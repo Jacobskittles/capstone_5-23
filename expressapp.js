@@ -1,3 +1,5 @@
+// initialize express app. nodemon expressapp.js to monitor
+
 const express = require('express')
 const app = express()
 const port = 8080
