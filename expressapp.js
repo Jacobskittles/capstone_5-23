@@ -1,5 +1,12 @@
 // Lincoln. initialize express app. nodemon expressapp.js to monitor
 
+//How to connect MongoDB: 
+// 1. Ensure that you have MongoDB compass installed and mongo initialized in the terminal.
+// 2. Open Mongo Atlas online, create your project, cluster, database. 
+// 3. Press "Connect" next to your cluster name in the UI. Go to drivers. follow the instructions ensuring you have proper credentials, you may need to reset your password.
+// Open MongoDB compass. New Connection. Advanced. Mongodb+srv. Input the same string from before with credentials. 
+// Use the code below to connect via express app. You should now be connected to the database in the compass as well as in the app.
+
 const express = require('express')
 const app = express()
 const port = 8088
