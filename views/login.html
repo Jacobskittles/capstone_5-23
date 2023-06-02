@@ -10,17 +10,17 @@
 
 </head>
 <body>
-    <form id = 'login' action = "/login" method = "">
+    <form id = 'login' action = "/login" method = "POST">
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" class="form-control" id="username" placeholder="Username" required>
+          <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
           <!-- <small id="emailHelp" class="form-text text-muted"></small> -->
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" class="form-control" id="password" placeholder="Password" required>
+          <input type="password" class="form-control" id="password" placeholder="Password" name="password" required>
         </div>
-        <button type="submit" class="btn btn-primary" onclick="validate()">Submit</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
       </form>
 </body>
 
@@ -29,28 +29,7 @@
 <script>
   
 
-  function validate(){
-    
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-    if ( username == "admin" && password == "admin123"){
-        document.getElementById('login').method = 'POST'
-        alert ("Login successfully");
-        window.location = "index.html"; // Redirecting to other page.
-        return false;
-    } else{
-        attempt --;// Decrementing by one.
-        alert("You have left "+attempt+" attempt;");
-        console.log('invalid')
-    // Disabling fields after 3 attempts.
-        if( attempt == 0){
-            document.getElementById("username").disabled = true;
-            document.getElementById("password").disabled = true;
-            document.getElementById("submit").disabled = true;
-            return false;
-        }
-    }
-}
+
 
 
 //use this for user validation

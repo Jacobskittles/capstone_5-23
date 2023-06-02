@@ -15,13 +15,22 @@ const app = express()
 const port = 8088
 const path = require('path')
 const fs = require('fs')
-
+//used to read the user login
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
+//cookie parser used for login
+var cookieParser = require('cookie-parser')
+app.use(cookieParser())
 //middleware
 function logger(req, res, next){
   console.log(`Received request ... [${Date.now()}] ${req.method} ${req.url}`);
   next();
 }
 app.use(logger);
+
+app.use(express.json())
+
+
 //error handling middleware to catch errors in page requests
 function handleErrors(err, req, res, next){
   console.log(err)
@@ -34,21 +43,45 @@ app.get('/', (req, res) => {
 })
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/login.html'))
+
 })
 app.get('/projects', (req, res) => {
-  //if login is not successful, redirect to login screen if this is manually inputted
-  //otherwise send project page
-  res.sendFile(path.join(__dirname, 'views/index.html'))
+  console.log(req.cookies.login)
+  //check to see if credentials are successful and stored as a cookie
+  if(req.cookies.login == 'true'){
+    res.sendFile(path.join(__dirname, 'views/index.html'))
+  }
+  else{
+    //redirect to login page if credentials are not successfully stored
+    res.redirect('/login')
+  }
+  
 })
 //connect main page 
 //route for POST request for login
+//require cookies to save login
 app.post('/login', (req, res)=>{
-  res.redirect('/projects')
-})
+    var {username, password} = req.body
+    console.log(username)
+    if ( username == "admin" && password == "admin123"){
+      res.cookie('login', true)
+      res.redirect('/projects')
+    } else{
+
+      res.redirect('/login')
+        }
+    })
+ 
 app.get('/upload', (req, res) => {
-  //if login is not successful, redirect to login screen if this is manually inputted
-  //otherwise send import page
-  res.sendFile(path.join(__dirname, 'views/import.html'))
+  console.log(req.cookies.login)
+  //check to see if credentials are successful and stored as a cookie
+  if(req.cookies.login == 'true'){
+    res.sendFile(path.join(__dirname, 'views/import.html'))
+  }
+  else{
+    //redirect to login page if credentials are not successfully stored
+    res.redirect('/login')
+  }
 })
 app.listen(port, () => {
   console.log(`Listening on port ${port}`)
@@ -88,3 +121,6 @@ run().catch(console.dir);
 //check login credentials
 var attempt = 3; // Variable to count number of attempts.
 // Below function Executes on click of login button.
+
+
+
