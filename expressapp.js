@@ -10,9 +10,35 @@
 const express = require('express')
 const app = express()
 const port = 8088
+const path = require('path')
+const fs = require('fs')
 
-app.get('/', (req, res) => {
-  res.send('Hello World! This is an express app running with MongoDB!')
+//middleware
+function logger(req, res, next){
+  console.log(`Received request ... [${Date.now()}] ${req.method} ${req.url}`);
+  next();
+}
+app.use(logger);
+//error handling middleware to catch errors in page requests
+function handleErrors(err, req, res, next){
+  console.log(err)
+  res.status(err.httpStatusCode || 500).send("Oh no, an error occurred!")
+}
+
+//connect main page 
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '/login.html'))
+  // res.writeHead(200, {'Content-Type': 'text/plain'})
+  // fs.readFile('./index.html', null, function(err, data){
+  //   if(error){
+  //     res.writeHead(404);
+  //     res.write('File not found!');
+  //   }else{
+  //     res.write(data)
+  //   }
+  //   res.end();
+  // })
+
 })
 
 app.listen(port, () => {
@@ -47,3 +73,27 @@ async function run() {
   }
 }
 run().catch(console.dir);
+
+
+//check login credentials
+var attempt = 3; // Variable to count number of attempts.
+// Below function Executes on click of login button.
+function validate(){
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+    if ( username == "admin" && password == "admin123"){
+        alert ("Login successfully");
+        window.location = "success.html"; // Redirecting to other page.
+        return false;
+    } else{
+        attempt --;// Decrementing by one.
+        alert("You have left "+attempt+" attempt;");
+    // Disabling fields after 3 attempts.
+        if( attempt == 0){
+            document.getElementById("username").disabled = true;
+            document.getElementById("password").disabled = true;
+            document.getElementById("submit").disabled = true;
+            return false;
+        }
+    }
+}
