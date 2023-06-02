@@ -6,21 +6,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>Login</title>
-    <!-- <script src="./expressapp.js"></script> -->
+
 
 </head>
 <body>
-    <form>
+    <form id = 'login' action = "/login" method = "">
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" class="form-control" id="username" placeholder="Username">
+          <input type="text" class="form-control" id="username" placeholder="Username" required>
           <!-- <small id="emailHelp" class="form-text text-muted"></small> -->
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" class="form-control" id="password" placeholder="Password">
+          <input type="password" class="form-control" id="password" placeholder="Password" required>
         </div>
         <button type="submit" class="btn btn-primary" onclick="validate()">Submit</button>
       </form>
 </body>
+
+
+
+<script>
+  
+
+  function validate(){
+    
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+    if ( username == "admin" && password == "admin123"){
+        document.getElementById('login').method = 'POST'
+        alert ("Login successfully");
+        window.location = "index.html"; // Redirecting to other page.
+        return false;
+    } else{
+        attempt --;// Decrementing by one.
+        alert("You have left "+attempt+" attempt;");
+        console.log('invalid')
+    // Disabling fields after 3 attempts.
+        if( attempt == 0){
+            document.getElementById("username").disabled = true;
+            document.getElementById("password").disabled = true;
+            document.getElementById("submit").disabled = true;
+            return false;
+        }
+    }
+}
+
+
+//use this for user validation
+
+// function validate(){
+//   console.log('validate button works')
+//   var username = document.getElementById('username')
+//   var password = document.getElementById('password')
+//   if(username == 'admin' && password == 'admin'){
+//     document.getElementById('login').method = "POST"
+//     alert('Success!')
+//     return true;
+//   }
+//   else{
+//     alert('Incorrect username/password')
+//     return false;
+//   }
+// }
+//use this for user validation
+</script>
 </html>

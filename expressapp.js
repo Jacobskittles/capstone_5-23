@@ -8,6 +8,8 @@
 // Open MongoDB compass. New Connection. Advanced. Mongodb+srv. Input the same string from before with credentials. 
 // Use the code below to connect via express app. You should now be connected to the database in the compass as well as in the app.
 
+//How to connect to MongoDB via command line? 
+
 const express = require('express')
 const app = express()
 const port = 8088
@@ -26,19 +28,28 @@ function handleErrors(err, req, res, next){
   res.status(err.httpStatusCode || 500).send("Oh no, an error occurred!")
 }
 
-//connect main page 
+//redirect to login screen 
+app.get('/', (req, res) => {
+  res.redirect('/login')
+})
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/login.html'))
 })
 app.get('/projects', (req, res) => {
+  //if login is not successful, redirect to login screen if this is manually inputted
+  //otherwise send project page
   res.sendFile(path.join(__dirname, 'views/index.html'))
-
+})
+//connect main page 
+//route for POST request for login
+app.post('/login', (req, res)=>{
+  res.redirect('/projects')
 })
 app.get('/upload', (req, res) => {
+  //if login is not successful, redirect to login screen if this is manually inputted
+  //otherwise send import page
   res.sendFile(path.join(__dirname, 'views/import.html'))
-
 })
-
 app.listen(port, () => {
   console.log(`Listening on port ${port}`)
 })
@@ -46,6 +57,7 @@ app.listen(port, () => {
 //Lincoln. This is some code I assembled to connect the database to the javascript.
 const { MongoClient, ServerApiVersion } = require('mongodb');
 // find the uri by connecting your cluster to your node.js. replace with the link found in the instructions on the MongoDB cloud website. Must have proper credentials assigned to the cluster.
+//can replace with local database host
 const uri = "mongodb+srv://ellahlincoln:examplepass@excluster.d8hkgut.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -72,26 +84,7 @@ async function run() {
 }
 run().catch(console.dir);
 
-
+//UI JAVASCRIPT
 //check login credentials
 var attempt = 3; // Variable to count number of attempts.
 // Below function Executes on click of login button.
-function validate(){
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-    if ( username == "admin" && password == "admin123"){
-        alert ("Login successfully");
-        window.location = "success.html"; // Redirecting to other page.
-        return false;
-    } else{
-        attempt --;// Decrementing by one.
-        alert("You have left "+attempt+" attempt;");
-    // Disabling fields after 3 attempts.
-        if( attempt == 0){
-            document.getElementById("username").disabled = true;
-            document.getElementById("password").disabled = true;
-            document.getElementById("submit").disabled = true;
-            return false;
-        }
-    }
-}
