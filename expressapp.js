@@ -1,3 +1,4 @@
+// 6/2/2023 run using command `npm run dev` can be found in package.json under scripts
 // Lincoln. initialize express app. nodemon expressapp.js to monitor
 
 //How to connect MongoDB using the web interface: 
@@ -27,17 +28,14 @@ function handleErrors(err, req, res, next){
 
 //connect main page 
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, '/login.html'))
-  // res.writeHead(200, {'Content-Type': 'text/plain'})
-  // fs.readFile('./index.html', null, function(err, data){
-  //   if(error){
-  //     res.writeHead(404);
-  //     res.write('File not found!');
-  //   }else{
-  //     res.write(data)
-  //   }
-  //   res.end();
-  // })
+  res.sendFile(path.join(__dirname, 'views/login.html'))
+})
+app.get('/projects', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/index.html'))
+
+})
+app.get('/upload', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/import.html'))
 
 })
 
