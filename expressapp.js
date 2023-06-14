@@ -100,7 +100,7 @@ app.listen(port, () => {
 const { MongoClient, ServerApiVersion } = require('mongodb');
 //  Find the uri by connecting your cluster to your node.js. replace with the link found in the instructions on the MongoDB cloud website. Must have proper credentials assigned to the cluster.
 //  You can replace with local database host
-const uri = "mongodb+srv://ellahlincoln:examplepass@excluster.d8hkgut.mongodb.net/?retryWrites=true&w=majority";
+const uri = 'mongodb://localhost:27017';
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {

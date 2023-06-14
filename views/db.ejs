@@ -1,0 +1,27 @@
+<!-- db.ejs -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>People and Projects</title>
+</head>
+<body>
+  <h1>People and Projects</h1>
+  <% if (people && people.length > 0) { %>
+    <% people.forEach(function(person) { %>
+      <h2><%= person.firstname %> <%= person.lastname %></h2>
+      <ul>
+        <% if (person.projects && person.projects.length > 0) { %>
+          <% person.projects.forEach(function(project) { %>
+            <li><%= project.name %>: <%= project.description %></li>
+          <% }) %>
+        <% } else { %>
+          <li>No projects</li>
+        <% } %>
+      </ul>
+    <% }) %>
+  <% } else { %>
+    <p>No people available</p>
+  <% } %>
+</body>
+</html>
