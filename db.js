@@ -148,8 +148,8 @@ async function fillData() {
     shaggy.addProject(ladder);
     sausage.addProject(cannon);
 
-    await Person.pushAll();
-    await Project.pushAll();
+    // await Person.pushAll();
+    // await Project.pushAll();
 }
 
 fillData();
