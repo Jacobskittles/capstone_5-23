@@ -102,8 +102,7 @@ app.get('/logout', (req, res) => {
   console.log(req.cookies.login)
   res.clearCookie('login')
   res.render('pages/logout')
-
-})
+  })
 // app.post('/projects',(req, res)=>{
 //   if(req.cookies.login == 'true'){
 //     res.sendFile(path.join(__dirname, 'views/import.html'))
