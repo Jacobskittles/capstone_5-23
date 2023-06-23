@@ -24,132 +24,12 @@ connect();
 
 const db = client.db("cb-projects");
 
-class Person {
-    static people = [];
-    static collection = db.collection("personnel");
-
-    constructor(firstname, lastname, projects = [], teams = [], id) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.projects = projects;
-        this.teams = teams;
-        this.id = id;
-
-        this.addToDatabase();
-    }
-
-    async addToDatabase() {
-        let inserted = await Person.collection.insertOne(this.format());
-        this.id = inserted.insertedId;
-        Person.people.push(this);
-    }
-
-    static async importAll() {
-        const documents = await this.collection.find().toArray();
-
-        documents.forEach((doc) => {
-            let person = new Person(doc.firstname, doc.lastname);
-            let projects = doc.projects.map((projectId) => {
-                return Project.projects.find(
-                    (project) => project.id === projectId
-                );
-            });
-            let teams = doc.teams;
-            let id = doc._id;
-        });
-    }
-
-    async update() {
-        if (this.id) {
-            await Person.collection.replaceOne({ _id: this.id }, this.format());
-        }
-    }
-
-    static async updateAll() {
-        for (let person of Person.people) {
-            await person.update();
-        }
-    }
-
-    format() {
-        return {
-            firstname: this.firstname,
-            lastname: this.lastname,
-            projects: this.projects.map((project) => project.id),
-            teams: this.teams.map((team) => team.id),
-        };
-    }
-
-    addProject(project) {
-        this.projects.push(project);
-    }
-}
-
-class Project {
-    static projects = [];
-    static collection = db.collection("projects");
-
-    constructor(name, description) {
-        this.name = name;
-        this.description = description;
-        this.id;
-
-        Project.projects.push(this);
-    }
-
-    static async importAll() {
-        const documents = await this.collection.find().toArray();
-
-        documents.forEach((doc) => {
-            let project = new Project(doc.name, doc.description);
-            project.projects = doc.projects;
-            project.teams = doc.teams;
-            project.id = doc._id;
-        });
-    }
-
-    static async pushAll() {
-        for (let project of Project.projects) {
-            if (!project.id) {
-                let inserted = await this.collection.insertOne(
-                    project.format()
-                );
-                project.id = inserted.insertedId;
-            } else {
-                await this.collection.replaceOne(
-                    { _id: project.id },
-                    project.format()
-                );
-            }
-        }
-    }
-
-    format() {
-        return {
-            name: this.name,
-            description: this.description,
-        };
-    }
-}
+let personnel;
+let projects;
 
 async function fillData() {
-    Person.importAll();
-    Project.importAll();
-
-    let ladder = new Project("Stepladder", "Become a human stepladder");
-    let cannon = new Project(
-        "Project X",
-        "Get launched out of a cannon to please NCOs"
-    );
-
-    let shaggy = new Person("Norville", "Rogers");
-    let sausage = new Person("Jimmy", "Dean");
-
-    shaggy.addProject(ladder);
-    sausage.addProject(cannon);
-
-    // await Person.pushAll();
-    // await Project.pushAll();
+    personnel = await db.collection("personnel").find().toArray();
+    projects = await db.collection("projects").find().toArray();
 }
 
 fillData();
@@ -164,10 +44,9 @@ fillData();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
     // Pass the 'people' array to the 'people.ejs' template
-    res.render("db", { people: Person.people });
-    res.send(Person.format());
+    res.render("db", { personnel: personnel, projects: projects });
 });
 
 app.listen(port, () => {
