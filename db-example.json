@@ -1,0 +1,37 @@
+{
+    "personnel": [
+        {
+            "_id": 0,
+            "firstName": "Norville",
+            "lastName": "Rogers",
+            "projects": [
+                {
+                    "_id": 0,
+                    "value": 2
+                },
+                {
+                    "_id": 1,
+                    "value": 1
+                }
+            ],
+            "account": {
+                "username": "zoiksScoob45",
+                "password": "5ad4f1d265d7a1f2e3",
+                "admin": false
+            }
+        }
+    ],
+    "projects": [
+        {
+            "_id": 0,
+            "name": "Human Stepladder",
+            "description": "Become a stepladder for the good of America and because we told you to.",
+            "members": [
+                {
+                    "_id": 0,
+                    "value": 2
+                }
+            ]
+        }
+    ]
+}
