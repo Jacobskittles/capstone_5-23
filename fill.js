@@ -108,6 +108,10 @@ while (quit == false) {
             new Project(name, description);
             console.log("project added");
             break;
+        case "3":
+            for(person of Person.people){
+                print(person)
+            }
         default:
             console.log("wuh?");
             break;
