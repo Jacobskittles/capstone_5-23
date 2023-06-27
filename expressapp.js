@@ -1,6 +1,8 @@
 //  6/2/2023 run using command `npm run dev` can be found in package.json under scripts
 //  Lincoln. initialize express app. nodemon expressapp.js to monitor
 
+//EJS - npm install ejs
+
 //How to connect MongoDB using the web interface: 
 // 1. Ensure that you have MongoDB compass installed and mongo initialized in the terminal.
 // 2. Open Mongo Atlas online, create your project, cluster, database. 
@@ -16,7 +18,11 @@ const app = express()
 const path = require('path')
 const port = 8088
 
+<<<<<<< HEAD
 // setting view for ejs - slivinski
+=======
+// Set the view engine to ejs
+>>>>>>> b349c327d6a33a4b19bcadb6bc2a8813d3c993e2
 app.set('view engine', 'ejs');
 
 //  Used to read the user login information and parse it. Gonzales + Lincoln
@@ -51,16 +57,20 @@ app.get('/', (req, res) => {
 
 //  Going to the login page will display the HTML.
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views/login.html'))
+  res.render('pages/login')
 })
 
 //  Going to the projects page. Lincoln + Gonzales
 app.get('/projects', (req, res) => {
     //  This code checks to see if credentials are successful and stored as a cookie
   if(req.cookies.login == 'true'){
+<<<<<<< HEAD
     //res.render allows to load ejs files with the view engine-slivinski
     res.render('pages/index', {
     });
+=======
+    res.render('pages/index')
+>>>>>>> b349c327d6a33a4b19bcadb6bc2a8813d3c993e2
   }else{
     //  Redirects to login page if the credentials are not successfully stored
     res.redirect('/login')
@@ -87,15 +97,32 @@ app.post('/login', (req, res)=>{
       }
     })
 
+
 //  Similar to the projects page, this will take you to the projects page.
 app.get('/upload', (req, res) => {
   console.log(req.cookies.login)
   if(req.cookies.login == 'true'){
-    res.sendFile(path.join(__dirname, 'views/import.html'))
+    res.render('pages/import')
   }else{
     res.redirect('/login')
   }
 })
+
+app.get('/logout', (req, res) => {
+  console.log(req.cookies.login)
+  res.clearCookie('login')
+  res.render('pages/logout')
+  })
+// app.post('/projects',(req, res)=>{
+//   if(req.cookies.login == 'true'){
+//     res.sendFile(path.join(__dirname, 'views/import.html'))
+//   }else{
+//     res.redirect('/login')
+//   }
+// })
+
+
+
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`)
