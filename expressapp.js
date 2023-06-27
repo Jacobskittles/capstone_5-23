@@ -16,7 +16,7 @@ const app = express()
 const path = require('path')
 const port = 8088
 
-// setting view for ejs
+// setting view for ejs - slivinski
 app.set('view engine', 'ejs');
 
 //  Used to read the user login information and parse it. Gonzales + Lincoln
@@ -58,6 +58,7 @@ app.get('/login', (req, res) => {
 app.get('/projects', (req, res) => {
     //  This code checks to see if credentials are successful and stored as a cookie
   if(req.cookies.login == 'true'){
+    //res.render allows to load ejs files with the view engine-slivinski
     res.render('pages/index', {
     });
   }else{
