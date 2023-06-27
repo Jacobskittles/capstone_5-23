@@ -20,8 +20,8 @@
       <% project.members.forEach(function(member) { %>
 
         <% let person = personnel.find(person => person._id === member.id) %>
-
-        <button draggable="True" class="btn border-secondary-subtle"><strong><%= person.firstName+' '+person.lastName+(person.projects.find(assignment => assignment.id === project._id).value == 2? '(Lead)': '')%></strong>
+        <% let role = ''; if (person.projects) { if (person.projects.find(assignment => assignment.id === project._id).value == 2) {role = '(Lead)'} } %>
+        <button draggable="True" class="btn border-secondary-subtle"><strong><%= person.firstName+' '+person.lastName+role %></strong>
           <% let total = 0; if(person.projects) {person.projects.forEach(function(project) { 
             total+= project.value 
           })};
