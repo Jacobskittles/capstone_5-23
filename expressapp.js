@@ -16,6 +16,7 @@ const app = express()
 const path = require('path')
 const port = 8088
 
+// setting view for ejs
 app.set('view engine', 'ejs');
 
 //  Used to read the user login information and parse it. Gonzales + Lincoln
