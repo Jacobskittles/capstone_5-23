@@ -16,6 +16,8 @@ const app = express()
 const path = require('path')
 const port = 8088
 
+app.set('view engine', 'ejs');
+
 //  Used to read the user login information and parse it. Gonzales + Lincoln
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -55,7 +57,8 @@ app.get('/login', (req, res) => {
 app.get('/projects', (req, res) => {
     //  This code checks to see if credentials are successful and stored as a cookie
   if(req.cookies.login == 'true'){
-    res.sendFile(path.join(__dirname, 'views/index.html'))
+    res.render('pages/index', {
+    });
   }else{
     //  Redirects to login page if the credentials are not successfully stored
     res.redirect('/login')
