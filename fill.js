@@ -2,11 +2,11 @@ const { MongoClient } = require("mongodb");
 const prompt = require("prompt-sync")({ sigint: true });
 const crypto = require("crypto");
 
-const uri = "mongodb://localhost:27017";
+const uri = "mongodb://10.10.20.80:27017";
 
 const apiUrl = "https://api.openai.com/v1/chat/completions";
 
-const chatgptString = `I want you to generate as a json file nothing more, a list of people like this, but come up with new names and projects and passwords and more people and projects, don't put it in a code block, don't put anything other than raw json:
+const chatgptString = `I want you to generate as a json file nothing more, a list of people like this, but come up with new names and projects and passwords and more people and projects, don't put it in a code block, don't put anything other than raw json, also make sure some people aren't assigned to projects:
 
 {
     "people": [
@@ -30,7 +30,7 @@ const chatgptString = `I want you to generate as a json file nothing more, a lis
             "name": "Human Stepladder",
             "description": "Become a stepladder for the good of America and because we told you to.",
             "members": [
-                [0, 2], // first number is id of member, second number is 2 if lead member, 1 otherwise
+                [0, 2], // first number is id of member, second number is 1 or 2 never 0
                 [1, 1]
             ]
         }
@@ -80,8 +80,8 @@ class Person {
         };
     }
 
-    addProject(project, value) {
-        this.projects.push({ id: project._id, value });
+    addProject(project, weight) {
+        this.projects.push({ id: project._id, weight });
     }
 }
 
@@ -95,8 +95,8 @@ class Project {
         Project.projects.push(this);
     }
 
-    addMember(member, value) {
-        this.members.push({ id: member._id, value });
+    addMember(member, weight) {
+        this.members.push({ id: member._id, weight });
     }
 
     format() {
@@ -109,9 +109,9 @@ class Project {
     }
 }
 
-function join(project, member, value) {
-    project.addMember(member, value);
-    member.addProject(project, value);
+function join(project, member, weight) {
+    project.addMember(member, weight);
+    member.addProject(project, weight);
 }
 
 //useful code
@@ -147,7 +147,7 @@ async function callChatGPT(prompt) {
         headers: {
             "Content-Type": "application/json",
             Authorization:
-                "Bearer API_KEY",
+                "Bearer ",
         },
         body: JSON.stringify({
             model: "gpt-3.5-turbo",
@@ -161,6 +161,7 @@ async function callChatGPT(prompt) {
     });
 
     const data = await response.json();
+    console.log(data.choices[0].message.content)
     return JSON.parse(data.choices[0].message.content);
 }
 

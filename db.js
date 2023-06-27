@@ -4,7 +4,7 @@ const { MongoClient } = require("mongodb");
 const path = require("path");
 
 const port = 8080;
-const uri = "mongodb://localhost:27017";
+const uri = "mongodb://localhost:27017/";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri);
@@ -22,7 +22,7 @@ connect();
 
 //useful code
 
-const db = client.db("cb-projects");
+const db = client.db("CBProjects");
 
 let personnel;
 let projects;
@@ -30,9 +30,12 @@ let projects;
 async function fillData() {
     personnel = await db.collection("personnel").find().toArray();
     projects = await db.collection("projects").find().toArray();
+    console.log(personnel)
 }
 
 fillData();
+
+
 
 /* 
 -------------------------------------------------
