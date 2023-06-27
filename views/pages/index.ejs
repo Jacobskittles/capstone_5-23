@@ -12,7 +12,21 @@
 <main>
   <div class="jumbotron">
     <h1>PROJECTS</h1>
-    <p>This is the main page for projects</p>
+    <p><% personnel.forEach(function(person) { %>
+      <button draggable="True" class="btn border-secondary-subtle"><strong><%= person.firstName+' '+person.lastName %></strong>
+        <% let total = 0; person.projects.forEach(function(project) { 
+          total+= project.value 
+        });
+        let color = 'danger'; 
+        if (total < 1) {color = 'primary'} 
+        else if (total < 2) {color = 'success'} 
+        else if (total < 3) {color = 'warning'} 
+        else {color = 'danger'} %>
+        
+        <span class="badge bg-<%=color%>">
+            <%= total %>
+        </span></button>
+  <% }); %></p>
   </div>
 </main>
 
