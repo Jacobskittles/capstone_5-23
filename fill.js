@@ -1,8 +1,41 @@
 const { MongoClient } = require("mongodb");
 const prompt = require("prompt-sync")({ sigint: true });
-const crypto = require("crypto")
+const crypto = require("crypto");
 
 const uri = "mongodb://localhost:27017";
+
+const apiUrl = "https://api.openai.com/v1/chat/completions";
+
+const chatgptString = `I want you to generate as a json file nothing more, a list of people like this, but come up with new names and projects and passwords and more people and projects, don't put it in a code block, don't put anything other than raw json:
+
+{
+    "people": [
+        {
+            "id": 0,
+            "firstname": "Norville",
+            "lastname": "Rogers",
+            "username": "zoiksScoob45",
+            "password": "password"
+        },
+        {
+            "id": 1,
+            "firstname": "Jimmy",
+            "lastname": "Dean",
+            "username": "sausageDude",
+            "password": "pass123"
+        }
+    ],
+    "projects": [
+        {
+            "name": "Human Stepladder",
+            "description": "Become a stepladder for the good of America and because we told you to.",
+            "members": [
+                [0, 2], // first number is id of member, second number is 2 if lead member, 1 otherwise
+                [1, 1]
+            ]
+        }
+    ]
+}`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri);
@@ -85,37 +118,135 @@ function join(project, member, value) {
 
 const db = client.db("CBProjects");
 
+const personnel = db.collection("personnel");
+
+const projects = db.collection("projects");
+
 let quit = false;
 
-while (quit == false) {
-    let choice = prompt(
-        "Add (1) Personnel (2) Projects (3) person to project (a) account (p) print all stuff | (e) to exit\n"
-    );
+async function insertAll() {
+    console.log("okay I'll try");
+    try {
+        for (person of Person.people) {
+            await personnel.insertOne(person.format());
+        }
+        for (project of Project.projects) {
+            await projects.insertOne(project.format());
+        }
+    } catch {
+        console.log("Fuck! I fucked up!");
+        return;
+    }
 
-    switch (choice) {
-        case "e":
+    console.log("alr cool im done");
+}
+
+async function callChatGPT(prompt) {
+    const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization:
+                "Bearer API_KEY",
+        },
+        body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+                {
+                    role: "system",
+                    content: prompt,
+                },
+            ],
+        }),
+    });
+
+    const data = await response.json();
+    return JSON.parse(data.choices[0].message.content);
+}
+
+async function main() {
+    while (quit == false) {
+        let choice = prompt(
+            "Add (1) Personnel (2) Projects (3) person to project (a) account (p) print all stuff (e) export | (q) to exit\n"
+        );
+
+        if (choice === "q") {
             quit = true;
-            break;
-        case "1":
+        } else if (choice === "1") {
             let firstName = prompt("What fname?\n");
             let lastName = prompt("what lname?\n");
+            console.log(firstName + " " + lastName);
             new Person(firstName, lastName);
-            console.log("Dude added")
-            break;
-        case "2":
+            console.log("Dude added");
+        } else if (choice === "2") {
             let name = prompt("what name?\n");
             let description = prompt("what desc?");
             new Project(name, description);
             console.log("project added");
-            break;
-        case "3":
-            for(person of Person.people){
-                print(person)
+        } else if (choice === "3") {
+            console.log("select a dude:");
+            for (let [i, person] of Person.people.entries()) {
+                console.log(
+                    i + ": " + person.firstName + " " + person.lastName
+                );
             }
-        default:
+            let person = Person.people[parseInt(prompt())];
+            console.log("select a project:");
+            for (let [i, project] of Project.projects.entries()) {
+                console.log(
+                    i + ": " + project.name + " " + project.description
+                );
+            }
+            let project = Project.projects[parseInt(prompt())];
+            let value = prompt("are they a leader?") == "y" ? 2 : 1;
+
+            join(project, person, value);
+        } else if (choice === "a") {
+            console.log("select a dude:");
+            for (let [i, person] of Person.people.entries()) {
+                console.log(
+                    i + ": " + person.firstName + " " + person.lastName
+                );
+            }
+            let person = Person.people[parseInt(prompt())];
+            let username = prompt("What the username be?");
+            let password = prompt("password?");
+            let admin = prompt("are they an admin?") == "y";
+            person.addAccount(username, password, admin);
+        } else if (choice === "p") {
+            for (let person of Person.people) {
+                console.log(JSON.stringify(person));
+            }
+            for (let project of Project.projects) {
+                console.log(JSON.stringify(project));
+            }
+        } else if (choice === "e") {
+            await insertAll();
+        } else if (choice === "i") {
+            try {
+                let response = await callChatGPT(chatgptString);
+                console.log(response);
+                let dudes = [];
+                for (let person of response.people) {
+                    let dude = new Person(person.firstname, person.lastname);
+                    dude.addAccount(person.username, person.password, false);
+                    dudes.push(dude);
+                }
+                for (let project of response.projects) {
+                    let proj = new Project(project.name, project.description);
+                    for (member of project.members) {
+                        join(proj, dudes[member[0]], member[1]);
+                    }
+                }
+            } catch (error) {
+                console.log("oops!" + error.constructor.name);
+            }
+        } else {
             console.log("wuh?");
-            break;
+        }
     }
+
+    throw new Error();
 }
 
-throw new Error();
+main();
