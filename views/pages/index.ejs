@@ -10,24 +10,58 @@
 </header>
 
 <main>
-  <div class="jumbotron">
+  <div class="row">
+  <div class="jumbotron col-sm-9">
     <h1>PROJECTS</h1>
-    <p><% personnel.forEach(function(person) { %>
-      <button draggable="True" class="btn border-secondary-subtle"><strong><%= person.firstName+' '+person.lastName %></strong>
-        <% let total = 0; person.projects.forEach(function(project) { 
-          total+= project.value 
-        });
-        let color = 'danger'; 
-        if (total < 1) {color = 'primary'} 
-        else if (total < 2) {color = 'success'} 
-        else if (total < 3) {color = 'warning'} 
-        else {color = 'danger'} %>
-        
-        <span class="badge bg-<%=color%>">
-            <%= total %>
-        </span></button>
-  <% }); %></p>
+    <% projects.forEach(function(project) { %>
+      <div class="card">
+      <div class="card-body">
+        <h4 class="card-title"><%= project.name %></h4><p><%= project.description %></p>
+      <% project.members.forEach(function(member) { %>
+
+        <% let person = personnel.find(person => person._id === member.id) %>
+
+        <button draggable="True" class="btn border-secondary-subtle"><strong><%= person.firstName+' '+person.lastName+(person.projects.find(assignment => assignment.id === project._id).value == 2? '(Lead)': '')%></strong>
+          <% let total = 0; if(person.projects) {person.projects.forEach(function(project) { 
+            total+= project.value 
+          })};
+          let color = 'danger'; 
+          if (total < 1) {color = 'primary'} 
+          else if (total < 2) {color = 'success'} 
+          else if (total < 3) {color = 'warning'} 
+          else {color = 'danger'} %>
+          
+          <span class="badge bg-<%=color%>"><%= total %></span></button><% }); %></div></div>
+      <% }) %>
+
   </div>
+
+  <div class="col-sm-3">
+    <div class="well">
+      <div style="padding-right: 5%; float: right;">
+      </div>
+            <div class="card">
+                <div class="card-body">
+                  <h1 class="card-title">Personnel</h1>
+                    <button class="btn border-secondary-subtle">ADD</button>
+                  <% personnel.forEach(function(person) { %>
+                    <button draggable="True" style="width: 100%; text-align: left;" class="btn border-secondary-subtle"><strong><%= person.firstName+' '+person.lastName %></strong>
+                      <% let total = 0; if(person.projects) {person.projects.forEach(function(project) { 
+                        total+= project.value 
+                      })};
+                      let color = 'danger'; 
+                      if (total < 1) {color = 'primary'} 
+                      else if (total < 2) {color = 'success'} 
+                      else if (total < 3) {color = 'warning'} 
+                      else {color = 'danger'} %>
+                      
+                      <span class="badge bg-<%=color%>" style="float: right;"><%= total %></span></button><% }); %>
+              </div>
+            </div>
+  </div>
+</div>
+</div>
+
 </main>
 
 <footer>

@@ -51,7 +51,7 @@ app.listen(port, () => {
 const { MongoClient } = require('mongodb');
 const { error } = require('console');
 
-const uri = "mongodb://10.10.20.152:27017";
+const uri = "mongodb://10.10.20.80:27017";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri);
@@ -121,16 +121,6 @@ app.post('/login', (req, res)=>{
       }
     })
 
-
-//  Similar to the projects page, this will take you to the projects page.
-app.get('/upload', (req, res) => {
-  console.log(req.cookies.login)
-  if(req.cookies.login == 'true'){
-    res.render('pages/import')
-  }else{
-    res.redirect('/login')
-  }
-})
 
 app.get('/logout', (req, res) => {
   console.log(req.cookies.login)
