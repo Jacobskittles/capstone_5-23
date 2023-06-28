@@ -1,0 +1,121 @@
+[{
+  "_id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05",
+  "name": "Invisible Cloak",
+  "description": "Develop a cloak that can make the wearer invisible.",
+  "members": [
+    {
+      "id": "d506edfb-737a-4681-be14-688d82770d76",
+      "weight": 1
+    },
+    {
+      "id": "534f101a-9ca5-4b85-93f9-f39c87f39711",
+      "weight": 2
+    },
+    {
+      "id": "bff0f2df-19e4-4112-b236-7ae2103398ec",
+      "weight": 1
+    }
+  ]
+},
+{
+  "_id": "062f631e-e913-4338-aeae-ceab2ba66dec",
+  "name": "Mind Reader",
+  "description": "Create a device that can read people's thoughts.",
+  "members": [
+    {
+      "id": "534f101a-9ca5-4b85-93f9-f39c87f39711",
+      "weight": 2
+    },
+    {
+      "id": "22dd52ea-1b4a-4cee-be2e-f118916797e9",
+      "weight": 1
+    }
+  ]
+},
+{
+  "_id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb",
+  "name": "Data Analysis",
+  "description": "Analyze and interpret large datasets to gain insights.",
+  "members": [
+    {
+      "id": "c6a38ff2-02fb-41aa-9cca-c48620955b12",
+      "weight": 1
+    },
+    {
+      "id": "f34ad31b-227f-443f-9799-9b5c306187e4",
+      "weight": 2
+    },
+    {
+      "id": "39c5a5d2-1674-47e5-ad98-09218577a478",
+      "weight": 1
+    },
+    {
+      "id": "d348ac42-419c-4328-be39-c504bde9f8ae",
+      "weight": 0
+    }
+  ]
+},
+{
+  "_id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b",
+  "name": "Website Redesign",
+  "description": "Redesign the company's website to improve user experience.",
+  "members": [
+    {
+      "id": "39c5a5d2-1674-47e5-ad98-09218577a478",
+      "weight": 2
+    },
+    {
+      "id": "d348ac42-419c-4328-be39-c504bde9f8ae",
+      "weight": 1
+    },
+    {
+      "id": "72f0b825-1bbf-4c99-a879-64de0e867815",
+      "weight": 1
+    }
+  ]
+},
+{
+  "_id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe",
+  "name": "Product Launch",
+  "description": "Plan and execute the launch of a new product in the market.",
+  "members": [
+    {
+      "id": "c6a38ff2-02fb-41aa-9cca-c48620955b12",
+      "weight": 0
+    },
+    {
+      "id": "f34ad31b-227f-443f-9799-9b5c306187e4",
+      "weight": 1
+    },
+    {
+      "id": "72f0b825-1bbf-4c99-a879-64de0e867815",
+      "weight": 1
+    }
+  ]
+},
+{
+  "_id": "fa799529-bc18-4264-9105-5526121d4e66",
+  "name": "Data Analysis Tool",
+  "description": "Develop a tool for analyzing large datasets and generating insights.",
+  "members": [
+    {
+      "id": "5153798e-7830-4eac-99e6-dbfdad91a3c5",
+      "weight": 2
+    },
+    {
+      "id": "fcf956b3-974a-40a2-b81a-cb5f5b61f4a4",
+      "weight": 1
+    }
+  ]
+},
+{
+  "_id": "74616ab0-b667-4775-8c22-c3cdc47e3514",
+  "name": "E-commerce Platform",
+  "description": "Build an online platform for selling and buying products.",
+  "members": [
+    {
+      "id": "f1ee63b3-e725-4166-8af1-c5b86556bf81",
+      "weight": 2
+    }
+  ]
+}]
