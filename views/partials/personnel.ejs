@@ -3,22 +3,21 @@
       <!-- <div style="padding-right: 5%; float: right;">
       </div> -->
       <div class="card">
-        <div class="card-body">
-          <h1 class="card-title">Personnel - <%= personnel.length %></h1>
-          <button class="btn border-secondary-subtle">ADD +</button>
-          <div>Assigned</div>
-          <% personnel.forEach(function(person) { %>
+        <div class="card-body" style="overflow-y: scroll;">
+          <h1 class="card-title">Personnel - <%= personnel.length %>
+          <button class="btn border-secondary-subtle">ADD +</button></h1>
+          <hr><h5 class="card-title">Assigned</h5>
+          <div class="card-body bg-secondary-subtle">
+          <% personnel.forEach(function(person) { if (person.projects) {%>
             <button draggable="True" style="width: 100%; text-align: left;"
-              class="btn border-secondary-subtle"><strong>
+              class="btn bg-light border-secondary-subtle"><strong>
                 <%= person.firstName+' '+person.lastName %></strong>
                   <% 
                     // count how many projects each person has and determine their color
                     let total = 0;
-                    if(person.projects) {
                       person.projects.forEach(function(project) { 
                         total+= project.weight;
                       })
-                    };
 
                     let color;
                     if (total < 1) {
@@ -36,7 +35,19 @@
                   <span class="badge bg-<%=color%>" style="float: right;">
                     <%= total %>
                   </span></button>
-            <% }); %>
+            <% }}); %>
+          </div>
+            <hr><h5 class="card-title">Unassigned</h5>
+            <div class="card-body bg-secondary-subtle">
+            <% personnel.forEach(function(person) { if (person.projects) {} else{ %>
+              <button draggable="True" style="width: 100%; text-align: left;"
+                class="btn bg-light border-secondary-subtle"><strong>
+                  <%= person.firstName+' '+person.lastName %></strong>
+                    <span class="badge bg-primary" style="float: right;">
+                      0
+                    </span></button>
+              <% }}); %>
+            </div>
         </div>
       </div>
     </div>
