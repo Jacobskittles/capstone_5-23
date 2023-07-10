@@ -5,24 +5,23 @@
       <div class="card">
         <div class="card-body" style="overflow-y: scroll;">
           <h1 class="card-title">Personnel - <%= personnel.length %>
-          <button class="btn border-secondary-subtle" data-toggle="modal" data-target="#exampleModal">ADD +</button>
+
+          <button class="btn border-secondary-subtle" data-bs-toggle="modal" data-bs-target="#exampleModal">ADD +</button>
         
         
-          <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
                 ...
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary">Save changes</button>
               </div>
             </div>
@@ -37,10 +36,10 @@
           <% personnel.forEach(function(person) { if (person.projects) {%>
             <button draggable="True" type="button" style="width: 100%; text-align: left; position: relative; z-index: 1000" 
               class="btn bg-light border-secondary-subtle" 
-              data-toggle="popover"  
+              data-bs-toggle="popover"  
               title="Popover title" 
-              data-placement="left"  
-              data-content="And here's some amazing content. It's very engaging. Right?">
+              data-bs-placement="left"  
+              data-bs-content="insert projects this member is assigned to here">
               
               <strong><%= person.firstName+' '+person.lastName %></strong>
                   <% 
@@ -86,17 +85,16 @@
 </div>
 
 <script>
-// var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-// var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-//   return new bootstrap.Popover(popoverTriggerEl)
-// })
-  $(document).ready(function(){
-      $('[data-toggle="popover"]').popover({
-        container: 'body'
-      });  
-  });
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl)
+  })
+ 
 
-  $('#myModal').on('shown.bs.modal', function () {
-  $('#myInput').trigger('focus')
-})
+  var myModal = document.getElementById('exampleModal')
+  var myInput = document.getElementById('myInput')
+
+  myModal.addEventListener('shown.bs.modal', function () {
+    myInput.focus()
+  })
   </script>
