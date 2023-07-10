@@ -1,25 +1,18 @@
 // just for testing
 
-var project1 = {
-    firstName: "billy",
-    lastName: "bobby",
-    thing: [9, 6, 2],
-};
+const bcrypt = require("bcrypt");
 
-var project2 = {
-    firstName: "a",
-    lastName: "b",
-    weight: 7,
-};
-
-var projects = [project1, project2];
-
-for (project of projects) {
-    if (project.weight == 6) {
-        console.log(project.weight);
-    } else if (project.thing[1] == 6) {
-        console.log("ahahah");
-    } else {
-        console.log(project);
-    }
+async function hashPlease() {
+    let masterPassword = "admin123";
+    const hashedPass = await bcrypt.hash(masterPassword, 10);
+    return hashedPass;
 }
+
+(async () => {
+    try {
+        const hashedPassword = await hashPlease();
+        console.log(hashedPassword);
+    } catch (error) {
+        console.error("Error:", error);
+    }
+})();
