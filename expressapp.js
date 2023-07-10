@@ -6,9 +6,6 @@ const path = require('path')
 const port = 8088
 const crypto = require("crypto");
 
-// Set the view engine to ejs
-app.set('view engine', 'ejs');
-
 //  Used to read the user login information and parse it. Gonzales + Lincoln
 const bodyParser = require('body-parser');
 
