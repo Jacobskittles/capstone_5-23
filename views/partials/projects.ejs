@@ -1,7 +1,8 @@
 <div class="row">
   <div class="card col-sm-9">
     <div class="card-body">
-    <h1 class="card-title">PROJECTS - <%= projects.length %> <button class="btn border-secondary-subtle">ADD +</button></h1>
+    <h1 class="card-title">PROJECTS - <%= projects.length %> <button class="btn border-secondary-subtle" data-bs-toggle="modal" data-bs-target="#projectsModal">ADD +</button></h1>
+    
     <% projects.forEach(function(project) { %>
       <div class="card">
         <div class="card-body">
@@ -66,7 +67,55 @@
                     }
                    })
                    %>
-                     <button class="btn bg-light">+</button>
+                     <button class="btn bg-light" data-bs-toggle="modal" data-bs-target="#p2Modal-<%=project._id%>">+</button>
+
+                    <div class="modal fade" id="p2Modal-<%=project._id%>" tabindex="-1" aria-labelledby="p2ModalLabel-<%=project._id%>" aria-hidden="true">
+                      <div class="modal-dialog">
+
+                      <form action="/projects" method="POST">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="p2ModalLabel-<%=project._id%>">Add Person to <%=project.name%></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>                          
+                          <div class="modal-body">                           
+                                 
+                            
+                            <% personnel.forEach(function(person) { if (person.projects) {%>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" value="" id="<%=person._id%>">
+                              <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
+                                <%= person.firstName+' '+person.lastName %>
+                                <% 
+                                // count how many projects each person has and determine their color
+                                let total = utils.countProjects(person)
+                                
+                                let color = utils.getColor(total)
+                              %>
+                              <span class="badge bg-<%=color%>" style="float: right;">
+                                <%= total %>
+                              </span>
+                                
+                              </label>      
+                            </div>
+                          <%}})%> 
+                            
+
+                           
+                            
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                          </div>
+                        </div>
+                      </form>
+
+                      </div>
+                    </div>
+                     
+
+
             </div>
           </div>
         </div>
@@ -75,3 +124,4 @@
       <% }) %>
     </div>
   </div>
+  

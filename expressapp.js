@@ -150,6 +150,28 @@ app.post('/projects', (req, res)=>{
   }
 })
 
+app.post('/projects', (req, res)=>{
+  // parsed JSON from input
+  // need ID generated
+  var id = req.body.id
+
+  
+  
+  //code to input the user into the database
+  try{
+    db.collection("projects").members.insertMany([{
+      id : id
+    }])
+    console.log(`inserted user(s) into project`)
+    filldata();
+    res.redirect('/projects')
+  }
+  catch(err){
+    console.log(err)
+  }
+})
+
+
 //code to delete a person, not assigned to any button yet
 app.post('/projects', (req, res)=>{
   var person = req.body;
