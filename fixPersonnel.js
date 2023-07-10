@@ -27,22 +27,34 @@ async function updatePersonnel() {
         const personnel = await personnelCollection.findOne({ _id: memberId });
 
         if (personnel) {
-          // Remove old projects attribute
-          delete personnel.projects;
+          // Remove old projects attribute if exists
+          if (personnel.projects) {
+            personnel.projects = personnel.projects.filter(
+              (p) => p.id !== project._id
+            );
+          }
 
-          // Create a new project attribute with correct information
+          // Create a new project object
+          const newProject = {
+            id: project._id,
+          };
+
           if (member.role === 'Lead') {
-            personnel.projects = [
-              { id: project._id, role: 'Lead' }
-            ];
+            newProject.role = 'Lead';
+          }
+
+          // Add the new project to the personnel document
+          if (!personnel.projects) {
+            personnel.projects = [newProject];
           } else {
-            personnel.projects = [
-              { id: project._id }
-            ];
+            personnel.projects.push(newProject);
           }
 
           // Update the personnel document
-          await personnelCollection.updateOne({ _id: memberId }, { $set: personnel });
+          await personnelCollection.updateOne(
+            { _id: memberId },
+            { $set: { projects: personnel.projects } }
+          );
         }
       }
     }
