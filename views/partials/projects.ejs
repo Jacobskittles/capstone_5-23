@@ -24,23 +24,11 @@
                         <button draggable="True" class="btn bg-light border-secondary-subtle" >
                           <strong><%= person.firstName+' '+person.lastName %></strong>
                           <% 
-                            let total = 0; 
-                            if(person.projects) {
-                              person.projects.forEach(function(project) { 
-                                total+= project.weight;
-                              })
-                            };
-                            let color; 
-                            if (total < 1) {
-                              color='primary';
-                            } else if (total < 2) {
-                              color='success';
-                            } else if (total < 3) {
-                              color='warning';
-                            } else {
-                              color='danger';
-                            }
-                          %>
+                          // count how many projects each person has and determine their color
+                          let total = utils.countProjects(person)
+                          
+                          let color = utils.getColor(total)
+                        %>
                           <span class="badge bg-<%=color%>">
                             <%= total %>
                           </span>
@@ -65,23 +53,11 @@
                         <button draggable="True" class="btn bg-light border-secondary-subtle" >
                           <strong><%= person.firstName+' '+person.lastName %></strong>
                           <% 
-                            let total = 0; 
-                            if(person.projects) {
-                              person.projects.forEach(function(project) { 
-                                total+= project.weight;
-                              })
-                            };
-                            let color; 
-                            if (total < 1) {
-                              color='primary';
-                            } else if (total < 2) {
-                              color='success';
-                            } else if (total < 3) {
-                              color='warning';
-                            } else {
-                              color='danger';
-                            }
-                          %>
+                          // count how many projects each person has and determine their color
+                          let total = utils.countProjects(person)
+                          
+                          let color = utils.getColor(total)
+                        %>
                           <span class="badge bg-<%=color%>">
                             <%= total %>
                           </span>
