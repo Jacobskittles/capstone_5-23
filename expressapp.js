@@ -1,5 +1,4 @@
 //  6/2/2023 run using command `npm run dev` can be found in package.json under scripts
-//  Lincoln. initialize express app. nodemon expressapp.js to monitor
 
 //  Lincoln's code
 const express = require('express')
@@ -51,7 +50,7 @@ app.listen(port, () => {
 const { MongoClient } = require('mongodb');
 const { error } = require('console');
 
-const uri = "mongodb://127.0.0.1:27017";
+const uri = "mongodb://10.10.20.64:27017";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri);
@@ -103,15 +102,12 @@ app.get('/projects', async (req, res) => {
 })
 
 app.post('/login', (req, res)=>{
-    //  This is a function that exists within the app.post. On submit,
-    //  this code will execute. 
+    //  This is a function that exists within the app.post. On submit, this code will execute. 
     //  Body parser into JSON
     var {username, password} = req.body
-    //  Simple code for now to check if login is correct. However, this will change once
-    //  we access users in the database.
+    //  Simple code for now to check if login is correct. However, this will change once we access users in the database.
     if ( username == "admin" && password == "admin123"){
-      //  Assign the cookie. Name of 'login' (change name depending on user or admin),
-      //  Then boolean true since login was successful.
+      //  Assign the cookie. Name of 'login' (change name depending on user or admin), Then boolean true since login was successful.
       res.cookie('login', true)
       //  Take user to projects page after successful login.
       res.redirect('/projects')
@@ -127,13 +123,7 @@ app.get('/logout', (req, res) => {
   res.clearCookie('login')
   res.render('pages/logout')
   })
-// app.post('/projects',(req, res)=>{
-//   if(req.cookies.login == 'true'){
-//     res.sendFile(path.join(__dirname, 'views/import.html'))
-//   }else{
-//     res.redirect('/login')
-//   }
-// })
+
 
 
 

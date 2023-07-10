@@ -7,10 +7,21 @@
           <h1 class="card-title">Personnel - <%= personnel.length %>
           <button class="btn border-secondary-subtle">ADD +</button></h1>
           <hr><h5 class="card-title">Assigned</h5>
-          <div class="card-body bg-secondary-subtle">
+          <div class="card-body bg-secondary-subtle" id="cont">
+
+      
           <% personnel.forEach(function(person) { if (person.projects) {%>
-            <button draggable="True" style="width: 100%; text-align: left;"
-              class="btn bg-light border-secondary-subtle"><strong>
+            <button draggable="True" style="width: 100%; text-align: left; position: relative; z-index: 1000" 
+              class="btn bg-light border-secondary-subtle" 
+              id="popbtn"
+              type="button"
+              data-bs-toggle="popover"  
+              title="Popover title" 
+              data-bs-placement="top"  
+              
+              data-bs-content="And here's some amazing content. It's very engaging. Right?">
+              
+                <strong>
                 <%= person.firstName+' '+person.lastName %></strong>
                   <% 
                     // count how many projects each person has and determine their color
@@ -53,3 +64,11 @@
     </div>
   </div>
 </div>
+
+<script>
+  $(document).ready(function(){
+      $('[data-bs-toggle="popover"]').popover({
+        container: 'body'
+      });  
+  });
+  </script>
