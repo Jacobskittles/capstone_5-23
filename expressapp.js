@@ -118,6 +118,29 @@ app.post('/login', (req, res)=>{
     })
 
 
+// Post new projects into the database, should activate on submit
+// Ensure that the action of the modal corresponds to /projects/upload
+app.post('/projects', (req, res)=>{
+  // parsed JSON from input
+  // need ID generated
+  var firstName = req.body.first;
+  var lastName = req.body.last;
+  //code to input the user into the database
+  try{
+    db.collection("personnel").insertOne({
+      firstName: firstName, 
+      lastName: lastName
+    })
+    console.log("inserted 1 user")
+  }
+  catch(err){
+    console.log(err)
+  }
+
+})
+
+
+
 app.get('/logout', (req, res) => {
   console.log(req.cookies.login)
   res.clearCookie('login')
