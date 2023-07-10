@@ -94,6 +94,30 @@
               </div>
             </div>
           </div>
+            <%
+            project.members.forEach(function(member) { 
+              let person=personnel.find(person=> person._id === member.id) 
+              let role='';
+              // if the person has 2 weight, name them the lead
+              if (person.projects) { 
+                if (person.projects.find(assignment=> assignment.id === project._id).weight == 2) {
+                  role = '(Lead)';
+                }
+              } 
+            %>
+            <button draggable="True" class="btn border-secondary-subtle">
+              <strong><%= person.firstName+' '+person.lastName+role %></strong>
+              <% 
+                // count how many projects each person has and determine their color
+                let total = utils.countProjects(person)
+                
+                let color = utils.getColor(total)
+              %>
+              <span class="badge bg-<%=color%>">
+                <%= total %>
+              </span>
+            </button>
+            <% }); %>
           </div>
         </div>
         <% }) %>
