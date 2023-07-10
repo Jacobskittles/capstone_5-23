@@ -51,28 +51,15 @@
               <strong><%= person.firstName+' '+person.lastName %></strong>
                   <% 
                     // count how many projects each person has and determine their color
-                    let total = 0;
-                      person.projects.forEach(function(project) { 
-                        total+= project.weight;
-                      })
-
-                    let color;
-                    if (total < 1) {
-                      color='primary';
-                    } else if (total < 2) {
-                      color='success';
-                    }
-                    else if (total < 3) {
-                      color='warning';
-                    } else {
-                      color='danger';
-                    } 
+                    let total = utils.countProjects(person)
+                    
+                    let color = utils.getColor(total)
                   %>
-
                   <span class="badge bg-<%=color%>" style="float: right;">
                     <%= total %>
                   </span></button>
             <% }}); %>
+
           </div>
             <hr><h5 class="card-title">Unassigned</h5>
             <div class="card-body bg-secondary-subtle">

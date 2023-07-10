@@ -2,7 +2,6 @@
 
 //  Lincoln's code
 const express = require('express')
-const app = express()
 const path = require('path')
 const port = 8088
 const crypto = require("crypto");
@@ -12,10 +11,20 @@ app.set('view engine', 'ejs');
 
 //  Used to read the user login information and parse it. Gonzales + Lincoln
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: false }));
 
 //  The cookie parser is used to store login information. Gonzales + Lincoln
 var cookieParser = require('cookie-parser')
+
+var utils = require("./utils");
+
+const app = express()
+const PORT = 8088
+
+// Set the view engine to ejs
+app.set('view engine', 'ejs');
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(cookieParser())
 
 //  This is Express middleware that is used to log access to certain pages in the console.
@@ -35,8 +44,8 @@ function handleErrors(err, req, res, next){
   res.status(err.httpStatusCode || 500).send("Oh no, an error occurred!")
 }
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`)
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`)
 })
 
 
@@ -94,7 +103,7 @@ app.get('/login', (req, res) => {
 app.get('/projects', async (req, res) => {
     //  This code checks to see if credentials are successful and stored as a cookie
   if(req.cookies.login == 'true'){
-    res.render('pages/index', {personnel: personnel, projects: projects})
+    res.render('pages/index', {personnel: personnel, projects: projects, utils: utils})
   }else{
     //  Redirects to login page if the credentials are not successfully stored
     res.redirect('/login')
