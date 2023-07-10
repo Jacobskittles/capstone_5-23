@@ -1,8 +1,11 @@
 const { MongoClient } = require("mongodb");
 const prompt = require("prompt-sync")({ sigint: true });
 const crypto = require("crypto");
+require('dotenv').config();
 
-const uri = "mongodb://10.10.20.80:27017";
+const API_KEY = process.env.OPENAI_API_KEY;
+
+const uri = "mongodb://10.10.20.64:27017";
 
 const apiUrl = "https://api.openai.com/v1/chat/completions";
 
@@ -80,8 +83,18 @@ class Person {
         };
     }
 
-    addProject(project, weight) {
-        this.projects.push({ id: project._id, weight });
+    addProject(project, role=null, weight=null) {
+        let projectObj = { id: project._id };
+
+        if (role !== null) {
+            projectObj.role = role;
+        }
+
+        if (weight !== null) {
+            projectObj.weight = weight;
+        }
+
+        this.projects.push(projectObj);
     }
 }
 
@@ -95,7 +108,16 @@ class Project {
         Project.projects.push(this);
     }
 
-    addMember(member, weight) {
+    addMember(member, role = null, weight = null) {
+        let memberObj = { id: member._id };
+
+        if (role !== null) {
+            memberObj.role = role;
+        }
+
+        if (weight !== null) {
+            memberObj
+        }
         this.members.push({ id: member._id, weight });
     }
 
@@ -147,7 +169,7 @@ async function callChatGPT(prompt) {
         headers: {
             "Content-Type": "application/json",
             Authorization:
-                "Bearer ",
+                "Bearer " + API_KEY,
         },
         body: JSON.stringify({
             model: "gpt-3.5-turbo",
