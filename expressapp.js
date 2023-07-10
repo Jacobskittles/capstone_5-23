@@ -5,6 +5,7 @@ const express = require('express')
 const app = express()
 const path = require('path')
 const port = 8088
+const crypto = require("crypto");
 
 // Set the view engine to ejs
 app.set('view engine', 'ejs');
@@ -123,20 +124,36 @@ app.post('/login', (req, res)=>{
 app.post('/projects', (req, res)=>{
   // parsed JSON from input
   // need ID generated
-  var firstName = req.body.first;
-  var lastName = req.body.last;
+  var fName = req.body.fName;
+  var lName = req.body.lName;
+  var id = crypto.randomUUID();
+  
   //code to input the user into the database
   try{
     db.collection("personnel").insertOne({
-      firstName: firstName, 
-      lastName: lastName
+      _id: id,
+      firstName: fName, 
+      lastName: lName
     })
-    console.log("inserted 1 user")
+    console.log(`inserted 1 user: ${firstname + lastname}`)
+    filldata();
+    res.redirect('/projects')
   }
   catch(err){
     console.log(err)
   }
+})
 
+//code to delete a person, not assigned to any button yet
+app.post('/projects', (req, res)=>{
+  var person = req.body;
+  try{
+    db.collection("personnel").deleteOne(person)
+    console.log("deleted a person")
+  }
+  catch(err){
+    console.log(err)
+  }
 })
 
 
