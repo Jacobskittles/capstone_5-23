@@ -1,11 +1,10 @@
 [{
   "_id": "d506edfb-737a-4681-be14-688d82770d76",
-  "firstName": "John",
+  "firstName": "Michael",
   "lastName": "McCann",
   "projects": [
     {
-      "id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05",
-      "weight": 1
+      "id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05"
     }
   ],
   "account": {
@@ -21,11 +20,11 @@
   "projects": [
     {
       "id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05",
-      "weight": 2
+      "role": "Lead"
     },
     {
       "id": "062f631e-e913-4338-aeae-ceab2ba66dec",
-      "weight": 2
+      "role": "Lead"
     }
   ],
   "account": {
@@ -40,8 +39,7 @@
   "lastName": "Davis",
   "projects": [
     {
-      "id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05",
-      "weight": 1
+      "id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05"
     }
   ],
   "account": {
@@ -56,8 +54,7 @@
   "lastName": "Lakes",
   "projects": [
     {
-      "id": "062f631e-e913-4338-aeae-ceab2ba66dec",
-      "weight": 1
+      "id": "062f631e-e913-4338-aeae-ceab2ba66dec"
     }
   ],
   "account": {
@@ -72,12 +69,10 @@
   "lastName": "Rattan",
   "projects": [
     {
-      "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb",
-      "weight": 1
+      "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb"
     },
     {
-      "id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe",
-      "weight": 0
+      "id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe"
     }
   ],
   "account": {
@@ -93,11 +88,10 @@
   "projects": [
     {
       "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb",
-      "weight": 2
+      "role": "Lead"
     },
     {
-      "id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe",
-      "weight": 1
+      "id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe"
     }
   ],
   "account": {
@@ -112,12 +106,11 @@
   "lastName": "Johnson",
   "projects": [
     {
-      "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb",
-      "weight": 1
+      "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb"
     },
     {
       "id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b",
-      "weight": 2
+      "role": "Lead"
     }
   ],
   "account": {
@@ -132,12 +125,10 @@
   "lastName": "Wilson",
   "projects": [
     {
-      "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb",
-      "weight": 0
+      "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb"
     },
     {
-      "id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b",
-      "weight": 1
+      "id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b"
     }
   ],
   "account": {
@@ -152,12 +143,10 @@
   "lastName": "Anderson",
   "projects": [
     {
-      "id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b",
-      "weight": 1
+      "id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b"
     },
     {
-      "id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe",
-      "weight": 1
+      "id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe"
     }
   ],
   "account": {
@@ -168,12 +157,12 @@
 },
 {
   "_id": "5153798e-7830-4eac-99e6-dbfdad91a3c5",
-  "firstName": "John",
-  "lastName": "Doe",
+  "firstName": "Kaden",
+  "lastName": "Langston",
   "projects": [
     {
       "id": "fa799529-bc18-4264-9105-5526121d4e66",
-      "weight": 2
+      "role": "Lead"
     }
   ],
   "account": {
@@ -184,12 +173,11 @@
 },
 {
   "_id": "fcf956b3-974a-40a2-b81a-cb5f5b61f4a4",
-  "firstName": "Jane",
-  "lastName": "Smith",
+  "firstName": "Carl",
+  "lastName": "Hanratty",
   "projects": [
     {
-      "id": "fa799529-bc18-4264-9105-5526121d4e66",
-      "weight": 1
+      "id": "fa799529-bc18-4264-9105-5526121d4e66"
     }
   ],
   "account": {
@@ -205,7 +193,7 @@
   "projects": [
     {
       "id": "74616ab0-b667-4775-8c22-c3cdc47e3514",
-      "weight": 2
+      "role": "Lead"
     }
   ],
   "account": {
@@ -232,4 +220,54 @@
   },
   "firstName": "Jimmy",
   "lastName": "Dean"
+},
+{
+  "_id": "3146a291-aede-4ab3-894c-49b5947c269e",
+  "firstName": "Goobie",
+  "lastName": "Smoobie"
+},
+{
+  "_id": "e872c875-39ba-463d-ad5a-4b5a3acb1283",
+  "firstName": "GOOBIE",
+  "lastName": "SMOOBIE"
+},
+{
+  "_id": "3e68561f-8cb5-424c-8af1-1b404b4260d0",
+  "firstName": "John",
+  "lastName": "Doe"
+},
+{
+  "_id": "791bebc0-b2ad-41c2-98dd-0769266c3820",
+  "firstName": "Johnn",
+  "lastName": "Dought"
+},
+{
+  "_id": "b2daf204-6eff-4828-a5c9-a132ec500690",
+  "firstName": "John",
+  "lastName": "Doe"
+},
+{
+  "_id": "1459a307-d70d-4797-953c-a04c2701e6fa",
+  "firstName": "Timmy",
+  "lastName": "Turner"
+},
+{
+  "_id": "de15ca5c-de46-48c8-b318-f51755d98e09",
+  "firstName": "Sleepy",
+  "lastName": "Eepy"
+},
+{
+  "_id": "0cfb0fc1-1764-4df4-b660-c471960025b2",
+  "firstName": "Sleepy",
+  "lastName": "Eepy"
+},
+{
+  "_id": "942d3162-feb5-4ab1-97c3-b5756a763b10",
+  "firstName": "Sleepy",
+  "lastName": "Eepy"
+},
+{
+  "_id": "9167205a-5534-45dd-8072-238cee2ca837",
+  "firstName": "Testy",
+  "lastName": "Testman"
 }]
