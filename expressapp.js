@@ -6,9 +6,6 @@ const path = require('path')
 const port = 8088
 const crypto = require("crypto");
 
-// Set the view engine to ejs
-app.set('view engine', 'ejs');
-
 //  Used to read the user login information and parse it. Gonzales + Lincoln
 const bodyParser = require('body-parser');
 
@@ -144,7 +141,7 @@ app.post('/projects', (req, res)=>{
       firstName: fName, 
       lastName: lName
     })
-    console.log(`inserted 1 user: ${firstname + lastname}`)
+    console.log(`inserted 1 user: ${fName + lName}`)
     filldata();
     res.redirect('/projects')
   }
@@ -166,7 +163,7 @@ app.post('/projects', (req, res)=>{
 })
 
 
-
+// code that will allow you to log out and clear your cookie
 app.get('/logout', (req, res) => {
   console.log(req.cookies.login)
   res.clearCookie('login')

@@ -1,7 +1,7 @@
 <div class="row">
     <div class="card col-sm-9">
       <div class="card-body">
-      <h1 class="card-title">PROJECTS - <%= projects.length %> <button class="btn border-secondary-subtle">ADD +</button></h1>
+      <h1 class="card-title">PROJECTS - <%= projects.length %> <button class="btn border-secondary-subtle" data-bs-toggle="modal" data-bs-target="#projectModal">ADD +</button></h1>
       <% projects.forEach(function(project) { %>
         <div class="card">
           <div class="card-body">
@@ -24,11 +24,23 @@
                         <button draggable="True" class="btn bg-light border-secondary-subtle" >
                           <strong><%= person.firstName+' '+person.lastName %></strong>
                           <% 
-                          // count how many projects each person has and determine their color
-                          let total = utils.countProjects(person)
-                          
-                          let color = utils.getColor(total)
-                        %>
+                            let total = 0; 
+                            if(person.projects) {
+                              person.projects.forEach(function(project) { 
+                                total+= project.weight;
+                              })
+                            };
+                            let color; 
+                            if (total < 1) {
+                              color='primary';
+                            } else if (total < 2) {
+                              color='success';
+                            } else if (total < 3) {
+                              color='warning';
+                            } else {
+                              color='danger';
+                            }
+                          %>
                           <span class="badge bg-<%=color%>">
                             <%= total %>
                           </span>
@@ -52,12 +64,24 @@
                       if (person.projects.find(assignment=> assignment.id === project._id).weight == 1) { empty = false %>
                         <button draggable="True" class="btn bg-light border-secondary-subtle" >
                           <strong><%= person.firstName+' '+person.lastName %></strong>
-                  <% 
-                    // count how many projects each person has and determine their color
-                    let total = utils.countProjects(person)
-                    
-                    let color = utils.getColor(total)
-                  %>
+                          <% 
+                            let total = 0; 
+                            if(person.projects) {
+                              person.projects.forEach(function(project) { 
+                                total+= project.weight;
+                              })
+                            };
+                            let color; 
+                            if (total < 1) {
+                              color='primary';
+                            } else if (total < 2) {
+                              color='success';
+                            } else if (total < 3) {
+                              color='warning';
+                            } else {
+                              color='danger';
+                            }
+                          %>
                           <span class="badge bg-<%=color%>">
                             <%= total %>
                           </span>
