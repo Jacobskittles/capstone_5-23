@@ -11,43 +11,89 @@
             <p>
               <%= project.description %>
             </p>
-            <%
-            project.members.forEach(function(member) { 
-              let person=personnel.find(person=> person._id === member.id) 
-              let role='';
-              // if the person has 2 weight, name them the lead
-              if (person.projects) { 
-                if (person.projects.find(assignment=> assignment.id === project._id).weight == 2) {
-                  role = '(Lead)';
-                }
-              } 
-            %>
-            <button draggable="True" class="btn border-secondary-subtle" 
->
-              <strong><%= person.firstName+' '+person.lastName+role %></strong>
-              <% 
-                let total = 0; 
-                if(person.projects) {
-                  person.projects.forEach(function(project) { 
-                    total+= project.weight;
-                  })
-                };
-                let color; 
-                if (total < 1) {
-                  color='primary';
-                } else if (total < 2) {
-                  color='success';
-                } else if (total < 3) {
-                  color='warning';
-                } else {
-                  color='danger';
-                }
-              %>
-              <span class="badge bg-<%=color%>">
-                <%= total %>
-              </span>
-            </button>
-            <% }); %>
+            <div class="row">
+            <div class="col-sm-auto">
+              <div class="card-title">Lead:</div>
+              <div class="card-body bg-secondary-subtle">
+                <%
+                  let empty = true;
+                  project.members.forEach(function(member) {
+                    let person=personnel.find(person=> person._id === member.id)
+                    if (person.projects) {
+                      if (person.projects.find(assignment=> assignment.id === project._id).weight == 2) {empty = false %>
+                        <button draggable="True" class="btn bg-light border-secondary-subtle" >
+                          <strong><%= person.firstName+' '+person.lastName %></strong>
+                          <% 
+                            let total = 0; 
+                            if(person.projects) {
+                              person.projects.forEach(function(project) { 
+                                total+= project.weight;
+                              })
+                            };
+                            let color; 
+                            if (total < 1) {
+                              color='primary';
+                            } else if (total < 2) {
+                              color='success';
+                            } else if (total < 3) {
+                              color='warning';
+                            } else {
+                              color='danger';
+                            }
+                          %>
+                          <span class="badge bg-<%=color%>">
+                            <%= total %>
+                          </span>
+                        </button>
+                    <%  } 
+                   }
+                  });
+                  if (empty) { %>
+                    <button class="btn bg-light">ADD LEAD +</button>
+                <% } %>
+              </div>
+            </div>
+            <div class="col-sm-auto">
+              <div class="card-title">Members:</div>
+              <div class="card-body bg-secondary-subtle">
+                <%
+                  empty = true;
+                  project.members.forEach(function(member) {
+                    let person=personnel.find(person=> person._id === member.id)
+                    if (person.projects) {
+                      if (person.projects.find(assignment=> assignment.id === project._id).weight == 1) { empty = false %>
+                        <button draggable="True" class="btn bg-light border-secondary-subtle" >
+                          <strong><%= person.firstName+' '+person.lastName %></strong>
+                          <% 
+                            let total = 0; 
+                            if(person.projects) {
+                              person.projects.forEach(function(project) { 
+                                total+= project.weight;
+                              })
+                            };
+                            let color; 
+                            if (total < 1) {
+                              color='primary';
+                            } else if (total < 2) {
+                              color='success';
+                            } else if (total < 3) {
+                              color='warning';
+                            } else {
+                              color='danger';
+                            }
+                          %>
+                          <span class="badge bg-<%=color%>">
+                            <%= total %>
+                          </span>
+                        </button>
+                        <%  } 
+                      }
+                     })
+                     %>
+                       <button class="btn bg-light">ADD/ASSIGN MEMBER +</button>
+              </div>
+            </div>
+          </div>
           </div>
         </div>
         <% }) %>
