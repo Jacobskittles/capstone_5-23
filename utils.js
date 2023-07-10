@@ -6,7 +6,7 @@ module.exports = {
                 total += project.weight;
             } else {
                 total += 1;
-                if (project.role == "lead") {
+                if (project.role == "Lead") {
                     total += 1;
                 }
             }
