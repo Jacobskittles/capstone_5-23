@@ -39,14 +39,23 @@
           <hr><h5 class="card-title">Assigned</h5>
           <div class="card-body bg-secondary-subtle" id="cont">
 
-      
-          <% personnel.forEach(function(person) { if (person.projects) {%>
+          <% personnel.forEach(function(person) { if (person.projects) { 
+            let assignments = [];
+            person.projects.forEach(function(assignment) {
+              let projectName = projects.find(project=> project._id === assignment.id).name
+              assignments.push(projectName)
+            }) %>
             <button draggable="True" type="button" style="width: 100%; text-align: left; position: relative; z-index: 1000" 
               class="btn bg-light border-secondary-subtle" 
-              data-bs-toggle="popover"  
-              title= "Info for <%=person.firstName%> <%=person.lastName%>" 
+              data-bs-html="true"
+              data-bs-toggle="popover"
+              title= "<b><%=person.firstName%> <%=person.lastName%> is assigned to:</b>" 
               data-bs-placement="left"  
-              data-bs-content="stuff">
+              data-bs-content="<ul>
+                <% assignments.forEach(function(item) { %>
+                  <li><%=item%></li>
+                <% }) %>
+                </ul>" >
               
               <strong><%= person.firstName+' '+person.lastName %></strong>
                   <% 
