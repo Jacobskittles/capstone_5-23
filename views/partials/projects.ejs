@@ -20,7 +20,7 @@
                   project.members.forEach(function(member) {
                     let person=personnel.find(person=> person._id === member.id)
                     if (person.projects) {
-                      if (person.projects.find(assignment=> assignment.id === project._id).weight == 2) {empty = false %>
+                      if (person.projects.find(assignment=> assignment.id === project._id).role == 'Lead' ) {empty = false %>
                         <button draggable="True" class="btn bg-light border-secondary-subtle" >
                           <strong><%= person.firstName+' '+person.lastName %></strong>
                           <% 
@@ -61,7 +61,7 @@
                   project.members.forEach(function(member) {
                     let person=personnel.find(person=> person._id === member.id)
                     if (person.projects) {
-                      if (person.projects.find(assignment=> assignment.id === project._id).weight == 1) { empty = false %>
+                      if (person.projects.find(assignment=> assignment.id === project._id).role != 'Lead') { empty = false %>
                         <button draggable="True" class="btn bg-light border-secondary-subtle" >
                           <strong><%= person.firstName+' '+person.lastName %></strong>
                           <% 
@@ -90,7 +90,7 @@
                       }
                      })
                      %>
-                       <button class="btn bg-light">ADD/ASSIGN MEMBER +</button>
+                       <button class="btn bg-light">ASSIGN MEMBER +</button>
               </div>
             </div>
           </div>
