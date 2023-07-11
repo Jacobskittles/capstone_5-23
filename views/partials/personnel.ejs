@@ -10,7 +10,7 @@
         <div class="modal fade" id="personnelModal" tabindex="-1" aria-labelledby="personnelModalLabel" aria-hidden="true">
           <div class="modal-dialog">
 
-          <form action="/projects" method="POST">
+          <form  id="personForm" action="/projects" method = "POST">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="personnelModalLabel">Add Person</h5>
@@ -24,7 +24,8 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Submit</button>
+
+                <button name="addNewPerson" type="submit" class="btn btn-primary" >Submit</button>
               </div>
             </div>
           </form>
@@ -69,8 +70,8 @@
 
           </div>
             <hr><h5 class="card-title">Unassigned - <%= unassigned %> </h5>
-            <div class="card-body bg-secondary-subtle" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <% personnel.forEach(function(person) { if (person.projects) {} else{ %>
+            <div class="card-body bg-secondary-subtle" ondrop="drop(event)" ondragover="allowDrop(event)" id="peopleList">
+            <% personnel.forEach(function(person) { if (!person.projects){ %>
               <button id="<%= person._id %>-button" draggable="True" style="width: 100%; text-align: left;"
                 class="btn bg-light border-secondary-subtle noDrop"
                 data-bs-toggle="popover"  
@@ -86,6 +87,7 @@
                 </span>
               </button>
               <% }}); %>
+              
             </div>
         </div>
       </div>
@@ -93,16 +95,3 @@
   </div>
 </div>
 
-<script>
-  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap.Popover(popoverTriggerEl)
-  })
- 
-  var myModal = document.getElementById('exampleModal')
-  var myInput = document.getElementById('myInput')
-
-  myModal.addEventListener('shown.bs.modal', function () {
-    myInput.focus()
-  })
-  </script>
