@@ -1,7 +1,7 @@
-
-  <div class="card col-9">
+<div class="row">
+  <div class="card col-sm-9">
     <div class="card-body">
-    <h1 class="card-title">PROJECTS - <%= projects.length %> <button class="btn border-secondary-subtle float-end" data-bs-toggle="modal" data-bs-target="#projectsModal">ADD +</button></h1>
+    <h1 class="card-title">PROJECTS - <%= projects.length %> <button class="btn border-secondary-subtle" data-bs-toggle="modal" data-bs-target="#projectsModal">ADD +</button></h1>
     
     <% projects.forEach(function(project) { %>
       <div class="card">
@@ -75,16 +75,16 @@
                       <form action="/projects" method="POST">
                         <div class="modal-content">
                           <div class="modal-header">
-                            <h5 class="modal-title" id="p2ModalLabel-<%=project._id%>">Add Person to <%=project.name%></h5>
+                            <h5 class="modal-title" id="p2ModalLabel-<%=project._id%>"  >Add Person to <%=project.name%></h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>                          
                           <div class="modal-body">                           
                                  
                             
                             <% personnel.forEach(function(person) { if (person.projects) {%>
+                            <div class="form-check" method="POST" action="/projects" >
+                              <input class="form-check-input" name="checkPerson" type="checkbox" value="<%=person._id%>" id="<%=person._id%>" >
                               
-                            <div class="form-check">
-                              <input class="form-check-input" type="checkbox" value="<%=person._id%>" id="<%=person._id%>">
                               <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
                                 <%= person.firstName+' '+person.lastName %>
                                 <% 
@@ -110,14 +110,14 @@
                               </label>      
                             </div>
                             
-                            }})%>                         
+                            <% }})%>                         
 
                           
                             
                           </div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button name="addPersonnelToProject" type="submit" class="btn btn-primary">Submit</button>
+                            <button name="addPersonnelToProject" value="<%=project._id%>" id="<%=project._id%>"  type="submit" class="btn btn-primary">Submit</button>
                           </div>
                         </div>
                       </form>

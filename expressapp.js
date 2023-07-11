@@ -153,9 +153,10 @@ app.post('/projects', (req, res)=>{
   }
   // code to add a person from the list of people to a project
   if("addPersonnelToProject" in req.body){
-    pass
-    // console.log(req.body.checkperson)
-    
+
+    console.log(req.body)
+    // name="projectname" value="<%=project._id%>"
+    //next i need to track which project this input is assigned to by id
         
     
   }
