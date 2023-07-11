@@ -15,14 +15,14 @@
           <div class="row">
           <div class="col-sm-auto">
             <div class="card-title">Lead:</div>
-            <div class="card-body bg-secondary-subtle">
+            <div class="card-body bg-secondary-subtle" ondrop="drop(event)" ondragover="allowDrop(event)">
               <%
                 let empty = true;
                 project.members.forEach(function(member) {
                   let person=personnel.find(person=> person._id === member.id)
                   if (person.projects) {
                     if (person.projects.find(assignment=> assignment.id === project._id).role == 'Lead' ) {empty = false %>
-                      <button draggable="True" class="btn bg-light border-secondary-subtle" >
+                      <button id="<%= person._id %>-button" draggable="True" class="btn bg-light border-secondary-subtle noDrop" ondragstart="drag(event)">
                         <strong><%= person.firstName+' '+person.lastName %></strong>
                         <% 
                         // count how many projects each person has and determine their color
@@ -38,20 +38,20 @@
                  }
                 });
                 if (empty) { %>
-                  <button class="btn bg-light">ADD LEAD +</button>
+                  <button class="btn bg-light noDrop">ADD LEAD +</button>
               <% } %>
             </div>
           </div>
           <div class="col-sm-auto">
             <div class="card-title">Members:</div>
-            <div class="card-body bg-secondary-subtle">
+            <div class="card-body bg-secondary-subtle" ondrop="drop(event)" ondragover="allowDrop(event)">
               <%
                 empty = true;
                 project.members.forEach(function(member) {
                   let person=personnel.find(person=> person._id === member.id)
                   if (person.projects) {
                     if (person.projects.find(assignment=> assignment.id === project._id).role != 'Lead') { empty = false %>
-                      <button draggable="True" class="btn bg-light border-secondary-subtle" >
+                      <button id="<%= person._id %>-button" draggable="True" class="btn bg-light border-secondary-subtle noDrop" ondragstart="drag(event)">
                         <strong><%= person.firstName+' '+person.lastName %></strong>
                 <% 
                   // count how many projects each person has and determine their color
@@ -67,7 +67,7 @@
                     }
                    })
                    %>
-                     <button class="btn bg-light" data-bs-toggle="modal" data-bs-target="#p2Modal-<%=project._id%>">+</button>
+                     <button class="btn bg-light noDrop" data-bs-toggle="modal" data-bs-target="#p2Modal-<%=project._id%>">+</button>
 
                     <div class="modal fade" id="p2Modal-<%=project._id%>" tabindex="-1" aria-labelledby="p2ModalLabel-<%=project._id%>" aria-hidden="true">
                       <div class="modal-dialog">
