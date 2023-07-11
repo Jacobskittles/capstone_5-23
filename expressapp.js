@@ -127,62 +127,65 @@ app.post('/login', (req, res)=>{
 
 // Post new projects into the database, should activate on submit
 // Ensure that the action of the modal corresponds to /projects/upload
-app.post('/projects', (req, res)=>{
-  // parsed JSON from input
-  // need ID generated
-  var fName = req.body.fName;
-  var lName = req.body.lName;
-  var id = crypto.randomUUID();
-  
-  //code to input the user into the database
-  try{
-    db.collection("personnel").insertOne({
-      _id: id,
-      firstName: fName, 
-      lastName: lName
-    })
-    console.log(`inserted 1 user: ${fName + lName}`)
-    filldata();
-    res.redirect('/projects')
-  }
-  catch(err){
-    console.log(err)
-  }
-})
+// app.post('/projects', (req, res)=>{
+//   // parsed JSON from input
+//   // need ID generated
 
-app.post('/projects', (req, res)=>{
-  // parsed JSON from input
-  // need ID generated
-  var id = req.body.id
+//   // var fName = req.body.fName;
+//   // var lName = req.body.lName;
+//   // var id = crypto.randomUUID();
+  
+//   //code to input the user into the database
+//   try{
+//     //insert many from a list of people 
+//     // db.collection("personnel").insertOne({
+//     //   _id: id,
+//     //   firstName: fName, 
+//     //   lastName: lName
+//     // })
+//     // next need to display this object onto the page without actually adding it to the database
+
+//     console.log(`inserted 1 user into local array: ${fName + lName}`)
+//     res.redirect('/projects')
+//   }
+//   catch(err){
+//     console.log(err)
+//   }
+// })
+
+// app.post('/projects', (req, res)=>{
+//   // parsed JSON from input
+//   // need ID generated
+//   var id = req.body.id
 
   
   
-  //code to input the user into the database
-  try{
-    db.collection("projects").members.insertMany([{
-      id : id
-    }])
-    console.log(`inserted user(s) into project`)
-    filldata();
-    res.redirect('/projects')
-  }
-  catch(err){
-    console.log(err)
-  }
-})
+//   //code to input the user into the database
+//   try{
+//     db.collection("projects").members.insertMany([{
+//       id : id
+//     }])
+//     console.log(`inserted user(s) into project`)
+//     filldata();
+//     res.redirect('/projects')
+//   }
+//   catch(err){
+//     console.log(err)
+//   }
+// })
 
 
 //code to delete a person, not assigned to any button yet
-app.post('/projects', (req, res)=>{
-  var person = req.body;
-  try{
-    db.collection("personnel").deleteOne(person)
-    console.log("deleted a person")
-  }
-  catch(err){
-    console.log(err)
-  }
-})
+// app.post('/projects', (req, res)=>{
+//   var person = req.body;
+//   try{
+//     db.collection("personnel").deleteOne(person)
+//     console.log("deleted a person")
+//   }
+//   catch(err){
+//     console.log(err)
+//   }
+// })
 
 
 // code that will allow you to log out and clear your cookie

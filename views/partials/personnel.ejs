@@ -13,7 +13,7 @@
         <div class="modal fade" id="personnelModal" tabindex="-1" aria-labelledby="personnelModalLabel" aria-hidden="true">
           <div class="modal-dialog">
 
-          <form action="/projects" method="POST">
+          <form  id="personForm">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="personnelModalLabel">Add Person</h5>
@@ -27,7 +27,8 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <!-- when creating a new person, I would like it to use the function addNewPerson on submit -->
+                <button id="personSubmit" type="submit" class="btn btn-primary" onclick="addNewPerson()">Submit</button>
               </div>
             </div>
           </form>
@@ -71,19 +72,20 @@
 
           </div>
             <hr><h5 class="card-title">Unassigned</h5>
-            <div class="card-body bg-secondary-subtle">
-            <% personnel.forEach(function(person) { if (person.projects) {} else{ %>
+            <div class="card-body bg-secondary-subtle" id="peopleList">
+            <% personnel.forEach(function(person) { if (!person.projects){ %>
               <button draggable="True" style="width: 100%; text-align: left;"
                 class="btn bg-light border-secondary-subtle"
                 data-bs-toggle="popover"  
                 title= "Info for <%=person.firstName%> <%=person.lastName%>" 
                 data-bs-placement="left"  
-                data-bs-content="No projects assigned."><strong>
-                  <%= person.firstName+' '+person.lastName %></strong>
+                data-bs-content="No projects assigned.">
+                <strong><%= person.firstName+' '+person.lastName %></strong>
                     <span class="badge bg-primary" style="float: right;">
                       0
                     </span></button>
               <% }}); %>
+              
             </div>
         </div>
       </div>
@@ -97,10 +99,30 @@
     return new bootstrap.Popover(popoverTriggerEl)
   })
  
-  var myModal = document.getElementById('exampleModal')
-  var myInput = document.getElementById('myInput')
 
-  myModal.addEventListener('shown.bs.modal', function () {
-    myInput.focus()
-  })
+
+  var fName = document.getElementById('fName')
+  var lName = document.getElementById('lName')
+  var id = crypto.randomUUID();
+  var list = document.getElementById('peopleList')
+
+  class Person{
+    constructor(id, firstName, )
+  }
+
+  function addNewPerson(){
+    var newPersonButton = document.createElement('button')
+    newPersonButton.draggable = "true"
+    newPersonButton.className = "btn bg-light border-secondary-subtle" 
+    newPersonButton.style = "width: 100%; text-align: left;"
+    newPersonButton.innerText = "new person"
+
+    list.appendChild(newPersonButton)
+
+    //need to add code to insert the person object into the list of people
+    // do we add this to the current array of all the people or make an array with only the people recently added
+    // on click add these individuals to the section with "0"
+  }
+  
+
   </script>
