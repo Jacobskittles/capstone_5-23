@@ -134,7 +134,7 @@ app.post('/projects', (req, res)=>{
 
   
   
-  //code to input the user into the database
+  //code to input a new user into the database
   if("addNewPerson" in req.body){
   try{
     var fName = req.body.fName;
@@ -146,34 +146,30 @@ app.post('/projects', (req, res)=>{
       firstName: fName, 
       lastName: lName
     })
-    // next need to display this object onto the page without actually adding it to the database
-
-    res.redirect('/projects')
   }
   catch(err){
     console.log(err)
   }
-}})
+  }
+  // code to add a person from the list of people to a project
+  if("addPersonnelToProject" in req.body){
+    pass
+    // console.log(req.body.checkperson)
+    
+        
+    
+  }
 
+})
+
+// console.log(db.collection("personnel").countDocuments)
 // app.post('/projects', (req, res)=>{
 //   // parsed JSON from input
 //   // need ID generated
 //   var id = req.body.id
 
-  
-  
 //   //code to input the user into the database
-//   try{
-//     db.collection("projects").members.insertMany([{
-//       id : id
-//     }])
-//     console.log(`inserted user(s) into project`)
-//     filldata();
-//     res.redirect('/projects')
-//   }
-//   catch(err){
-//     console.log(err)
-//   }
+
 // })
 
 
