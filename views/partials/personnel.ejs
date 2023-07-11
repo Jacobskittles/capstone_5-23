@@ -13,7 +13,7 @@
         <div class="modal fade" id="personnelModal" tabindex="-1" aria-labelledby="personnelModalLabel" aria-hidden="true">
           <div class="modal-dialog">
 
-          <form  id="personForm">
+          <form  id="personForm" action="/projects" method = "POST">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="personnelModalLabel">Add Person</h5>
@@ -27,8 +27,8 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <!-- when creating a new person, I would like it to use the function addNewPerson on submit -->
-                <button id="personSubmit" type="submit" class="btn btn-primary" onclick="addNewPerson()">Submit</button>
+
+                <button type="submit" class="btn btn-primary" >Submit</button>
               </div>
             </div>
           </form>
@@ -98,36 +98,3 @@
   </div>
 </div>
 
-<script>
-  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap.Popover(popoverTriggerEl)
-  })
- 
-
-
-  var fName = document.getElementById('fName')
-  var lName = document.getElementById('lName')
-  var id = crypto.randomUUID();
-  var list = document.getElementById('peopleList')
-
-  class Person{
-    constructor(id, firstName, )
-  }
-
-  function addNewPerson(){
-    var newPersonButton = document.createElement('button')
-    newPersonButton.draggable = "true"
-    newPersonButton.className = "btn bg-light border-secondary-subtle" 
-    newPersonButton.style = "width: 100%; text-align: left;"
-    newPersonButton.innerText = "new person"
-
-    list.appendChild(newPersonButton)
-
-    //need to add code to insert the person object into the list of people
-    // do we add this to the current array of all the people or make an array with only the people recently added
-    // on click add these individuals to the section with "0"
-  }
-  
-
-  </script>
