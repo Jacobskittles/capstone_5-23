@@ -114,11 +114,6 @@ app.get("/projects", async (req, res) => {
     }
 });
 
-async function hashPassword(password) {
-    let hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-    return hashedPassword;
-}
-
 app.post("/login", async (req, res) => {
     //  This is a function that exists within the app.post. On submit, this code will execute.
     //  Body parser into JSON
