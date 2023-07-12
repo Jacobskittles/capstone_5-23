@@ -57,7 +57,7 @@ app.listen(PORT, () => {
 const { MongoClient } = require('mongodb');
 const { error } = require('console');
 
-const uri = "mongodb://10.10.20.64:27017";
+const uri = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.9.0";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri);
@@ -159,20 +159,29 @@ app.post('/projects', (req, res)=>{
     
     // code that grabs the id of each person assigned to the project you chose
     let people = req.body.checkPerson
-    people.forEach((person)=>{
-      console.log("Adding" + person)
-      // db.collection("projects").findAndModify({
-      //   query : {"_id" : projID},
-      //   update : {push : {"members" : person}} })
-      
 
-    })
- 
+    try{
+    // update's push method requires an array to be pushed
+    // i initially tried to iterate through the array and grab the ids, then insert into the project._id.members list, but didnt come to a solution
+    //this produces results but not in the proper format as the database. doing this will also break the database so remove the ids before you try again
+    db.collection("projects").updateOne({
+      //query, find in projects where _id = unique id
+      _id : projID
+      },
+      // push into members list the array of ids 
+      {
+        $push : {
+          "members":{ 
+            // people is an array of ids
+            $each: people
+        }}
+      }
+    ) 
+    console.log("success")
+    }catch(e){
+      console.log(e)
+    }
 
-
-  
-    //next i need to track which project this input is assigned to by id
-        
     
   }
 
