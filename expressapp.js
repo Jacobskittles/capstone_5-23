@@ -153,9 +153,20 @@ app.post('/projects', (req, res)=>{
   }
   // code to add a person from the list of people to a project
   if("addPersonnelToProject" in req.body){
+    
+    // code that grabs the id of each person assigned to the project you chose
+    let people = req.body.checkPerson
+    people.forEach((person)=>{
+      // console.log(person)
+      
 
-    console.log(req.body)
-    // name="projectname" value="<%=project._id%>"
+    })
+ 
+
+
+    
+    // console.log(req.body.checkPerson)
+    console.log(req.body.addPersonnelToProject)
     //next i need to track which project this input is assigned to by id
         
     
