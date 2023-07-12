@@ -154,19 +154,23 @@ app.post('/projects', (req, res)=>{
   // code to add a person from the list of people to a project
   if("addPersonnelToProject" in req.body){
     
+    let projID = req.body.addPersonnelToProject
+    console.log("Project ID: "+ projID)
+    
     // code that grabs the id of each person assigned to the project you chose
     let people = req.body.checkPerson
     people.forEach((person)=>{
-      // console.log(person)
+      console.log("Adding" + person)
+      // db.collection("projects").findAndModify({
+      //   query : {"_id" : projID},
+      //   update : {push : {"members" : person}} })
       
 
     })
  
 
 
-    
-    // console.log(req.body.checkPerson)
-    console.log(req.body.addPersonnelToProject)
+  
     //next i need to track which project this input is assigned to by id
         
     
