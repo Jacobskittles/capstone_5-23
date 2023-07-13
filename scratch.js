@@ -209,7 +209,7 @@ async function createPerson(person) {
             console.error("Failed to insert person:", err);
         }
     });
-    return person._id
+    return person._id;
 }
 
 async function createProject(project) {
@@ -220,7 +220,7 @@ async function createProject(project) {
             console.error("Failed to insert person:", err);
         }
     });
-    return project._id
+    return project._id;
 }
 
 async function deletePerson(personID) {
@@ -272,8 +272,25 @@ async function deleteProject(projectID) {
     });
 }
 
+async function updatePerson(personID, person) {
+    const personQuery = { _id: personID };
+    let { firstName, lastName } = person;
+
+    personnel.updateOne(personQuery, { $set: { firstName, lastName } });
+}
+
+async function updateProject(projectID, project) {
+    const projectQuery = { _id: projectID };
+    let { name, description } = project;
+
+    projects.updateOne(projectQuery, { $set: { name, description } });
+}
+
 async function doThing() {
-    const ianID = await createPerson({ firstName: "Ian", lastName: "Gronemier" });
+    const ianID = await createPerson({
+        firstName: "Ian",
+        lastName: "Gronemier",
+    });
 
     const projectID = await createProject({
         name: "Kick bricks",
@@ -281,23 +298,30 @@ async function doThing() {
             "If you got this assignment that means no one wants you at the squadron",
     });
 
-    console.log(ianID, projectID)
+    console.log(ianID, projectID);
 
     await join(projectID, ianID);
 
     await changeRole(projectID, ianID, "Lead");
 
-    await unjoin(projectID, ianID)
+    await unjoin(projectID, ianID);
 
     await deletePerson(ianID);
 
     await deleteProject(projectID);
 }
 
-async function test() {
-    let dowuh = await createPerson({firstName: "ernest", lastName: "carrasco"})
-    console.log(dowuh)
-}
-doThing()
+async function test2() {
+    ian = { firstName: "Ian", lastName: "Gronemeier" };
+    const id = await createPerson(ian);
+    ian.firstName = "Zynny";
+    updatePerson(id, ian);
 
-//test()
+    ahahah = { name: "ooh", description: "ahh" };
+    const projid = await createProject(ahahah);
+    ahahah.name = "wuh?";
+    ahahah.description = "huh?"
+    updateProject(projid, ahahah)
+}
+
+test2();
