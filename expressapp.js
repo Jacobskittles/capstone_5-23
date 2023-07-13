@@ -164,19 +164,21 @@ app.post('/projects', (req, res)=>{
     // update's push method requires an array to be pushed
     // i initially tried to iterate through the array and grab the ids, then insert into the project._id.members list, but didnt come to a solution
     //this produces results but not in the proper format as the database. doing this will also break the database so remove the ids before you try again
-    db.collection("projects").updateOne({
-      //query, find in projects where _id = unique id
-      _id : projID
-      },
-      // push into members list the array of ids 
-      {
-        $push : {
-          "members":{ 
-            // people is an array of ids
-            $each: people
-        }}
-      }
-    ) 
+
+    people.forEach(id => {
+      db.collection("projects").updateOne({
+        //query, find in projects where _id = unique id
+        _id : projID
+        },
+        // push into members list the array of
+        {
+          $push : {
+            "members": {id}
+          }}
+        
+      ) 
+    });
+
     console.log("success")
     }catch(e){
       console.log(e)
