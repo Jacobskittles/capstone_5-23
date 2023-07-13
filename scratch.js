@@ -23,13 +23,13 @@ const db = client.db("CBProjects");
 const personnel = db.collection("personnel");
 const projects = db.collection("projects");
 
+/**
+ * "Unjoins" a person and project
+ * @param {string} projectID - The ID of the project to join.
+ * @param {string} personID - The ID of the person to join.
+ * @returns {Promise<void>} - A promise that resolves once the operation is complete.
+ */
 async function unjoin(projectID, personID) {
-    /**
-     * "Unjoins" a person and project
-     * @param {string} projectID - The ID of the project to join.
-     * @param {string} personID - The ID of the person to join.
-     * @returns {Promise<void>} - A promise that resolves once the operation is complete.
-     */
     let projectQuery = { _id: projectID };
     let personQuery = { _id: personID };
 
@@ -76,13 +76,13 @@ async function unjoin(projectID, personID) {
     }
 }
 
+/**
+ * Joins a person to a project in the database.
+ * @param {string} projectID - The ID of the project to join.
+ * @param {string} personID - The ID of the person to join.
+ * @returns {Promise<void>} - A promise that resolves once the join operation is complete.
+ */
 async function join(projectID, personID) {
-    /**
-     * Joins a person to a project in the database.
-     * @param {string} projectID - The ID of the project to join.
-     * @param {string} personID - The ID of the person to join.
-     * @returns {Promise<void>} - A promise that resolves once the join operation is complete.
-     */
     // set up the queries
     const projectQuery = { _id: projectID };
     const personQuery = { _id: personID };
@@ -146,6 +146,13 @@ async function join(projectID, personID) {
     }
 }
 
+/**
+ * Changes the role of a person in a project by updating the person and project documents.
+ * @param {string} projectID - The ID of the project where the role change occurs.
+ * @param {string} personID - The ID of the person whose role is being changed.
+ * @param {string} role - The new role to assign to the person.
+ * @returns {Promise<void>} - A promise that resolves once the role change operation is complete.
+ */
 async function changeRole(projectID, personID, role) {
     const projectQuery = { _id: projectID };
     const personQuery = { _id: personID };
@@ -201,6 +208,11 @@ async function changeRole(projectID, personID, role) {
     }
 }
 
+/**
+ * Creates a new person document into the personnel collection
+ * @param {string} person - The new person object to be inserted
+ * @returns {Promise<void>} - A promise that resolves once the creation operation is complete.
+ */
 async function createPerson(person) {
     //generate new ID and insert into db
     person._id = crypto.randomUUID();
@@ -212,6 +224,11 @@ async function createPerson(person) {
     return person._id;
 }
 
+/**
+ * Creates a new project document into the projects collection
+ * @param {string} project - The new project object to be inserted
+ * @returns {Promise<void>} - A promise that resolves once the creation operation is complete.
+ */
 async function createProject(project) {
     //generate new ID and insert into db
     project._id = crypto.randomUUID();
@@ -223,6 +240,11 @@ async function createProject(project) {
     return project._id;
 }
 
+/**
+ * Deletes a person document from the personnel collection with the specified personID.
+ * @param {string} personID - The ID of the person document to be deleted.
+ * @returns {Promise<void>} - A promise that resolves once the deletion operation is complete.
+ */
 async function deletePerson(personID) {
     const personQuery = { _id: personID };
 
@@ -237,6 +259,7 @@ async function deletePerson(personID) {
         console.log("ERROR: " + error);
     }
 
+    // get rid of all joins
     for (assignment of person.projects) {
         unjoin(assignment.id, personID);
     }
@@ -248,8 +271,14 @@ async function deletePerson(personID) {
     });
 }
 
+/**
+ * Deletes a project document from the projects collection with the specified projectID.
+ * @param {string} projectID - The ID of the project document to be deleted.
+ * @returns {Promise<void>} - A promise that resolves once the deletion operation is complete.
+ */
 async function deleteProject(projectID) {
     const projectQuery = { _id: projectID };
+
     let project;
     try {
         project = await projects.findOne(projectQuery);
@@ -261,6 +290,7 @@ async function deleteProject(projectID) {
         console.log("ERROR: " + error);
     }
 
+    // get rid of all joins
     for (member of project.members) {
         unjoin(projectID, member.id);
     }
@@ -272,6 +302,12 @@ async function deleteProject(projectID) {
     });
 }
 
+/**
+ * Updates a person document in the personnel collection with the specified personID.
+ * @param {string} personID - The ID of the person document to be updated.
+ * @param {Object} person - The updated person object containing the new values for firstName and lastName properties.
+ * @returns {Promise<void>} - A promise that resolves once the update operation is complete.
+ */
 async function updatePerson(personID, person) {
     const personQuery = { _id: personID };
     let { firstName, lastName } = person;
@@ -279,6 +315,12 @@ async function updatePerson(personID, person) {
     personnel.updateOne(personQuery, { $set: { firstName, lastName } });
 }
 
+/**
+ * Updates a project document in the projects collection with the specified projectID.
+ * @param {string} projectID - The ID of the project document to be updated.
+ * @param {Object} project - The updated project object containing the new values for name and description properties.
+ * @returns {Promise<void>} - A promise that resolves once the update operation is complete.
+ */
 async function updateProject(projectID, project) {
     const projectQuery = { _id: projectID };
     let { name, description } = project;
@@ -320,8 +362,8 @@ async function test2() {
     ahahah = { name: "ooh", description: "ahh" };
     const projid = await createProject(ahahah);
     ahahah.name = "wuh?";
-    ahahah.description = "huh?"
-    updateProject(projid, ahahah)
+    ahahah.description = "huh?";
+    updateProject(projid, ahahah);
 }
 
 test2();
