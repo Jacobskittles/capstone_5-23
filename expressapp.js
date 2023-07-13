@@ -60,7 +60,7 @@ app.listen(PORT, () => {
 const { MongoClient } = require("mongodb");
 const { error } = require("console");
 
-const uri = "mongodb://10.10.20.64:27017";
+const uri = "mongodb://localhost:27017";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri);
