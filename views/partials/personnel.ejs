@@ -43,24 +43,26 @@
               let projectName = projects.find(project=> project._id === assignment.id).name
               assignments.push(projectName)
             }) %>
+
             <button id="<%= person._id %>-button" draggable="True" type="button" style="width: 100%; text-align: left"
               class="btn bg-light border-secondary-subtle noDrop" 
               data-bs-html="true"
               data-bs-toggle="popover"
-              title= "<b><%=person.firstName%> <%=person.lastName%> is assigned to:</b>" 
+              
+              title= "<span><b><%=person.firstName%> <%=person.lastName%></b></span> " 
               data-bs-placement="left"  
               data-bs-content="<ul>
                 <% assignments.forEach(function(item) { %>
                   <li><%= item %></li>
                 <% }) %>
                 </ul>" 
-              ondragstart="drag(event)">
+              ondragstart="drag(event)"
+              >
               
               <strong><%= person.firstName+' '+person.lastName %></strong>
                   <% 
                     // count how many projects each person has and determine their color
                     let total = utils.countProjects(person)
-                    
                     let color = utils.getColor(total)
                   %>
                   <span class="badge bg-<%=color%> float-end">
@@ -95,3 +97,13 @@
   </div>
 </div>
 
+<script>
+
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+  return new bootstrap.Popover(popoverTriggerEl)
+});
+
+
+
+</script>

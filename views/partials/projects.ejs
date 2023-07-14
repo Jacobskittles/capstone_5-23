@@ -1,7 +1,32 @@
 <div class="row">
   <div class="card col-sm-9">
     <div class="card-body">
-    <h1 class="card-title">PROJECTS - <%= projects.length %> <button class="btn border-secondary-subtle" data-bs-toggle="modal" data-bs-target="#projectsModal">ADD +</button></h1>
+    <h1 class="card-title">PROJECTS - <%= projects.length %> <button class="btn border-secondary-subtle" data-bs-toggle="modal" data-bs-target="#projectModal">ADD +</button></h1>
+
+    <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+
+      <form  id="projectForm" action="/projects" method = "POST">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="projectModalLabel">Add Project</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <label for="projName">Project Name:</label>
+            <input type="text" id="projName" name="projName"><br><br>
+            <label for="projDesc">Description:</label>
+            <textarea class="form-control" rows="5" type="projDesc" id="projDesc" name="projDesc"></textarea><br><br>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+            <button name="addNewProject" type="submit" class="btn btn-primary" >Submit</button>
+          </div>
+        </div>
+      </form>
+      </div>
+    </div>
     
     <% projects.forEach(function(project) { %>
       <div class="card">
@@ -38,7 +63,49 @@
                  }
                 });
                 if (empty) { %>
-                  <button class="btn bg-light noDrop">ADD LEAD +</button>
+                  <button  data-bs-toggle="modal" data-bs-target="#addLeadModal" class="btn bg-light noDrop">ADD LEAD +</button>
+
+                  <div class="modal fade" id="addLeadModal" tabindex="-1" aria-labelledby="addLeadModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+
+                    <form  id="leadForm" action="/projects" method = "POST">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="leadModalLabel">Add Lead</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        
+                          <%
+                          project.members.forEach(function(member) {
+                          person=personnel.find(person=> person._id === member.id)
+                          if (person.projects) { %>
+                          <input class="form-check-input" name="checkLead" type="radio" value="<%=person._id%>" id="<%=person._id%>" >
+                              <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
+                                <%= person.firstName+' '+person.lastName %>
+                                <% 
+                                // count how many projects each person has and determine their color
+                                let total = utils.countProjects(person)
+                                
+                                let color = utils.getColor(total)
+                              %>
+                              <span class="badge bg-<%=color%>" style="float: right;">
+                                <%= total %>
+                              </span>
+                              </label> 
+                              <% }}) %>
+
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                          <button name="addNewLead" value="<%=project._id%>" id="<%=project._id%>" type="submit" class="btn btn-primary" >Submit</button>
+                        </div>
+                      </div>
+                    </form>
+                    </div>
+                  </div>
+
               <% } %>
             </div>
           </div>

@@ -59,6 +59,7 @@ app.listen(PORT, () => {
 //  Lincoln - This is some code I assembled to connect a web-hosted database to the javascript.
 const { MongoClient } = require("mongodb");
 const { error } = require("console");
+const { create } = require("domain");
 
 const uri = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.9.0";
 
@@ -136,31 +137,115 @@ app.post("/login", async (req, res) => {
     }
 });
 
+
+
+async function createPerson(person) {
+  //generate new ID and insert into db
+  person._id = crypto.randomUUID();
+  db.collection("personnel").insertOne(person, (err, result) => {
+      if (err) {
+          console.error("Failed to insert person:", err);
+      }
+  });
+  return person._id;
+}
+async function createProject(project) {
+  //generate new ID and insert into db
+  project._id = crypto.randomUUID();
+  db.collection("projects").insertOne(project, (err, result) => {
+      if (err) {
+          console.error("Failed to insert project:", err);
+      }
+  });
+  return project._id;
+}
+
+async function changeRole(projectID, personID, role) {
+  const projectQuery = { _id: projectID };
+  const personQuery = { _id: personID };
+
+  //create and load the person and project objects with queries
+  let person, project;
+  try {
+      person = await db.collection("personnel").findOne(personQuery);
+      project = await db.collection("projects").findOne(projectQuery);
+      if (!person || !project) {
+          console.log("Result not found");
+          return;
+      }
+  } catch (error) {
+      console.log("ERROR: " + error);
+  }
+
+  const assignments = person.projects;
+  const members = project.members;
+
+  // THERE CAN ONLY BE ONE!
+  if (role === "Lead") {
+      for (let member of members) {
+          if (member.role === "Lead") delete member.role;
+      }
+  }
+
+  // Find index of assignment and member
+  const assignmentIndex = assignments.findIndex(
+      (assignment) => assignment.id === projectID
+  );
+  const memberIndex = members.findIndex((member) => member.id === personID);
+
+  // Check if assignment and member were found
+  if (assignmentIndex === -1 || memberIndex === -1) {
+      return;
+  }
+
+  // Update the role
+  assignments[assignmentIndex].role = role;
+  members[memberIndex].role = role;
+
+  // push to database
+  try {
+      await db.collection("personnel").updateOne(personQuery, {
+          $set: { projects: assignments },
+      });
+      await db.collection("projects").updateOne(projectQuery, {
+          $set: { members: members },
+      });
+  } catch (error) {
+      console.log("ERROR: " + error);
+  }
+}
+
 // Post new projects into the database, should activate on submit
 // Ensure that the action of the modal corresponds to /projects/upload
 app.post('/projects', (req, res)=>{
-  // parsed JSON from input
-  // need ID generated
-
-  
-  
   //code to input a new user into the database
   if("addNewPerson" in req.body){
-  try{
-    var fName = req.body.fName;
-    var lName = req.body.lName;
-    var id = crypto.randomUUID();
-    // insert many from a list of people 
-    db.collection("personnel").insertOne({
-      _id: id,
-      firstName: fName, 
-      lastName: lName
+      createPerson({
+        firstName : req.body.fName,
+        lastName : req.body.lName,
+        account: {}
+      })
+      res.redirect('/projects')
+  }
+  if("addNewProject" in req.body){
+    createProject({
+      name : req.body.projName,
+      description : req.body.projDesc,
+      members : []
     })
+    res.redirect('projects')
   }
-  catch(err){
-    console.log(err)
+
+  if("addNewLead" in req.body){
+    let projID = req.body.addNewLead
+    let persID = req.body.checkLead
+    let role = "Lead"
+    changeRole(projID, persID, role)
+    res.redirect('/projects')
   }
-  }
+
+
+
   // code to add a person from the list of people to a project
   if("addPersonnelToProject" in req.body){
     
@@ -171,9 +256,6 @@ app.post('/projects', (req, res)=>{
     let people = req.body.checkPerson
 
     try{
-    // update's push method requires an array to be pushed
-    // i initially tried to iterate through the array and grab the ids, then insert into the project._id.members list, but didnt come to a solution
-    //this produces results but not in the proper format as the database. doing this will also break the database so remove the ids before you try again
 
     people.forEach(id => {
       db.collection("projects").updateOne({
@@ -193,35 +275,9 @@ app.post('/projects', (req, res)=>{
     }catch(e){
       console.log(e)
     }
-
-    
   }
 
 })
-
-// console.log(db.collection("personnel").countDocuments)
-// app.post('/projects', (req, res)=>{
-//   // parsed JSON from input
-//   // need ID generated
-//   var id = req.body.id
-
-//   //code to input the user into the database
-
-// })
-
-
-//code to delete a person, not assigned to any button yet
-// app.post('/projects', (req, res)=>{
-//   var person = req.body;
-//   try{
-//     db.collection("personnel").deleteOne(person)
-//     console.log("deleted a person")
-//   }
-//   catch(err){
-//     console.log(err)
-//   }
-// })
-
 
 // code that will allow you to log out and clear your cookie
 app.get('/logout', (req, res) => {
