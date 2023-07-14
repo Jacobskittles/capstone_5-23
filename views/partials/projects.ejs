@@ -1,7 +1,8 @@
 <div class="row">
   <div class="card col-sm-9">
     <div class="card-body">
-    <h1 class="card-title">PROJECTS - <%= projects.length %> <button class="btn border-secondary-subtle" data-bs-toggle="modal" data-bs-target="#projectModal">ADD +</button></h1>
+    <h1 class="card-title">PROJECTS - <%= projects.length %> <button class="btn border-secondary-subtle" data-bs-toggle="modal" data-bs-target="#projectModal">ADD +</button>
+      </h1>
 
     <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -30,13 +31,42 @@
     
     <% projects.forEach(function(project) { %>
       <div class="card">
-        <div class="card-body">
+        <div class="card-body"><button class="btn btn-secondary float-end btn-sm" data-bs-toggle="modal" data-bs-target="#editProjectModal">EDIT</button>
+
+          <div class="modal fade" id="editProjectModal" tabindex="-1" aria-labelledby="editProjectModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            
+            <form  id="editProjectForm" action="/projects" method = "POST">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="editProjectModalLabel">Edit Project</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <label for="projName">Project Name:</label>
+                  <input type="text" id="projName" name="projName" value="<%=project.name%>"required><br><br>
+                  <label for="projDesc">Description:</label>
+                  <textarea class="form-control" rows="5" type="projDesc" id="projDesc" name="projDesc" required><%=project.description%></textarea><br><br>
+                </div>
+                <div class="modal-footer">
+                  <button name="deleteProject" class="btn btn-danger float-start" type="submit">Remove</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button name="editProject" type="submit" class="btn btn-primary" value="<%=project._id%>" id="<%=project._id%>" >Submit</button>
+                </div>
+              </div>
+            </form>
+            </div>
+          </div>
+
+
+          
           <h4 class="card-title">
             <%= project.name %>
           </h4>
           <p>
             <%= project.description %>
           </p>
+          
           <div class="row">
           <div class="col-sm-auto">
             <div class="card-title">Lead:</div>
