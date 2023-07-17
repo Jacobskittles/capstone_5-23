@@ -199,7 +199,12 @@
                           <div class="modal-body">                           
                             <% 
                             
-                            personnel.forEach(function(person) { if (person.projects) {%>
+                            personnel.forEach(function(person) { 
+                              let assignments = []
+                              if (person.projects) {person.projects.forEach(function(item) {assignments.push(item.id)})}
+                              let alreadyAssigned = false
+                              assignments.forEach(function(item) {if (item === project._id) {alreadyAssigned = true}})
+                              if (person.projects && !alreadyAssigned) {%>
                             <div class="form-check" method="POST" action="/projects" >
                               <input class="form-check-input" name="checkPerson" type="checkbox" value="<%=person._id%>" id="<%=person._id%>" >
                               
