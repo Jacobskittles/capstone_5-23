@@ -17,7 +17,8 @@ var utils = require("./utils");
 const app = express();
 const PORT = 8088;
 
-const SALT_ROUNDS = 10;
+// not used with bcrypt compare
+// const SALT_ROUNDS = 10; 
 
 // Set the view engine to ejs
 app.set("view engine", "ejs");
@@ -140,6 +141,14 @@ app.post("/login", async (req, res) => {
         res.redirect("/login");
     }
 });
+
+/*
+----------------------------------------
+|         Database Functions           |
+|              Gonzales                |
+----------------------------------------
+*/
+
 
 /**
  * Creates a new project document into the projects collection
@@ -460,6 +469,7 @@ async function deleteProject(projectID) {
 
 // Function called during POST to remove a person from a project
 async function unassignPerson(personID, projectID) {}
+// Is this going to be used?
 
 // Post new projects into the database, should activate on submit
 // Ensure that the action of the modal corresponds to /projects/upload

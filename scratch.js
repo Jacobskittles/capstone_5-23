@@ -1,3 +1,6 @@
+// currently just some functions for db management, fully integrated into expressapp.js
+// DELETE ME
+
 const { MongoClient, ObjectId } = require("mongodb");
 const crypto = require("crypto");
 
