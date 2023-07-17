@@ -165,7 +165,7 @@
                             
                             personnel.forEach(function(person) { 
                               let assignments = []
-                              person.projects.forEach(function(item) {assignments.push(item.id)})
+                              if (person.projects) {person.projects.forEach(function(item) {assignments.push(item.id)})}
                               let alreadyAssigned = false
                               assignments.forEach(function(item) {if (item === project._id) {alreadyAssigned = true}})
                               if (person.projects && !alreadyAssigned) {%>
