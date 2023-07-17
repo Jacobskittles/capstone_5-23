@@ -265,7 +265,52 @@ async function join(projectID, personID) {
   }
 }
 
+async function unjoin(projectID, personID) {
+  let projectQuery = { _id: projectID };
+  let personQuery = { _id: personID };
 
+  let person, project;
+  try {
+      person = await db.collection("personnel").findOne(personQuery);
+      project = await db.collection("projects").findOne(projectQuery);
+
+      if (!person || !project) {
+          console.log("Result not found");
+          return;
+      }
+  } catch (error) {
+      console.log("ERROR: " + error);
+  }
+
+  let assignments = person.projects;
+  let members = project.members;
+
+  if (!assignments || !members) return; // this person has no projects
+
+  // this isn't joined
+  if (
+      !assignments.find((assignment) => assignment.id === projectID) ||
+      !members.find((member) => member.id === personID)
+  )
+      return;
+
+  assignments = assignments.filter(
+      (assignment) => assignment.id !== projectID
+  );
+  members = members.filter((member) => member.id !== personID);
+
+  // push to database
+  try {
+      await db.collection("personnel").updateOne(personQuery, {
+          $set: { projects: assignments },
+      });
+      await db.collection("projects").updateOne(projectQuery, {
+          $set: { members: members },
+      });
+  } catch (error) {
+      console.log("ERROR: " + error);
+  }
+}
 // Function called during POST to update project name and description values and post to the database
 async function updateProject(projectID, projectname, projectdesc) {
   const projectQuery = { _id: projectID };
@@ -321,18 +366,14 @@ async function deleteProject(projectID) {
   // get rid of all joins
   for (member of project.members) {
       unjoin(projectID, member.id);
-  }
-// Function called during POST to delete a person from the database
-async function deletePerson(personID) {}
-
-// Function called during POST to delete a project from the database
-async function deleteProject(projectID) {}
-
-    db.collection("projects").deleteOne(projectQuery, (err, result) => {
-      if (err) {
-          console.error("Failed to delete project: ", err);
-      }
+    }
+  db.collection("projects").deleteOne(projectQuery, (err, result) => {
+    if (err) {
+        console.error("Failed to delete project: ", err);
+    }
   });
+  console.log('Project successfully deleted')
+
 }
 // Function called during POST to remove a person from a project
 async function unassignPerson(personID, projectID) {}
@@ -366,7 +407,7 @@ app.post('/projects', async(req, res)=>{
       let projID = req.body.addNewLead
       let persID = req.body.checkLead
       let role = "Lead"
-      changeRole(projID, persID, role)
+      await changeRole(projID, persID, role)
       await filldata();
       res.redirect('/projects');
     }
@@ -393,6 +434,15 @@ app.post('/projects', async(req, res)=>{
       await updateProject(projID, projName, projDesc)
       await filldata();
       res.redirect('/projects');
+    }
+
+    if("deleteProject" in req.body){
+      projID = req.body.deleteProject
+      console.log("Deleting project...")
+      await(deleteProject(projID))
+      await filldata();
+      res.redirect('/projects');
+
     }
     
   }catch(error){
