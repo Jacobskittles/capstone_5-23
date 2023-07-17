@@ -176,9 +176,9 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>                          
                           <div class="modal-body">                           
-                                 
+                            <% 
                             
-                            <% personnel.forEach(function(person) { if (person.projects) {%>
+                            personnel.forEach(function(person) { if (person.projects) {%>
                             <div class="form-check" method="POST" action="/projects" >
                               <input class="form-check-input" name="checkPerson" type="checkbox" value="<%=person._id%>" id="<%=person._id%>" >
                               
@@ -196,9 +196,9 @@
                               </label>      
                             </div>
                           <%}
-                          else{ %>
+                          if(!person.projects){ %>
                             <div class="form-check">
-                              <input name="checkPerson" class="form-check-input" type="checkbox" value="" id="<%=person._id%>">
+                              <input name="checkPerson" class="form-check-input" type="checkbox" value="<%=person._id%>" id="<%=person._id%>">
                               <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
                                 <%= person.firstName+' '+person.lastName %>
                               <span class="badge bg-primary" style="float: right;">
