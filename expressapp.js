@@ -378,7 +378,7 @@ async function deleteProject(projectID) {
     const deleteResult = await db.collection("projects").deleteOne(projectQuery);
 
     if (deleteResult.deletedCount === 1) {
-      console.log("Project successfully deleted");
+      console.log(`Project ${projectID} successfully deleted`);
     } else {
       console.log("Failed to delete project");
     }
