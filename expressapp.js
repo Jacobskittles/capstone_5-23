@@ -214,67 +214,67 @@ async function changeRole(projectID, personID, role) {
 }
 
 async function join(projectID, personID) {
-  // set up the queries
-  const projectQuery = { _id: projectID };
-  const personQuery = { _id: personID };
+ // set up the queries
+ const projectQuery = { _id: projectID };
+ const personQuery = { _id: personID };
 
-  //create and load the person and project objects with queries
-  let person, project;
-  try {
-      person = await db.collection("personnel").findOne(personQuery);
-      project = await db.collection("projects").findOne(projectQuery);
-      if (!person || !project) {
-          console.log("Result not found");
-          return;
-      }
-  } catch (error) {
-      console.log("ERROR: " + error);
-  }
+ //create and load the person and project objects with queries
+ let person, project;
+ try {
+     person = await db.collection("personnel").findOne(personQuery);
+     project = await db.collection("projects").findOne(projectQuery);
+     if (!person || !project) {
+         console.log("Result not found");
+         return;
+     }
+ } catch (error) {
+     console.log("ERROR: " + error);
+ }
 
-  // create projects and members if they don't exist
-  if (!person.projects) person.projects = [];
+ // create projects and members if they don't exist
+ if (!person.projects) person.projects = [];
 
-  if (!project.members) project.members = [];
+ if (!project.members) project.members = [];
 
-  // check if project and member are already joined
-  const assignment = person.projects.find(
-      (assignment) => assignment.id === projectID
-  );
-  const member = project.members.find((member) => member.id === personID);
+ // check if project and member are already joined
+ const assignment = person.projects.find(
+     (assignment) => assignment.id === projectID
+ );
+ const member = project.members.find((member) => member.id === personID);
 
-  // if they aren't the same (member and project were improperly joined somehow)
-  if ((assignment !== undefined) ^ (member !== undefined)) {
-      console.log("Project and member improperly joined (?). Fixing...");
-      if (!assignment) {
-          const newAssignment = { id: projectID };
-          if (member.role)
-              // if, for some bizarre reason, the improper join has a role assigned
-              newAssignment.role = member.role;
-          person.projects.push(newAssignment);
-      } else {
-          const newMember = { id: personID };
-          if (assignment.role) newMember.role = assignment.role;
-          project.members.push(newMember);
-      }
-  } else if (!assignment && !member) {
-      person.projects.push({ id: projectID });
-      project.members.push({ id: personID });
-  } else {
-      // condition met when they are already joined and no change needs to be made
-      return;
-  }
+ // if they aren't the same (member and project were improperly joined somehow)
+ if ((assignment !== undefined) ^ (member !== undefined)) {
+     console.log("Project and member improperly joined (?). Fixing...");
+     if (!assignment) {
+         const newAssignment = { id: projectID };
+         if (member.role)
+             // if, for some bizarre reason, the improper join has a role assigned
+             newAssignment.role = member.role;
+         person.projects.push(newAssignment);
+     } else {
+         const newMember = { id: personID };
+         if (assignment.role) newMember.role = assignment.role;
+         project.members.push(newMember);
+     }
+ } else if (!assignment && !member) {
+     person.projects.push({ id: projectID });
+     project.members.push({ id: personID });
+ } else {
+     // condition met when they are already joined and no change needs to be made
+     return;
+ }
 
-  // finally, push to the database, updating only the projects and members arrays
-  try {
-      await db.collection("personnel").updateOne(personQuery, {
-          $set: { projects: person.projects },
-      });
-      await db.collection("projects").updateOne(projectQuery, {
-          $set: { members: project.members },
-      });
-  } catch (error) {
-      console.log("ERROR: " + error);
-  }
+ // finally, push to the database, updating only the projects and members arrays
+ try {
+     await db.collection("personnel").updateOne(personQuery, {
+         $set: { projects: person.projects },
+     });
+     await db.collection("projects").updateOne(projectQuery, {
+         $set: { members: project.members },
+     });
+ } catch (error) {
+     console.log("ERROR: " + error);
+ }
 }
 
 
@@ -332,6 +332,7 @@ app.post('/projects', (req, res)=>{
     filldata();
     res.redirect('/projects')
     }
+
 
   if("editProject" in req.body){
     projName = req.body.projName
