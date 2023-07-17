@@ -139,6 +139,8 @@ app.post("/login", async (req, res) => {
     }
 });
 
+
+// Function called during POST to create a new person object to post to the database
 async function createPerson(person) {
   try{
     person._id = crypto.randomUUID();
@@ -151,6 +153,7 @@ async function createPerson(person) {
   }
 }
 
+// Function called during POST to create a new Project object to post to the database
 async function createProject(project) {
   try{
     project._id = crypto.randomUUID();
@@ -164,6 +167,7 @@ async function createProject(project) {
   
 }
 
+// Function called during POST to update a current project member to lead status
 async function changeRole(projectID, personID, role) {
   try {
     const projectQuery = { _id: projectID };
@@ -213,6 +217,7 @@ async function changeRole(projectID, personID, role) {
   }
 }
 
+// Function called during POST to assign/join personnel and project and post to the databass
 async function join(projectID, personID) {
   try {
     const projectQuery = { _id: projectID };
@@ -260,8 +265,7 @@ async function join(projectID, personID) {
   }
 }
 
-
-
+// Function called during POST to update project name and description values and post to the database
 async function updateProject(projectID, projectname, projectdesc) {
   const projectQuery = { _id: projectID };
   // let { name, description } = project;
@@ -269,7 +273,14 @@ async function updateProject(projectID, projectname, projectdesc) {
   db.collection("projects").updateOne(projectQuery, { $set: { name : projectname, description : projectdesc} });
 }
 
+// Function called during POST to delete a person from the database
+async function deletePerson(personID) {}
 
+// Function called during POST to delete a project from the database
+async function deleteProject(projectID) {}
+
+// Function called during POST to remove a person from a project
+async function unassignPerson(personID, projectID) {}
 
 // Post new projects into the database, should activate on submit
 // Ensure that the action of the modal corresponds to /projects/upload
