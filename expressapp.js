@@ -60,7 +60,8 @@ const { MongoClient } = require("mongodb");
 const { error } = require("console");
 const { create } = require("domain");
 
-const uri = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.9.0";
+const uri =
+    "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.9.0";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri);
@@ -81,8 +82,6 @@ const db = client.db("CBProjects");
 
 let personnel;
 let projects;
-
-
 
 async function filldata() {
     personnel = await db.collection("personnel").find().toArray();
@@ -105,7 +104,7 @@ app.get("/login", (req, res) => {
 app.get("/projects", async (req, res) => {
     //  This code checks to see if credentials are successful and stored as a cookie
     if (req.cookies.login == "true") {
-        filldata()
+        filldata();
         res.render("pages/index", {
             personnel: personnel,
             projects: projects,
@@ -128,7 +127,10 @@ app.post("/login", async (req, res) => {
     console.log(user);
 
     //  Simple code for now to check if login is correct. However, this will change once we access users in the database.
-    if (username == 'admin' && password == 'admin123' || (user && (await bcrypt.compare(password, user.account.password)))) {
+    if (
+        (username == "admin" && password == "admin123") ||
+        (user && (await bcrypt.compare(password, user.account.password)))
+    ) {
         // Assign the cookie. Name of 'login' (change name depending on user or admin), then boolean true since login was successful
         res.cookie("login", true);
         // Take the user to the projects page after successful login
@@ -139,252 +141,321 @@ app.post("/login", async (req, res) => {
     }
 });
 
-
-// Function called during POST to create a new person object to post to the database
+/**
+ * Creates a new project document into the projects collection
+ * @param {string} project - The new project object to be inserted
+ * @returns {Promise<void>} - A promise that resolves once the creation operation is complete.
+ */
 async function createPerson(person) {
-  try{
-    person._id = crypto.randomUUID();
-    await db.collection("personnel").insertOne(person);
-    console.log("Person created")
-    return person._id;
-  }catch(error){
-    console.error("Failed to insert person:", error)
-    throw error
-  }
+    try {
+        person._id = crypto.randomUUID();
+        await db.collection("personnel").insertOne(person);
+        console.log("Person created");
+        return person._id;
+    } catch (error) {
+        console.error("Failed to insert person:", error);
+        throw error;
+    }
 }
 
-// Function called during POST to create a new Project object to post to the database
+/**
+ * Creates a new person document into the personnel collection
+ * @param {string} person - The new person object to be inserted
+ * @returns {Promise<void>} - A promise that resolves once the creation operation is complete.
+ */
 async function createProject(project) {
-  try{
-    project._id = crypto.randomUUID();
-    await db.collection("projects").insertOne(project)
-    console.log("Project created")
-    return project._id;
-  } catch(error){
-    console.error("Failed to insert project:", error)
-    throw error;
-  }
-  
+    try {
+        project._id = crypto.randomUUID();
+        await db.collection("projects").insertOne(project);
+        console.log("Project created");
+        return project._id;
+    } catch (error) {
+        console.error("Failed to insert project:", error);
+        throw error;
+    }
 }
 
-// Function called during POST to update a current project member to lead status
+/**
+ * Changes the role of a person in a project by updating the person and project documents.
+ * @param {string} projectID - The ID of the project where the role change occurs.
+ * @param {string} personID - The ID of the person whose role is being changed.
+ * @param {string} role - The new role to assign to the person.
+ * @returns {Promise<void>} - A promise that resolves once the role change operation is complete.
+ */
 async function changeRole(projectID, personID, role) {
-  try {
-    const projectQuery = { _id: projectID };
-    const personQuery = { _id: personID };
+    try {
+        const projectQuery = { _id: projectID };
+        const personQuery = { _id: personID };
 
-    // Fetch the person and project from the database
-    const person = await db.collection("personnel").findOne(personQuery);
-    const project = await db.collection("projects").findOne(projectQuery);
+        // Fetch the person and project from the database
+        const person = await db.collection("personnel").findOne(personQuery);
+        const project = await db.collection("projects").findOne(projectQuery);
 
-    if (!person || !project) {
-      console.log("Result not found");
-      return;
+        if (!person || !project) {
+            console.log("Result not found");
+            return;
+        }
+
+        const assignments = person.projects;
+        const members = project.members;
+
+        // Remove existing "Lead" role if it exists
+        members.forEach((member) => {
+            if (member.role === "Lead") {
+                delete member.role;
+            }
+        });
+
+        // Find index of assignment and member
+        const assignmentIndex = assignments.findIndex(
+            (assignment) => assignment.id === projectID
+        );
+        const memberIndex = members.findIndex(
+            (member) => member.id === personID
+        );
+
+        // Check if assignment and member were found
+        if (assignmentIndex === -1 || memberIndex === -1) {
+            console.log("Result not found");
+            return;
+        }
+
+        // Update the role
+        assignments[assignmentIndex].role = role;
+        members[memberIndex].role = role;
+
+        // Update the database with the modified data
+        await db
+            .collection("personnel")
+            .updateOne(personQuery, { $set: { projects: assignments } });
+        await db
+            .collection("projects")
+            .updateOne(projectQuery, { $set: { members: members } });
+
+        console.log("Role changed successfully");
+    } catch (error) {
+        console.error("Failed to change role:", error);
+        throw error;
     }
-
-    const assignments = person.projects;
-    const members = project.members;
-
-    // Remove existing "Lead" role if it exists
-    members.forEach(member => {
-      if (member.role === "Lead") {
-        delete member.role;
-      }
-    });
-
-    // Find index of assignment and member
-    const assignmentIndex = assignments.findIndex(assignment => assignment.id === projectID);
-    const memberIndex = members.findIndex(member => member.id === personID);
-
-    // Check if assignment and member were found
-    if (assignmentIndex === -1 || memberIndex === -1) {
-      console.log("Result not found");
-      return;
-    }
-
-    // Update the role
-    assignments[assignmentIndex].role = role;
-    members[memberIndex].role = role;
-
-    // Update the database with the modified data
-    await db.collection("personnel").updateOne(personQuery, { $set: { projects: assignments } });
-    await db.collection("projects").updateOne(projectQuery, { $set: { members: members } });
-
-    console.log("Role changed successfully");
-  } catch (error) {
-    console.error("Failed to change role:", error);
-    throw error;
-  }
 }
 
-// Function called during POST to assign/join personnel and project and post to the databass
+/**
+ * Joins a person to a project in the database.
+ * @param {string} projectID - The ID of the project to join.
+ * @param {string} personID - The ID of the person to join.
+ * @returns {Promise<void>} - A promise that resolves once the join operation is complete.
+ */
 async function join(projectID, personID) {
-  try {
+    try {
+        const projectQuery = { _id: projectID };
+        const personQuery = { _id: personID };
+
+        const person = await db.collection("personnel").findOne(personQuery);
+        const project = await db.collection("projects").findOne(projectQuery);
+
+        if (!person || !project) {
+            console.log("Result not found: " + person);
+            return;
+        }
+
+        if (!person.projects) person.projects = [];
+        if (!project.members) project.members = [];
+
+        const assignment = person.projects.find(
+            (assignment) => assignment.id === projectID
+        );
+        const member = project.members.find((member) => member.id === personID);
+
+        if ((assignment !== undefined) ^ (member !== undefined)) {
+            console.log("Project and member improperly joined (?). Fixing...");
+            if (!assignment) {
+                const newAssignment = { id: projectID };
+                if (member.role) newAssignment.role = member.role;
+                person.projects.push(newAssignment);
+            } else {
+                const newMember = { id: personID };
+                if (assignment.role) newMember.role = assignment.role;
+                project.members.push(newMember);
+            }
+        } else if (!assignment && !member) {
+            person.projects.push({ id: projectID });
+            project.members.push({ id: personID });
+        } else {
+            // Already joined, no change needed
+            return;
+        }
+
+        await db
+            .collection("personnel")
+            .updateOne(personQuery, { $set: { projects: person.projects } });
+        await db
+            .collection("projects")
+            .updateOne(projectQuery, { $set: { members: project.members } });
+
+        console.log(`Successfully joined member to project`);
+    } catch (error) {
+        console.log("ERROR: " + error);
+    }
+}
+
+/**
+ * "Unjoins" a person and project
+ * @param {string} projectID - The ID of the project to join.
+ * @param {string} personID - The ID of the person to join.
+ * @returns {Promise<void>} - A promise that resolves once the operation is complete.
+ */
+async function unjoin(projectID, personID) {
+    let projectQuery = { _id: projectID };
+    let personQuery = { _id: personID };
+
+    let person, project;
+    try {
+        person = await db.collection("personnel").findOne(personQuery);
+        project = await db.collection("projects").findOne(projectQuery);
+
+        if (!person || !project) {
+            console.log("Result not found");
+            return;
+        }
+    } catch (error) {
+        console.log("ERROR: " + error);
+    }
+
+    let assignments = person.projects;
+    let members = project.members;
+
+    if (!assignments || !members) return; // this person has no projects
+
+    // this isn't joined
+    if (
+        !assignments.find((assignment) => assignment.id === projectID) ||
+        !members.find((member) => member.id === personID)
+    )
+        return;
+
+    assignments = assignments.filter(
+        (assignment) => assignment.id !== projectID
+    );
+    members = members.filter((member) => member.id !== personID);
+
+    // Update the person's projects array or remove it if no assignments remain
+    if (assignments.length > 0) {
+        try {
+            await db.collection("personnel").updateOne(personQuery, {
+                $set: { projects: assignments },
+            });
+            await db.collection("projects").updateOne(projectQuery, {
+                $set: { members: members },
+            });
+        } catch (error) {
+            console.log("ERROR: " + error);
+            return;
+        }
+    } else {
+        try {
+            await db.collection("personnel").updateOne(personQuery, {
+                $unset: { projects: "" },
+            });
+        } catch (error) {
+            console.log("ERROR: " + error);
+            return;
+        }
+    }
+}
+
+/**
+ * Updates a project document in the projects collection with the specified projectID.
+ * @param {string} projectID - The ID of the project document to be updated.
+ * @param {Object} project - The updated project object containing the new values for name and description properties.
+ * @returns {Promise<void>} - A promise that resolves once the update operation is complete.
+ */
+async function updateProject(projectID, projectname, projectdesc) {
     const projectQuery = { _id: projectID };
+    // let { name, description } = project;
+
+    db.collection("projects").updateOne(projectQuery, {
+        $set: { name: projectname, description: projectdesc },
+    });
+}
+
+/**
+ * Updates a person document in the personnel collection with the specified personID.
+ * @param {string} personID - The ID of the person document to be updated.
+ * @param {Object} person - The updated person object containing the new values for firstName and lastName properties.
+ * @returns {Promise<void>} - A promise that resolves once the update operation is complete.
+ */
+async function updatePerson(personID, person) {
+    const personQuery = { _id: personID };
+    let { firstName, lastName } = person;
+
+    db.collection("personnel").updateOne(personQuery, {
+        $set: { firstName, lastName },
+    });
+}
+
+/**
+ * Deletes a person document from the personnel collection with the specified personID.
+ * @param {string} personID - The ID of the person document to be deleted.
+ * @returns {Promise<void>} - A promise that resolves once the deletion operation is complete.
+ */
+async function deletePerson(personID) {
     const personQuery = { _id: personID };
 
-    const person = await db.collection("personnel").findOne(personQuery);
-    const project = await db.collection("projects").findOne(projectQuery);
-
-    if (!person || !project) {
-      console.log("Result not found: " + person);
-      return;
-    }
-
-    if (!person.projects) person.projects = [];
-    if (!project.members) project.members = [];
-
-    const assignment = person.projects.find((assignment) => assignment.id === projectID);
-    const member = project.members.find((member) => member.id === personID);
-
-    if ((assignment !== undefined) ^ (member !== undefined)) {
-      console.log("Project and member improperly joined (?). Fixing...");
-      if (!assignment) {
-        const newAssignment = { id: projectID };
-        if (member.role) newAssignment.role = member.role;
-        person.projects.push(newAssignment);
-      } else {
-        const newMember = { id: personID };
-        if (assignment.role) newMember.role = assignment.role;
-        project.members.push(newMember);
-      }
-    } else if (!assignment && !member) {
-      person.projects.push({ id: projectID });
-      project.members.push({ id: personID });
-    } else {
-      // Already joined, no change needed
-      return;
-    }
-
-    await db.collection("personnel").updateOne(personQuery, { $set: { projects: person.projects } });
-    await db.collection("projects").updateOne(projectQuery, { $set: { members: project.members } });
-
-    console.log(`Successfully joined member to project`);
-  } catch (error) {
-    console.log("ERROR: " + error);
-  }
-}
-async function unjoin(projectID, personID) {
-  let projectQuery = { _id: projectID };
-  let personQuery = { _id: personID };
-
-  let person, project;
-  try {
-      person = await db.collection("personnel").findOne(personQuery);
-      project = await db.collection("projects").findOne(projectQuery);
-
-      if (!person || !project) {
-          console.log("Result not found");
-          return;
-      }
-  } catch (error) {
-      console.log("ERROR: " + error);
-  }
-
-  let assignments = person.projects;
-  let members = project.members;
-
-  if (!assignments || !members) return; // this person has no projects
-
-  // this isn't joined
-  if (
-      !assignments.find((assignment) => assignment.id === projectID) ||
-      !members.find((member) => member.id === personID)
-  )
-      return;
-
-  assignments = assignments.filter(
-      (assignment) => assignment.id !== projectID
-  );
-  members = members.filter((member) => member.id !== personID);
-
-  // Update the person's projects array or remove it if no assignments remain
-  if (assignments.length > 0) {
+    let person;
     try {
-      await db.collection("personnel").updateOne(personQuery, {
-        $set: { projects: assignments },
-      });
-      await db.collection("projects").updateOne(projectQuery, {
-        $set: { members: members },
+        person = await db.collection("personnel").findOne(personQuery);
+        if (!person) {
+            console.log("Result not found");
+            return;
+        }
+    } catch (error) {
+        console.log("ERROR: " + error);
+    }
+
+    // get rid of all joins
+    for (assignment of person.projects) {
+        unjoin(assignment.id, personID);
+    }
+
+    personnel.deleteOne(personQuery, (err, result) => {
+        if (err) {
+            console.error("Failed to delete person: ", err);
+        }
     });
-    } catch (error) {
-      console.log("ERROR: " + error);
-      return;
-    }
-  } else {
-    try {
-      await db.collection("personnel").updateOne(personQuery, {
-        $unset: { projects: "" },
-      });
-    } catch (error) {
-      console.log("ERROR: " + error);
-      return;
-    }
-  }
 }
-// Function called during POST to update project name and description values and post to the database
-async function updateProject(projectID, projectname, projectdesc) {
-  const projectQuery = { _id: projectID };
-  // let { name, description } = project;
 
-  db.collection("projects").updateOne(projectQuery, { $set: { name : projectname, description : projectdesc} });
-}
-async function updatePerson(personID, person) {
-  const personQuery = { _id: personID };
-  let { firstName, lastName } = person;
-
-  db.collection("personnel").updateOne(personQuery, { $set: { firstName, lastName } });
-}
-async function deletePerson(personID) {
-  const personQuery = { _id: personID };
-
-  let person;
-  try {
-      person = await db.collection("personnel").findOne(personQuery);
-      if (!person) {
-          console.log("Result not found");
-          return;
-      }
-  } catch (error) {
-      console.log("ERROR: " + error);
-  }
-
-  // get rid of all joins
-  for (assignment of person.projects) {
-      unjoin(assignment.id, personID);
-  }
-
-  personnel.deleteOne(personQuery, (err, result) => {
-      if (err) {
-          console.error("Failed to delete person: ", err);
-      }
-  });
-}
+/**
+ * Deletes a project document from the projects collection with the specified projectID.
+ * @param {string} projectID - The ID of the project document to be deleted.
+ * @returns {Promise<void>} - A promise that resolves once the deletion operation is complete.
+ */
 async function deleteProject(projectID) {
-  const projectQuery = { _id: projectID };
+    const projectQuery = { _id: projectID };
 
-  try {
-    const project = await db.collection("projects").findOne(projectQuery);
-    if (!project) {
-      console.log("Result not found");
-      return;
+    try {
+        const project = await db.collection("projects").findOne(projectQuery);
+        if (!project) {
+            console.log("Result not found");
+            return;
+        }
+
+        // Get rid of all joins
+        for (member of project.members) {
+            await unjoin(projectID, member.id);
+        }
+
+        const deleteResult = await db
+            .collection("projects")
+            .deleteOne(projectQuery);
+
+        if (deleteResult.deletedCount === 1) {
+            console.log(`Project ${projectID} successfully deleted`);
+        } else {
+            console.log("Failed to delete project");
+        }
+    } catch (error) {
+        console.log("ERROR: " + error);
     }
-
-    // Get rid of all joins
-    for (member of project.members) {
-      await unjoin(projectID, member.id);
-    }
-
-    const deleteResult = await db.collection("projects").deleteOne(projectQuery);
-
-    if (deleteResult.deletedCount === 1) {
-      console.log(`Project ${projectID} successfully deleted`);
-    } else {
-      console.log("Failed to delete project");
-    }
-  } catch (error) {
-    console.log("ERROR: " + error);
-  }
 }
 
 // Function called during POST to remove a person from a project
@@ -392,92 +463,79 @@ async function unassignPerson(personID, projectID) {}
 
 // Post new projects into the database, should activate on submit
 // Ensure that the action of the modal corresponds to /projects/upload
-app.post('/projects', async(req, res)=>{
-  try{
-    //code to input a new user into the database
-    if("addNewPerson" in req.body){
-        createPerson({
-          firstName : req.body.fName,
-          lastName : req.body.lName,
-          account: {}
-        })
-        await filldata();
-        res.redirect('/projects');
-    }
-    //code to input a new project into the database
-    if("addNewProject" in req.body){
-      createProject({
-        name : req.body.projName,
-        description : req.body.projDesc,
-        members : []
-      })
-      await filldata();
-      res.redirect('/projects');
-    }
-    //code to add a new lead to the project
-    if("addNewLead" in req.body){
-      let projID = req.body.addNewLead
-      let persID = req.body.checkLead
-      let role = "Lead"
-      await changeRole(projID, persID, role)
-      await filldata();
-      res.redirect('/projects');
-    }
-    // code to add a person from the list of people to a project
-    if ("addPersonnelToProject" in req.body) {
-      const projID = req.body.addPersonnelToProject;
-      //conditional to check if there is one or more people (if one, turn the object into array. if more, it is already an array.)
-      const people = Array.isArray(req.body.checkPerson)
-        ? req.body.checkPerson
-        : [req.body.checkPerson];
-    
-      for (person of people) {
-        await join(projID, person);
-      };
-    
-      await filldata();
-      res.redirect('/projects');
-    }
+app.post("/projects", async (req, res) => {
+    try {
+        //code to input a new user into the database
+        if ("addNewPerson" in req.body) {
+            createPerson({
+                firstName: req.body.fName,
+                lastName: req.body.lName,
+                account: {},
+            });
+            await filldata();
+            res.redirect("/projects");
+        }
+        //code to input a new project into the database
+        if ("addNewProject" in req.body) {
+            createProject({
+                name: req.body.projName,
+                description: req.body.projDesc,
+                members: [],
+            });
+            await filldata();
+            res.redirect("/projects");
+        }
+        //code to add a new lead to the project
+        if ("addNewLead" in req.body) {
+            let projID = req.body.addNewLead;
+            let persID = req.body.checkLead;
+            let role = "Lead";
+            await changeRole(projID, persID, role);
+            await filldata();
+            res.redirect("/projects");
+        }
+        // code to add a person from the list of people to a project
+        if ("addPersonnelToProject" in req.body) {
+            const projID = req.body.addPersonnelToProject;
+            //conditional to check if there is one or more people (if one, turn the object into array. if more, it is already an array.)
+            const people = Array.isArray(req.body.checkPerson)
+                ? req.body.checkPerson
+                : [req.body.checkPerson];
 
-    if("editProject" in req.body){
-      projName = req.body.projName
-      projDesc = req.body.projDesc
-      projID = req.body.editProject
-      await updateProject(projID, projName, projDesc)
-      await filldata();
-      res.redirect('/projects');
+            for (person of people) {
+                await join(projID, person);
+            }
+
+            await filldata();
+            res.redirect("/projects");
+        }
+
+        if ("editProject" in req.body) {
+            projName = req.body.projName;
+            projDesc = req.body.projDesc;
+            projID = req.body.editProject;
+            await updateProject(projID, projName, projDesc);
+            await filldata();
+            res.redirect("/projects");
+        }
+
+        if ("deleteProject" in req.body) {
+            projID = req.body.deleteProject;
+            console.log(`Deleting project with ID: ${projID}`);
+            await deleteProject(projID);
+            await filldata();
+            res.redirect("/projects");
+        }
+    } catch (error) {
+        // Handle errors
+        console.error(error);
+        res.status(500).send("An error occurred.");
     }
-
-    if("deleteProject" in req.body){
-      projID = req.body.deleteProject
-      console.log(`Deleting project with ID: ${projID}`)
-      await(deleteProject(projID))
-      await filldata();
-      res.redirect('/projects');
-
-    }
-    
-  }catch(error){
-    // Handle errors
-    console.error(error);
-    res.status(500).send("An error occurred.");
-  }
-  })
-
-
+});
 
 // code that will allow you to log out and clear your cookie
-app.get('/logout', (req, res) => {
-  console.log(req.cookies.login)
-  res.clearCookie('login')
-  res.render('pages/logout')
-  })
-
-
-
-
-
-
-
-
-
+app.get("/logout", (req, res) => {
+    console.log(req.cookies.login);
+    res.clearCookie("login");
+    res.render("pages/logout");
+});
