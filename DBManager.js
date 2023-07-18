@@ -253,7 +253,7 @@ class DBManager {
 
         // get rid of all joins
         for (let assignment of person.projects) {
-            this.unjoin(assignment.id, personID);
+            await this.unjoin(assignment.id, personID);
         }
 
         this.personnel.deleteOne(personQuery, (err, result) => {
@@ -284,7 +284,7 @@ class DBManager {
 
         // get rid of all joins
         for (let member of project.members) {
-            this.unjoin(projectID, member.id);
+            await this.unjoin(projectID, member.id);
         }
 
         this.projects.deleteOne(projectQuery, (err, result) => {
