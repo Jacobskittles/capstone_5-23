@@ -1,9 +1,17 @@
+/**
+ * Manages the personnel and projects collections in a database.
+ */
 class DBManager {
-    constructor (personnel, projects) {
+    /**
+     * Constructs a new DBManager instance.
+     * @param {Collection} projects - The projects collection object.
+     * @param {Collection} personnel - The personnel collection object.
+     */
+    constructor (projects, personnel) {
         this.personnel = personnel;
         this.projects = projects;
     }
-    
+
     /**
      * "Unjoins" a person and project
      * @param {string} projectID - The ID of the project to join.
@@ -311,3 +319,5 @@ class DBManager {
         this.projects.updateOne(projectQuery, { $set: { name, description } });
     }
 }
+
+module.exports = DBManager;
