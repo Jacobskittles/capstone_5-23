@@ -146,10 +146,6 @@ app.post("/login", async (req, res) => {
 // DBManager has all of the functions for accessing the database
 const DBMan = new DBManager(db.collection("projects"), db.collection("personnel"));
 
-// Function called during POST to remove a person from a project
-async function unassignPerson(personID, projectID) {}
-// Is this going to be used?
-
 // Post new projects into the database, should activate on submit
 // Ensure that the action of the modal corresponds to /projects/upload
 // Lincoln's code
@@ -204,7 +200,7 @@ app.post("/projects", async (req, res) => {
             projName = req.body.projName;
             projDesc = req.body.projDesc;
             projID = req.body.editProject;
-            await DBMan.updateProject(projID, projName, projDesc);
+            await DBMan.updateProject(projID, {name: projName, description: projDesc});
             await filldata();
             res.redirect("/projects");
         }
