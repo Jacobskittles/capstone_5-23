@@ -2,8 +2,7 @@
 
 //  Lincoln's code
 const express = require("express");
-const path = require("path");
-const crypto = require("crypto");
+
 const bcrypt = require("bcrypt");
 
 //  Used to read the user login information and parse it. Gonzales + Lincoln
@@ -212,6 +211,7 @@ app.post("/projects", async (req, res) => {
             await filldata();
             res.redirect("/projects");
         }
+        
     } catch (error) {
         // Handle errors
         console.error(error);
