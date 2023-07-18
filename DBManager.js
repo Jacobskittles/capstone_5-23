@@ -8,7 +8,7 @@ class DBManager {
      * @param {Collection} projects - The projects collection object.
      * @param {Collection} personnel - The personnel collection object.
      */
-    constructor (projects, personnel) {
+    constructor(projects, personnel) {
         this.personnel = personnel;
         this.projects = projects;
     }
@@ -252,8 +252,8 @@ class DBManager {
         }
 
         // get rid of all joins
-        for (assignment of person.projects) {
-            unjoin(assignment.id, personID);
+        for (let assignment of person.projects) {
+            this.unjoin(assignment.id, personID);
         }
 
         this.personnel.deleteOne(personQuery, (err, result) => {
@@ -283,8 +283,8 @@ class DBManager {
         }
 
         // get rid of all joins
-        for (member of project.members) {
-            unjoin(projectID, member.id);
+        for (let member of project.members) {
+            this.unjoin(projectID, member.id);
         }
 
         this.projects.deleteOne(projectQuery, (err, result) => {
@@ -304,7 +304,9 @@ class DBManager {
         const personQuery = { _id: personID };
         let { firstName, lastName } = person;
 
-        this.personnel.updateOne(personQuery, { $set: { firstName, lastName } });
+        this.personnel.updateOne(personQuery, {
+            $set: { firstName, lastName },
+        });
     }
 
     /**
