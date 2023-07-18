@@ -44,7 +44,7 @@
               assignments.push(projectName)
             }) %>
 
-            <button id="<%= person._id %>-button" draggable="True" type="button" style="width: 100%; text-align: left"
+            <div id="<%= person._id %>-button" draggable="True" type="button" style="width: 100%; text-align: left"
               class="btn bg-light border-secondary-subtle noDrop" 
               data-bs-html="true"
               data-bs-toggle="popover"
@@ -60,7 +60,9 @@
               ondragstart="drag(event)"
               >
               
+              
               <strong><%= person.firstName+' '+person.lastName %></strong>
+              
                   <% 
                     // count how many projects each person has and determine their color
                     let total = utils.countProjects(person)
@@ -68,7 +70,9 @@
                   %>
                   <span class="badge bg-<%=color%> float-end">
                     <%= total %>
-                  </span></button>
+                  </span>                 
+                  </div>
+                  
             <% }}); %>
 
           </div>

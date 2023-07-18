@@ -211,7 +211,9 @@ app.post("/projects", async (req, res) => {
             await filldata();
             res.redirect("/projects");
         }
-        
+        if("removePerson" in req.body){
+          
+        }
     } catch (error) {
         // Handle errors
         console.error(error);

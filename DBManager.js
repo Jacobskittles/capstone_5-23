@@ -2,6 +2,7 @@
  * Manages the personnel and projects collections in a database.
  * Gonzales' code
  */
+const crypto = require("crypto");
 class DBManager {
     /**
      * Constructs a new DBManager instance.
@@ -19,41 +20,43 @@ class DBManager {
      * @param {string} personID - The ID of the person to join.
      * @returns {Promise<void>} - A promise that resolves once the operation is complete.
      */
-    async unjoin(projectID, personID) {
-        let projectQuery = { _id: projectID };
-        let personQuery = { _id: personID };
 
-        let person, project;
-        try {
-            person = await this.personnel.findOne(personQuery);
-            project = await this.projects.findOne(projectQuery);
+    async  unjoin(projectID, personID) {
+    let projectQuery = { _id: projectID };
+    let personQuery = { _id: personID };
 
-            if (!person || !project) {
-                console.log("Result not found");
-                return;
-            }
-        } catch (error) {
-            console.log("ERROR: " + error);
-        }
+    let person, project;
+    try {
+        person = await this.personnel.findOne(personQuery);
+        project = await this.projects.findOne(projectQuery);
 
-        let assignments = person.projects;
-        let members = project.members;
-
-        if (!assignments || !members) return; // this person has no projects
-
-        // this isn't joined
-        if (
-            !assignments.find((assignment) => assignment.id === projectID) ||
-            !members.find((member) => member.id === personID)
-        )
+        if (!person || !project) {
+            console.log("Result not found");
             return;
+        }
+    } catch (error) {
+        console.log("ERROR: " + error);
+    }
 
-        assignments = assignments.filter(
-            (assignment) => assignment.id !== projectID
-        );
-        members = members.filter((member) => member.id !== personID);
+    let assignments = person.projects;
+    let members = project.members;
 
-        // push to database
+    if (!assignments || !members) return; // this person has no projects
+
+    // this isn't joined
+    if (
+        !assignments.find((assignment) => assignment.id === projectID) ||
+        !members.find((member) => member.id === personID)
+    )
+        return;
+
+    assignments = assignments.filter(
+        (assignment) => assignment.id !== projectID
+    );
+    members = members.filter((member) => member.id !== personID);
+
+    // Update the person's projects array or remove it if no assignments remain
+    if (assignments.length > 0) {
         try {
             await this.personnel.updateOne(personQuery, {
                 $set: { projects: assignments },
@@ -63,8 +66,20 @@ class DBManager {
             });
         } catch (error) {
             console.log("ERROR: " + error);
+            return;
+        }
+    } else {
+        try {
+            await this.personnel.updateOne(personQuery, {
+                $unset: { projects: "" },
+            });
+        } catch (error) {
+            console.log("ERROR: " + error);
+            return;
         }
     }
+}
+
 
     /**
      * Joins a person to a project in the database.
@@ -256,11 +271,15 @@ class DBManager {
             await this.unjoin(assignment.id, personID);
         }
 
-        this.personnel.deleteOne(personQuery, (err, result) => {
-            if (err) {
-                console.error("Failed to delete person: ", err);
-            }
-        });
+        const deleteResult = await db
+            .collection("projects")
+            .deleteOne(projectQuery);
+
+        if (deleteResult.deletedCount === 1) {
+            console.log(`Project ${projectID} successfully deleted`);
+        } else {
+            console.log("Failed to delete project");
+        }
     }
 
     /**
