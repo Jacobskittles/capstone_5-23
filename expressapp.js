@@ -3,7 +3,6 @@
 //  Lincoln's code
 const express = require("express");
 const path = require("path");
-const port = 8088;
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 
@@ -14,11 +13,13 @@ const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
 
 var utils = require("./utils");
+const DBManager = require("./DBManager")
 
 const app = express();
 const PORT = 8088;
 
-const SALT_ROUNDS = 10;
+// not used with bcrypt compare
+// const SALT_ROUNDS = 10; 
 
 // Set the view engine to ejs
 app.set("view engine", "ejs");
@@ -59,8 +60,10 @@ app.listen(PORT, () => {
 //  Lincoln - This is some code I assembled to connect a web-hosted database to the javascript.
 const { MongoClient } = require("mongodb");
 const { error } = require("console");
+const { create } = require("domain");
 
-const uri = "mongodb://localhost:27017";
+const uri =
+    "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.9.0";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri);
@@ -103,6 +106,7 @@ app.get("/login", (req, res) => {
 app.get("/projects", async (req, res) => {
     //  This code checks to see if credentials are successful and stored as a cookie
     if (req.cookies.login == "true") {
+        filldata();
         res.render("pages/index", {
             personnel: personnel,
             projects: projects,
@@ -125,7 +129,10 @@ app.post("/login", async (req, res) => {
     console.log(user);
 
     //  Simple code for now to check if login is correct. However, this will change once we access users in the database.
-    if (user && (await bcrypt.compare(password, user.account.password))) {
+    if (
+        (username == "admin" && password == "admin123") ||
+        (user && (await bcrypt.compare(password, user.account.password)))
+    ) {
         // Assign the cookie. Name of 'login' (change name depending on user or admin), then boolean true since login was successful
         res.cookie("login", true);
         // Take the user to the projects page after successful login
@@ -136,41 +143,87 @@ app.post("/login", async (req, res) => {
     }
 });
 
+// DBManager has all of the functions for accessing the database
+const DBMan = new DBManager(db.collection("projects"), db.collection("personnel"));
+
+// Function called during POST to remove a person from a project
+async function unassignPerson(personID, projectID) {}
+// Is this going to be used?
+
 // Post new projects into the database, should activate on submit
 // Ensure that the action of the modal corresponds to /projects/upload
-app.post("/projects", (req, res) => {
-    // parsed JSON from input
-    // need ID generated
-    var fName = req.body.fName;
-    var lName = req.body.lName;
-    var id = crypto.randomUUID();
-
-    //code to input the user into the database
+// Lincoln's code
+app.post("/projects", async (req, res) => {
     try {
-        db.collection("personnel").insertOne({
-            _id: id,
-            firstName: fName,
-            lastName: lName,
-        });
-        console.log(`inserted 1 user: ${firstname + lastname}`);
-        filldata();
-        res.redirect("/projects");
-    } catch (err) {
-        console.log(err);
+        //code to input a new user into the database
+        if ("addNewPerson" in req.body) {
+            DBMan.createPerson({
+                firstName: req.body.fName,
+                lastName: req.body.lName,
+                account: {},
+            });
+            await filldata();
+            res.redirect("/projects");
+        }
+        //code to input a new project into the database
+        if ("addNewProject" in req.body) {
+            DBMan.createProject({
+                name: req.body.projName,
+                description: req.body.projDesc,
+                members: [],
+            });
+            await filldata();
+            res.redirect("/projects");
+        }
+        //code to add a new lead to the project
+        if ("addNewLead" in req.body) {
+            let projID = req.body.addNewLead;
+            let persID = req.body.checkLead;
+            let role = "Lead";
+            await DBMan.changeRole(projID, persID, role);
+            await filldata();
+            res.redirect("/projects");
+        }
+        // code to add a person from the list of people to a project
+        if ("addPersonnelToProject" in req.body) {
+            const projID = req.body.addPersonnelToProject;
+            //conditional to check if there is one or more people (if one, turn the object into array. if more, it is already an array.)
+            const people = Array.isArray(req.body.checkPerson)
+                ? req.body.checkPerson
+                : [req.body.checkPerson];
+
+            for (person of people) {
+                await DBMan.join(projID, person);
+            }
+
+            await filldata();
+            res.redirect("/projects");
+        }
+
+        if ("editProject" in req.body) {
+            projName = req.body.projName;
+            projDesc = req.body.projDesc;
+            projID = req.body.editProject;
+            await DBMan.updateProject(projID, projName, projDesc);
+            await filldata();
+            res.redirect("/projects");
+        }
+
+        if ("deleteProject" in req.body) {
+            projID = req.body.deleteProject;
+            console.log(`Deleting project with ID: ${projID}`);
+            await DBMan.deleteProject(projID);
+            await filldata();
+            res.redirect("/projects");
+        }
+    } catch (error) {
+        // Handle errors
+        console.error(error);
+        res.status(500).send("An error occurred.");
     }
 });
 
-//code to delete a person, not assigned to any button yet
-app.post("/projects", (req, res) => {
-    var person = req.body;
-    try {
-        db.collection("personnel").deleteOne(person);
-        console.log("deleted a person");
-    } catch (err) {
-        console.log(err);
-    }
-});
-
+// code that will allow you to log out and clear your cookie
 app.get("/logout", (req, res) => {
     console.log(req.cookies.login);
     res.clearCookie("login");

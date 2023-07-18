@@ -1,19 +1,16 @@
-<div class="col-sm-3">
-    <div class="well">
-      <!-- <div style="padding-right: 5%; float: right;">
-      </div> -->
-      <div class="card">
-        <div class="card-body" style="overflow-y: scroll;">
-          <h1 class="card-title">Personnel - <%= personnel.length %>
 
-          <button class="btn border-secondary-subtle" data-bs-toggle="modal" data-bs-target="#personnelModal">ADD +</button>
-        
-        
+<div class="col-3">
+    <div class="well">
+      <div class="card">
+        <div class="card-body">
+          <h1 class="card-title">PERSONNEL - <%= personnel.length  %><button class="btn border-secondary-subtle float-end m-2" data-bs-toggle="modal" data-bs-target="#personnelModal">ADD +</button></h1>
+            
+          
         <!-- Modal -->
         <div class="modal fade" id="personnelModal" tabindex="-1" aria-labelledby="personnelModalLabel" aria-hidden="true">
           <div class="modal-dialog">
 
-          <form action="/projects" method="POST">
+          <form  id="personForm" action="/projects" method = "POST">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="personnelModalLabel">Add Person</h5>
@@ -27,7 +24,8 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Submit</button>
+
+                <button name="addNewPerson" type="submit" class="btn btn-primary" >Submit</button>
               </div>
             </div>
           </form>
@@ -35,46 +33,61 @@
           </div>
         </div>
 
-</h1>
-          <hr><h5 class="card-title">Assigned</h5>
-          <div class="card-body bg-secondary-subtle" id="cont">
+          <% let assigned = 0; let unassigned = 0; personnel.forEach(function(person) {if (person.projects) {assigned+=1} else {unassigned+=1}}) %>
+          <hr><h5 class="card-title">Assigned - <%= assigned %></h5>
+          <div class="card-body bg-secondary-subtle" id="cont" ondrop="drop(event)" ondragover="allowDrop(event)">
 
-      
-          <% personnel.forEach(function(person) { if (person.projects) {%>
-            <button draggable="True" type="button" style="width: 100%; text-align: left; position: relative; z-index: 1000" 
-              class="btn bg-light border-secondary-subtle" 
-              data-bs-toggle="popover"  
-              title= "Info for <%=person.firstName%> <%=person.lastName%>" 
+          <% personnel.forEach(function(person) { if (person.projects) { 
+            let assignments = [];
+            person.projects.forEach(function(assignment) {
+              let projectName = projects.find(project=> project._id === assignment.id).name
+              assignments.push(projectName)
+            }) %>
+
+            <button id="<%= person._id %>-button" draggable="True" type="button" style="width: 100%; text-align: left"
+              class="btn bg-light border-secondary-subtle noDrop" 
+              data-bs-html="true"
+              data-bs-toggle="popover"
+              
+              title= "<span><b><%=person.firstName%> <%=person.lastName%></b></span> " 
               data-bs-placement="left"  
-              data-bs-content="INSERT PROJECT NAMES HERE">
+              data-bs-content="<ul>
+                <% assignments.forEach(function(item) { %>
+                  <li><%= item %></li>
+                <% }) %>
+                </ul>
+                " 
+              ondragstart="drag(event)"
+              >
               
               <strong><%= person.firstName+' '+person.lastName %></strong>
                   <% 
                     // count how many projects each person has and determine their color
                     let total = utils.countProjects(person)
-                    
                     let color = utils.getColor(total)
                   %>
-                  <span class="badge bg-<%=color%>" style="float: right;">
+                  <span class="badge bg-<%=color%> float-end">
                     <%= total %>
                   </span></button>
             <% }}); %>
 
           </div>
-            <hr><h5 class="card-title">Unassigned</h5>
-            <div class="card-body bg-secondary-subtle">
-            <% personnel.forEach(function(person) { if (person.projects) {} else{ %>
-              <button draggable="True" style="width: 100%; text-align: left;"
-                class="btn bg-light border-secondary-subtle"
-                data-bs-toggle="popover"  
-                title= "Info for <%=person.firstName%> <%=person.lastName%>" 
-                data-bs-placement="left"  
-                data-bs-content="No projects assigned."><strong>
-                  <%= person.firstName+' '+person.lastName %></strong>
-                    <span class="badge bg-primary" style="float: right;">
+            <hr>
+            <h5 class="card-title">Unassigned - <%= unassigned %></h5>
+            <div class="card-body bg-secondary-subtle" ondrop="drop(event)" ondragover="allowDrop(event)" id="peopleList">
+            <% personnel.forEach(function(person) { if (!person.projects){ %>
+              <button name="persbtn" id="<%= person._id %>-button" draggable="True" style="width: 100%; text-align: left;" class="btn bg-light border-secondary-subtle noDrop" data-bs-toggle="popover"  title= "Info for <%=person.firstName%> <%=person.lastName%>" data-bs-placement="left" data-bs-content="No projects assigned." ondragstart="drag(event)">
+                <strong>
+                  <%= person.firstName+' '+person.lastName %>
+                </strong>
+                <span class="badge bg-primary" style="float: right;">
                       0
-                    </span></button>
+                </span>
+                
+                
+                
               <% }}); %>
+              
             </div>
         </div>
       </div>
@@ -83,15 +96,22 @@
 </div>
 
 <script>
-  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap.Popover(popoverTriggerEl)
-  })
- 
-  var myModal = document.getElementById('exampleModal')
-  var myInput = document.getElementById('myInput')
 
-  myModal.addEventListener('shown.bs.modal', function () {
-    myInput.focus()
-  })
-  </script>
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+  return new bootstrap.Popover(popoverTriggerEl)
+});
+
+  document.getElementsByName("persbtn").addEventListener("hover", function() {
+  document.getElementById("dotsButton").classList.remove("d-none");
+});
+
+document.getElementById("dotsButton").addEventListener("click", function() {
+  var myModal = new bootstrap.Modal(document.getElementById("myModal"));
+  myModal.show();
+});
+
+
+
+
+</script>

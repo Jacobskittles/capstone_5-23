@@ -1,3 +1,6 @@
+// currently just some functions for db management, fully integrated into expressapp.js
+// DELETE ME
+
 const { MongoClient, ObjectId } = require("mongodb");
 const crypto = require("crypto");
 
@@ -22,6 +25,7 @@ const db = client.db("CBProjects");
 
 const personnel = db.collection("personnel");
 const projects = db.collection("projects");
+
 /**
  * "Unjoins" a person and project
  * @param {string} projectID - The ID of the project to join.
