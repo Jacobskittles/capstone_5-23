@@ -1,5 +1,6 @@
 /**
  * Manages the personnel and projects collections in a database.
+ * Gonzales' code
  */
 class DBManager {
     /**

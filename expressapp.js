@@ -143,13 +143,7 @@ app.post("/login", async (req, res) => {
     }
 });
 
-/*
-----------------------------------------
-|         Database Functions           |
-|              Gonzales                |
-----------------------------------------
-*/
-
+// DBManager has all of the functions for accessing the database
 const DBMan = new DBManager(db.collection("projects"), db.collection("personnel"));
 
 // Function called during POST to remove a person from a project
