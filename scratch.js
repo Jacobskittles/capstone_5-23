@@ -22,7 +22,6 @@ const db = client.db("CBProjects");
 
 const personnel = db.collection("personnel");
 const projects = db.collection("projects");
-
 /**
  * "Unjoins" a person and project
  * @param {string} projectID - The ID of the project to join.
