@@ -149,73 +149,95 @@ const DBMan = new DBManager(db.collection("projects"), db.collection("personnel"
 // Ensure that the action of the modal corresponds to /projects/upload
 // Lincoln's code
 app.post("/projects", async (req, res) => {
-    try {
-        //code to input a new user into the database
-        if ("addNewPerson" in req.body) {
-            DBMan.createPerson({
-                firstName: req.body.fName,
-                lastName: req.body.lName,
-                account: {},
-            });
-            await filldata();
-            res.redirect("/projects");
-        }
-        //code to input a new project into the database
-        if ("addNewProject" in req.body) {
-            DBMan.createProject({
-                name: req.body.projName,
-                description: req.body.projDesc,
-                members: [],
-            });
-            await filldata();
-            res.redirect("/projects");
-        }
-        //code to add a new lead to the project
-        if ("addNewLead" in req.body) {
-            let projID = req.body.addNewLead;
-            let persID = req.body.checkLead;
-            let role = "Lead";
-            await DBMan.changeRole(projID, persID, role);
-            await filldata();
-            res.redirect("/projects");
-        }
-        // code to add a person from the list of people to a project
-        if ("addPersonnelToProject" in req.body) {
-            const projID = req.body.addPersonnelToProject;
-            //conditional to check if there is one or more people (if one, turn the object into array. if more, it is already an array.)
-            const people = Array.isArray(req.body.checkPerson)
-                ? req.body.checkPerson
-                : [req.body.checkPerson];
+  try {
+      //code to input a new user into the database
+      if ("addNewPerson" in req.body) {
+        // call createProject from DB manager and fill with inputted data from req.body
+          DBMan.createPerson({
+              firstName: req.body.fName,
+              lastName: req.body.lName,
+              account: {},
+          });
+          // updates the page immediately with the updated database
+          await filldata();
+          res.redirect("/projects");
+      }
+      //code to input a new project into the database
+      if ("addNewProject" in req.body) {
+        // call createProject from DB manager and fill with inputted data from req.body
+          DBMan.createProject({
+              name: req.body.projName,
+              description: req.body.projDesc,
+              members: [],
+          });
+          await filldata();
+          res.redirect("/projects");
+      }
+      // code to add a new lead to the project
+      if ("addNewLead" in req.body) {
+          const projID = req.body.addNewLead;
+          const persID = req.body.checkLead;
+          const role = "Lead";
+          await DBMan.changeRole(projID, persID, role);
+          await filldata();
+          res.redirect("/projects");
+      }
+      // code to add a person from the list of people to a project
+      if ("addPersonnelToProject" in req.body) {
+          const projID = req.body.addPersonnelToProject;
+          //conditional to check if there is one or more people (if one, turn the object into array. if more, it is already an array.)
+          const people = Array.isArray(req.body.checkPerson)
+              ? req.body.checkPerson
+              : [req.body.checkPerson];
+          // iterate through the array of people to join them to the project
+          for (person of people) {
+              await DBMan.join(projID, person);
+          }
 
-            for (person of people) {
-                await DBMan.join(projID, person);
-            }
-
-            await filldata();
-            res.redirect("/projects");
+          await filldata();
+          res.redirect("/projects");
+      }
+      // code that allows user to change name and/or description of a project
+      if ("editProject" in req.body) {
+          projName = req.body.projName;
+          projDesc = req.body.projDesc;
+          projID = req.body.editProject;
+          await DBMan.updateProject(projID, {name: projName, description: projDesc});
+          await filldata();
+          res.redirect("/projects");
+      }
+      // code that allows user to delete a project entirely
+      if ("deleteProject" in req.body) {
+          projID = req.body.deleteProject;
+          console.log(`Deleting project with ID: ${projID}`);
+          await DBMan.deleteProject(projID);
+          await filldata();
+          res.redirect("/projects");
+      }
+      // code that allows user to remove one or more people from a project
+      if("removePersonnel" in req.body){
+        const projID = req.body.removePersonnel         
+        const people = Array.isArray(req.body.checkRemovePerson)
+        ? req.body.checkRemovePerson
+        : [req.body.checkRemovePerson]; 
+        // like adding a list of people to a project, iterate through the array to remove 1 or more from the list
+        for (person of people){
+          await DBMan.unjoin(projID, person)
         }
-
-        if ("editProject" in req.body) {
-            projName = req.body.projName;
-            projDesc = req.body.projDesc;
-            projID = req.body.editProject;
-            await DBMan.updateProject(projID, {name: projName, description: projDesc});
-            await filldata();
-            res.redirect("/projects");
-        }
-
-        if ("deleteProject" in req.body) {
-            projID = req.body.deleteProject;
-            console.log(`Deleting project with ID: ${projID}`);
-            await DBMan.deleteProject(projID);
-            await filldata();
-            res.redirect("/projects");
-        }
-        if("removePerson" in req.body){
-          
-        }
+        await filldata();
+        res.redirect("/projects")
+      }
+      // code that allows the user to remove the lead role from
+      if("removeLead" in req.body){
+        const projID = req.body.removeLead;
+        const persID = req.body.checkRemoveLead;
+        const role = "";
+        await DBMan.changeRole(projID, persID, role);
+        await filldata();
+        res.redirect("/projects");
+      }
     } catch (error) {
-        // Handle errors
+        // Handle errors 
         console.error(error);
         res.status(500).send("An error occurred.");
     }
