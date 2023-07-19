@@ -211,6 +211,15 @@ app.post("/projects", async (req, res) => {
             await filldata();
             res.redirect("/projects");
         }
+
+        if ("deletePerson" in req.body) {
+          personID = req.body.deletePerson;
+          console.log(`Deleting person with ID: ${personID}`);
+          await DBMan.deletePerson(personID);
+          await filldata();
+          res.redirect("/projects");
+      }
+      
         if("removePerson" in req.body){
           
         }
