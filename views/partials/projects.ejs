@@ -169,7 +169,7 @@
                   project.members.forEach(function(member) {
                   person=personnel.find(person=> person._id === member.id)
                   if (person.projects) { %>
-                  <input class="form-check-input" name="checkRemovePerson" type="checkbox" value="<%=person._id%>" id="<%=person._id%>" >
+                  <input class="form-check-input" name="selectRemoveMembers" type="checkbox" value="<%=person._id%>" id="<%=person._id%>" >
                       <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
                         <%= person.firstName+' '+person.lastName %>
                         <% 
@@ -189,7 +189,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button name="removePersonnel" value="<%=project._id%>" id="<%=project._id%>"  type="submit" class="btn btn-primary">Submit</button>
+              <button name="removeMembers" value="<%=project._id%>" id="<%=project._id%>"  type="submit" class="btn btn-primary">Submit</button>
             </div>
           </div>
         </form>
@@ -360,7 +360,7 @@
                               assignments.forEach(function(item) {if (item === project._id) {alreadyAssigned = true}})
                               if (person.projects && !alreadyAssigned) {%>
                             <div class="form-check" method="POST" action="/projects" >
-                              <input class="form-check-input" name="checkPerson" type="checkbox" value="<%=person._id%>" id="<%=person._id%>" >
+                              <input class="form-check-input" name="selectAddMembers" type="checkbox" value="<%=person._id%>" id="<%=person._id%>" >
                               
                               <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
                                 <%= person.firstName+' '+person.lastName %>
@@ -378,7 +378,7 @@
                           <%}
                           if(!person.projects){ %>
                             <div class="form-check">
-                              <input name="checkPerson" class="form-check-input" type="checkbox" value="<%=person._id%>" id="<%=person._id%>">
+                              <input name="selectAddMembers" class="form-check-input" type="checkbox" value="<%=person._id%>" id="<%=person._id%>">
                               <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
                                 <%= person.firstName+' '+person.lastName %>
                               <span class="badge bg-primary" style="float: right;">
@@ -394,7 +394,7 @@
                           </div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button name="addPersonnelToProject" value="<%=project._id%>" id="<%=project._id%>"  type="submit" class="btn btn-primary">Submit</button>
+                            <button name="addMembersToProject" value="<%=project._id%>" id="<%=project._id%>"  type="submit" class="btn btn-primary">Submit</button>
                           </div>
                         </div>
                       </form>

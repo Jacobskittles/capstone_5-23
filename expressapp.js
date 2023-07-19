@@ -190,11 +190,12 @@ app.post("/projects", authenticateToken, async (req, res) => {
             //code to input a new user into the database
             if ("addNewPerson" in req.body) {
                 // call createProject from DB manager and fill with inputted data from req.body
-                DBMan.createPerson({
-                    firstName: req.body.fName,
-                    lastName: req.body.lName,
+                await DBMan.createPerson({
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
                     account: {},
                 });
+                console.log(`New person with name ${req.body.fName} ${req.body.lName} successfully created`)
                 // updates the page immediately with the updated database
                 await filldata();
                 res.redirect("/projects");
@@ -202,59 +203,62 @@ app.post("/projects", authenticateToken, async (req, res) => {
             //code to input a new project into the database
             if ("addNewProject" in req.body) {
                 // call createProject from DB manager and fill with inputted data from req.body
-                DBMan.createProject({
+                await DBMan.createProject({
                     name: req.body.projName,
                     description: req.body.projDesc,
                     members: [],
                 });
+                console.log(`New project with name ${req.body.projName} successfully created`)
                 await filldata();
                 res.redirect("/projects");
             }
             // code to add a new lead to the project
             if ("addNewLead" in req.body) {
-                const projID = req.body.addNewLead;
-                const persID = req.body.checkLead;
+                const projectID = req.body.addNewLead;
+                const personID = req.body.checkLead;
                 const role = "Lead";
-
-                await DBMan.changeRole(projID, persID, role);
+                console.log(`Adding member ${personID} as lead to ${projectID}...`)
+                await DBMan.changeRole(projectID, personID, role);
+                console.log(`Member ${personID} successfully added as lead to ${projectID}`)
                 await filldata();
                 res.redirect("/projects");
             }
-            // code to add a person from the list of people to a project
-            if ("addPersonnelToProject" in req.body) {
-                const projID = req.body.addPersonnelToProject;
-                //conditional to check if there is one or more people (if one, turn the object into array. if more, it is already an array.)
-                const people = Array.isArray(req.body.checkPerson)
-                    ? req.body.checkPerson
-                    : [req.body.checkPerson];
-                // iterate through the array of people to join them to the project
-                for (person of people) {
-                    await DBMan.join(projID, person);
+            // code to add a person from the list of members to a project
+            if ("addMembersToProject" in req.body) {
+                const projectID = req.body.addMembersToProject;
+                //conditional to check if there is one or more members (if one, turn the object into array. if more, it is already an array.)
+                const members = Array.isArray(req.body.selectAddMembers)
+                    ? req.body.selectAddMembers
+                    : [req.body.selectAddMembers];
+                console.log(`Adding members with IDs ${members} to project ${projectID}...`)
+                // iterate through the array of members to join them to the project
+                for (member of members) {
+                    await DBMan.join(projectID, member);
                 }
-
+                console.log(`Members with IDs ${members} successfully added to project ${projectID}`)
                 await filldata();
                 res.redirect("/projects");
             }
 
             if ("editProject" in req.body) {
-                projName = req.body.projName;
-                projDesc = req.body.projDesc;
-                projID = req.body.editProject;
-                console.log(`Editing project with ID: ${projID}...`)
-                await DBMan.updateProject(projID, {
-                    name: projName,
-                    description: projDesc,
+                projectName = req.body.projName;
+                projectDesc = req.body.projDesc;
+                projectID = req.body.editProject;
+                console.log(`Editing project with ID: ${projectID}...`)
+                await DBMan.updateProject(projectID, {
+                    name: projectName,
+                    description: projectDesc,
                 });
-                console.log(`Successfully updated project with ID: ${projID}`)
+                console.log(`Successfully updated project with ID: ${projectID}`)
                 await filldata();
                 res.redirect("/projects");
             }
 
             if ("deleteProject" in req.body) {
-                projID = req.body.deleteProject;
-                console.log(`Deleting project with ID: ${projID}`);
-                await DBMan.deleteProject(projID);
-                console.log(`Successfully deleted project with ID: ${projID}`)
+                projectID = req.body.deleteProject;
+                console.log(`Deleting project with ID: ${projectID}`);
+                await DBMan.deleteProject(projectID);
+                console.log(`Successfully deleted project with ID: ${projectID}`)
                 await filldata();
                 res.redirect("/projects");
             }
@@ -263,41 +267,47 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 personID = req.body.deletePerson;
                 console.log(`Deleting person with ID: ${personID}`);
                 await DBMan.deletePerson(personID);
+                console.log(`Successfully deleted person with ID: ${personID}`);
                 await filldata();
                 res.redirect("/projects");
             }
 
             if ("editPerson" in req.body) {
-                personName = req.body.firstName;
-                personLastName = req.body.lastName;
                 personID = req.body.editPerson;
-                await DBMan.updateProject(personID, {
-                    firstname: personName,
-                    lastname: personlastName,
+                console.log(`Editing person information with ID: ${personID}...`);
+                await DBMan.updatePerson(personID, {
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName
                 });
+                console.log(`Successfully updated person with ID: ${personID}`);
                 await filldata();
                 res.redirect("/projects");
             }
 
-            if ("removePersonnel" in req.body) {
-                const projID = req.body.removePersonnel;
-                const people = Array.isArray(req.body.checkRemovePerson)
-                    ? req.body.checkRemovePerson
-                    : [req.body.checkRemovePerson];
-                // like adding a list of people to a project, iterate through the array to remove 1 or more from the list
-                for (person of people) {
-                    await DBMan.unjoin(projID, person);
+            if ("removeMembers" in req.body) {
+                const projectID = req.body.removeMembers;
+                const members = Array.isArray(req.body.selectRemoveMembers)
+                    ? req.body.selectRemoveMembers
+                    : [req.body.selectRemoveMembers];
+                console.log(`Removing member(s) with IDs: ${members} from project ${projectID}...`)
+                // like adding a list of members to a project, iterate through the array to remove 1 or more from the list
+                for (member of members) {
+                    await DBMan.unjoin(projectID, member);
                 }
+                console.log(`Members successfully removed from project: ${projectID}`)
                 await filldata();
                 res.redirect("/projects");
             }
+
             if("changeLead" in req.body){
-              const projID = req.body.changeLead
-              const persID = req.body.checkChangeLead
+              const projectID = req.body.changeLead
+              const personID = req.body.checkChangeLead
               const role = "Lead"
-              await DBMan.changeRole(projID, persID, role);
-                await filldata();
-                res.redirect("/projects");
+              console.log(`Changing lead role for project ${projectID} to member ${personID}...`)
+              await DBMan.changeRole(projectID, personID, role);
+              console.log(`Lead role for project ${projectID} successfully changed to member ${personID}` )
+              await filldata();
+              res.redirect("/projects");
               
             }
         } catch (error) {
