@@ -184,17 +184,17 @@ class DBManager {
         }
 
 
-
         const assignments = person.projects;
         const members = project.members;
 
         // THERE CAN ONLY BE ONE!
         if (role === "Lead") {
             for (let member of members) {
-                if (member.role === "Lead") delete member.role;
+                if (member.role === "Lead") {
+                    await this.unjoin(projectID, member.id)
+                    await this.join(projectID, member.id)
+                }
             }
-            // need to delete the role from personnel collection
-            
         }
 
         // Find index of assignment and member
