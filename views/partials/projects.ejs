@@ -44,11 +44,18 @@
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#changeLeadModal-<%= project._id %>">CHANGE LEAD</button></li>
 
-                <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editProjectModal-<%= project._id %>">EDIT PROJECT</button></li>
+                <li><button class="dropdown-item" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#editProjectModal-<%= project._id %>">EDIT PROJECT</button></li>
 
-                <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#removePersonnelModal-<%= project._id %>">REMOVE MEMBER(S)</button></li>
+                <li><button class="dropdown-item" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#removePersonnelModal-<%= project._id %>">REMOVE MEMBER(S)</button></li>
                 
-                <li><button style="color:red" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteProjectModal-<%= project._id %>">DELETE PROJECT</button></li>
+                <li><button style="color:red" 
+                  class="dropdown-item" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#deleteProjectModal-<%= project._id %>">DELETE PROJECT</button></li>
               </ul>
           </div>
 
@@ -119,7 +126,12 @@
           </div>
 
 
-          <div class="modal fade" id="deleteProjectModal-<%= project._id %>" tabindex="-1" aria-labelledby="deleteProjectModalLabel" aria-hidden="true">
+          <div class="modal fade" 
+            id="deleteProjectModal-<%= project._id %>" 
+            tabindex="-1" 
+            aria-labelledby="deleteProjectModalLabel" 
+            aria-hidden="true">
+
           <div class="modal-dialog">
           <form  id="deleteProjectForm" action="/projects" method = "POST">
             <div class="modal-content">
@@ -138,7 +150,11 @@
             </form>
             </div>
       </div>
-      <div class="modal fade" id="removePersonnelModal-<%=project._id%>" tabindex="-1" aria-labelledby="removePersonnelModalLabel-<%=project._id%>" aria-hidden="true">
+      <div class="modal fade" 
+        id="removePersonnelModal-<%=project._id%>" 
+        tabindex="-1" aria-labelledby="removePersonnelModalLabel-<%=project._id%>" 
+        aria-hidden="true">
+
         <div class="modal-dialog">
 
         <form action="/projects" method="POST">
