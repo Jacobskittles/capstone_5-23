@@ -214,6 +214,25 @@ app.post("/projects", async (req, res) => {
             await filldata();
             res.redirect("/projects");
         }
+
+        
+        if ("deletePerson" in req.body) {
+          personID = req.body.deletePerson;
+          console.log(`Deleting person with ID: ${personID}`);
+          await DBMan.deletePerson(personID);
+          await filldata();
+          res.redirect("/projects");
+      }
+      
+        if ("editPerson" in req.body) {
+          personName = req.body.firstName;
+          personLastName = req.body.lastName;
+          personID = req.body.editPerson;
+          await DBMan.updateProject(personID, {name: firstName, lastname: lastName});
+          await filldata();
+          res.redirect("/projects");
+      }
+
         if("removePersonnel" in req.body){
           const projID = req.body.removePersonnel         
           const people = Array.isArray(req.body.checkRemovePerson)
