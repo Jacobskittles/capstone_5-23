@@ -167,6 +167,9 @@ class DBManager {
         const projectQuery = { _id: projectID };
         const personQuery = { _id: personID };
 
+        // need to check if the person is in the project, if they aren't call the join function
+        this.join(projectID, personID)
+
         //create and load the person and project objects with queries
         let person, project;
         try {
@@ -180,6 +183,8 @@ class DBManager {
             console.log("ERROR: " + error);
         }
 
+
+
         const assignments = person.projects;
         const members = project.members;
 
@@ -190,11 +195,16 @@ class DBManager {
             }
         }
 
+        
+  
+
         // Find index of assignment and member
+
+        
         const assignmentIndex = assignments.findIndex(
             (assignment) => assignment.id === projectID
         );
-        const memberIndex = members.findIndex(
+            const memberIndex = members.findIndex(
             (member) => member.id === personID
         );
 

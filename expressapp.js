@@ -157,6 +157,7 @@ app.post("/login", async (req, res) => {
             user_id: user._id,
             first_name: user.firstName,
             last_name: user.lastName,
+            username: user.account.username,
             admin: user.account.admin,
         };
 
@@ -182,7 +183,7 @@ const DBMan = new DBManager(
 // Post new projects into the database, should activate on submit
 // Ensure that the action of the modal corresponds to /projects/upload
 // Lincoln's code
-app.post("/projects", async (req, res) => {
+app.post("/projects", authenticateToken, async (req, res) => {
     if (req.user.admin) {
         console.log(req.user.admin);
         try {
@@ -215,8 +216,7 @@ app.post("/projects", async (req, res) => {
                 console.log(req.body.addNewLead);
                 console.log(req.body.checkLead);
                 const persID = req.body.checkLead;
-                // check if person is already in the project
-                await DBMan.join(projID, person);
+
                 const role = "Lead";
                 await DBMan.changeRole(projID, persID, role);
                 await filldata();
