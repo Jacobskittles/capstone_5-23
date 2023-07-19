@@ -176,7 +176,11 @@ app.post("/projects", async (req, res) => {
       // code to add a new lead to the project
       if ("addNewLead" in req.body) {
           const projID = req.body.addNewLead;
+          console.log(req.body.addNewLead);
+          console.log(req.body.checkLead)
           const persID = req.body.checkLead;
+          // check if person is already in the project
+          await DBMan.join(projID, person)
           const role = "Lead";
           await DBMan.changeRole(projID, persID, role);
           await filldata();
