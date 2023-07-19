@@ -180,9 +180,7 @@ const DBMan = new DBManager(
     db.collection("personnel")
 );
 
-// Post new projects into the database, should activate on submit
-// Ensure that the action of the modal corresponds to /projects/upload
-// Lincoln's code
+// Lincoln and Slivinski's Code - Posts to the database depending on the name and values associated with the modal or submit buttons that you are pressing in order to keep the site limited to one page.
 app.post("/projects", authenticateToken, async (req, res) => {
     if (req.user.admin) {
         console.log(req.user.admin);
@@ -200,7 +198,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 await filldata();
                 res.redirect("/projects");
             }
-            //code to input a new project into the database
+            // Lincoln - This code adds a new project to the database
             if ("addNewProject" in req.body) {
                 // call createProject from DB manager and fill with inputted data from req.body
                 await DBMan.createProject({
@@ -212,7 +210,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 await filldata();
                 res.redirect("/projects");
             }
-            // code to add a new lead to the project
+            // Lincoln - This code adds a new lead to a project without a lead
             if ("addNewLead" in req.body) {
                 const projectID = req.body.addNewLead;
                 const personID = req.body.checkLead;
@@ -223,7 +221,19 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 await filldata();
                 res.redirect("/projects");
             }
-            // code to add a person from the list of members to a project
+            // Lincoln - This code changes a lead from one person to another if the lead position is already filled. Cannot remove a lead and make it empty unless the person is removed entirely from the project.
+            if("changeLead" in req.body){
+              const projectID = req.body.changeLead
+              const personID = req.body.checkChangeLead
+              const role = "Lead"
+              console.log(`Changing lead role for project ${projectID} to member ${personID}...`)
+              await DBMan.changeRole(projectID, personID, role);
+              console.log(`Lead role for project ${projectID} successfully changed to member ${personID}` )
+              await filldata();
+              res.redirect("/projects");
+              
+            }
+            // Lincoln - This code adds a member or members to a project
             if ("addMembersToProject" in req.body) {
                 const projectID = req.body.addMembersToProject;
                 //conditional to check if there is one or more members (if one, turn the object into array. if more, it is already an array.)
@@ -239,7 +249,22 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 await filldata();
                 res.redirect("/projects");
             }
-
+            // Lincoln - This code removes a member or members from a project
+            if ("removeMembersFromProject" in req.body) {
+              const projectID = req.body.removeMembersFromProject;
+              const members = Array.isArray(req.body.selectRemoveMembers)
+                  ? req.body.selectRemoveMembers
+                  : [req.body.selectRemoveMembers];
+              console.log(`Removing member(s) with IDs: ${members} from project ${projectID}...`)
+              // like adding a list of members to a project, iterate through the array to remove 1 or more from the list
+              for (member of members) {
+                  await DBMan.unjoin(projectID, member);
+              }
+              console.log(`Members successfully removed from project: ${projectID}`)
+              await filldata();
+              res.redirect("/projects");
+            }
+            // Lincoln - This code edits the project name and/or description
             if ("editProject" in req.body) {
                 projectName = req.body.projName;
                 projectDesc = req.body.projDesc;
@@ -253,7 +278,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 await filldata();
                 res.redirect("/projects");
             }
-
+            // Lincoln - This code deletes a project from the database 
             if ("deleteProject" in req.body) {
                 projectID = req.body.deleteProject;
                 console.log(`Deleting project with ID: ${projectID}`);
@@ -262,7 +287,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 await filldata();
                 res.redirect("/projects");
             }
-
+            // Slivinski - This code deletes a person entirely from the database
             if ("deletePerson" in req.body) {
                 personID = req.body.deletePerson;
                 console.log(`Deleting person with ID: ${personID}`);
@@ -271,7 +296,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 await filldata();
                 res.redirect("/projects");
             }
-
+            // Slinky - This code edits the first name and/or last name of a person
             if ("editPerson" in req.body) {
                 personID = req.body.editPerson;
                 console.log(`Editing person information with ID: ${personID}...`);
@@ -284,32 +309,6 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 res.redirect("/projects");
             }
 
-            if ("removeMembers" in req.body) {
-                const projectID = req.body.removeMembers;
-                const members = Array.isArray(req.body.selectRemoveMembers)
-                    ? req.body.selectRemoveMembers
-                    : [req.body.selectRemoveMembers];
-                console.log(`Removing member(s) with IDs: ${members} from project ${projectID}...`)
-                // like adding a list of members to a project, iterate through the array to remove 1 or more from the list
-                for (member of members) {
-                    await DBMan.unjoin(projectID, member);
-                }
-                console.log(`Members successfully removed from project: ${projectID}`)
-                await filldata();
-                res.redirect("/projects");
-            }
-
-            if("changeLead" in req.body){
-              const projectID = req.body.changeLead
-              const personID = req.body.checkChangeLead
-              const role = "Lead"
-              console.log(`Changing lead role for project ${projectID} to member ${personID}...`)
-              await DBMan.changeRole(projectID, personID, role);
-              console.log(`Lead role for project ${projectID} successfully changed to member ${personID}` )
-              await filldata();
-              res.redirect("/projects");
-              
-            }
         } catch (error) {
             // Handle errors
             console.error(error);
@@ -322,5 +321,6 @@ app.post("/projects", authenticateToken, async (req, res) => {
 app.get("/logout", (req, res) => {
     console.log(req.cookies.login);
     res.clearCookie("jwt");
+    // timed logout splash
     res.render("pages/logout");
 });
