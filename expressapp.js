@@ -149,47 +149,50 @@ const DBMan = new DBManager(db.collection("projects"), db.collection("personnel"
 // Ensure that the action of the modal corresponds to /projects/upload
 // Lincoln's code
 app.post("/projects", async (req, res) => {
-    try {
-        //code to input a new user into the database
-        if ("addNewPerson" in req.body) {
-            DBMan.createPerson({
-                firstName: req.body.fName,
-                lastName: req.body.lName,
-                account: {},
-            });
-            await filldata();
-            res.redirect("/projects");
-        }
-        //code to input a new project into the database
-        if ("addNewProject" in req.body) {
-            DBMan.createProject({
-                name: req.body.projName,
-                description: req.body.projDesc,
-                members: [],
-            });
-            await filldata();
-            res.redirect("/projects");
-        }
-        //code to add a new lead to the project
-        if ("addNewLead" in req.body) {
-            let projID = req.body.addNewLead;
-            let persID = req.body.checkLead;
-            let role = "Lead";
-            await DBMan.changeRole(projID, persID, role);
-            await filldata();
-            res.redirect("/projects");
-        }
-        // code to add a person from the list of people to a project
-        if ("addPersonnelToProject" in req.body) {
-            const projID = req.body.addPersonnelToProject;
-            //conditional to check if there is one or more people (if one, turn the object into array. if more, it is already an array.)
-            const people = Array.isArray(req.body.checkPerson)
-                ? req.body.checkPerson
-                : [req.body.checkPerson];
-
-            for (person of people) {
-                await DBMan.join(projID, person);
-            }
+  try {
+      //code to input a new user into the database
+      if ("addNewPerson" in req.body) {
+        // call createProject from DB manager and fill with inputted data from req.body
+          DBMan.createPerson({
+              firstName: req.body.fName,
+              lastName: req.body.lName,
+              account: {},
+          });
+          // updates the page immediately with the updated database
+          await filldata();
+          res.redirect("/projects");
+      }
+      //code to input a new project into the database
+      if ("addNewProject" in req.body) {
+        // call createProject from DB manager and fill with inputted data from req.body
+          DBMan.createProject({
+              name: req.body.projName,
+              description: req.body.projDesc,
+              members: [],
+          });
+          await filldata();
+          res.redirect("/projects");
+      }
+      // code to add a new lead to the project
+      if ("addNewLead" in req.body) {
+          const projID = req.body.addNewLead;
+          const persID = req.body.checkLead;
+          const role = "Lead";
+          await DBMan.changeRole(projID, persID, role);
+          await filldata();
+          res.redirect("/projects");
+      }
+      // code to add a person from the list of people to a project
+      if ("addPersonnelToProject" in req.body) {
+          const projID = req.body.addPersonnelToProject;
+          //conditional to check if there is one or more people (if one, turn the object into array. if more, it is already an array.)
+          const people = Array.isArray(req.body.checkPerson)
+              ? req.body.checkPerson
+              : [req.body.checkPerson];
+          // iterate through the array of people to join them to the project
+          for (person of people) {
+              await DBMan.join(projID, person);
+          }
 
             await filldata();
             res.redirect("/projects");
@@ -211,11 +214,20 @@ app.post("/projects", async (req, res) => {
             await filldata();
             res.redirect("/projects");
         }
-        if("removePerson" in req.body){
-          
+        if("removePersonnel" in req.body){
+          const projID = req.body.removePersonnel         
+          const people = Array.isArray(req.body.checkRemovePerson)
+          ? req.body.checkRemovePerson
+          : [req.body.checkRemovePerson]; 
+          // like adding a list of people to a project, iterate through the array to remove 1 or more from the list
+          for (person of people){
+            await DBMan.unjoin(projID, person)
+          }
+          await filldata();
+          res.redirect("/projects")
         }
     } catch (error) {
-        // Handle errors
+        // Handle errors 
         console.error(error);
         res.status(500).send("An error occurred.");
     }
