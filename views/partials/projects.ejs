@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="card col-sm-9">
+  <div class="card col-md-8">
     <div class="card-body">
     <h1 class="card-title">PROJECTS - <%= projects.length %> <button class="btn border-secondary-subtle" data-bs-toggle="modal" data-bs-target="#projectModal">ADD +</button>
       </h1>
@@ -47,28 +47,28 @@
                 <li><button style="color:red" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteProjectModal-<%= project._id %>">DELETE</button></li>
               </ul>
 
-          </div>
+            </div>
 
 
           <div class="modal fade" id="deleteProjectModal-<%= project._id %>" tabindex="-1" aria-labelledby="deleteProjectModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-          <form  id="deleteProjectForm" action="/projects" method = "POST">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="deleteProjectModalLabel">Delete Project</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                Are you sure you want to delete the project "<%=project.name%>"? This action is irreversible.
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button name="deleteProject" type="submit" class="btn btn-danger" value="<%=project._id%>" id="<%=project._id%>" >Delete</button>
-              </div>
+            <div class="modal-dialog">
+              <form  id="deleteProjectForm" action="/projects" method = "POST">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="deleteProjectModalLabel">Delete Project</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    Are you sure you want to delete the project "<%=project.name%>"? This action is irreversible.
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button name="deleteProject" type="submit" class="btn btn-danger" value="<%=project._id%>" id="<%=project._id%>" >Delete</button>
+                  </div>
+                </div>
+              </form>
             </div>
-            </form>
-            </div>
-      </div>
+          </div>
 
           <div class="modal fade" id="editProjectModal-<%= project._id %>" tabindex="-1" aria-labelledby="editProjectModalLabel" aria-hidden="true">
           <div class="modal-dialog">
