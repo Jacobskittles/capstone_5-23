@@ -240,10 +240,12 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 projName = req.body.projName;
                 projDesc = req.body.projDesc;
                 projID = req.body.editProject;
+                console.log(`Editing project with ID: ${projID}...`)
                 await DBMan.updateProject(projID, {
                     name: projName,
                     description: projDesc,
                 });
+                console.log(`Successfully updated project with ID: ${projID}`)
                 await filldata();
                 res.redirect("/projects");
             }
@@ -252,6 +254,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 projID = req.body.deleteProject;
                 console.log(`Deleting project with ID: ${projID}`);
                 await DBMan.deleteProject(projID);
+                console.log(`Successfully deleted project with ID: ${projID}`)
                 await filldata();
                 res.redirect("/projects");
             }

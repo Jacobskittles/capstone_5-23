@@ -54,7 +54,7 @@ class DBManager {
         (assignment) => assignment.id !== projectID
     );
     members = members.filter((member) => member.id !== personID);
-    console.log(members)
+    
 
     // Update the person's projects array or remove it if no assignments remain
     if (assignments.length > 0) {
