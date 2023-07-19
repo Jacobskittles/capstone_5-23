@@ -194,48 +194,38 @@ app.post("/projects", async (req, res) => {
               await DBMan.join(projID, person);
           }
 
-          await filldata();
-          res.redirect("/projects");
-      }
-      // code that allows user to change name and/or description of a project
-      if ("editProject" in req.body) {
-          projName = req.body.projName;
-          projDesc = req.body.projDesc;
-          projID = req.body.editProject;
-          await DBMan.updateProject(projID, {name: projName, description: projDesc});
-          await filldata();
-          res.redirect("/projects");
-      }
-      // code that allows user to delete a project entirely
-      if ("deleteProject" in req.body) {
-          projID = req.body.deleteProject;
-          console.log(`Deleting project with ID: ${projID}`);
-          await DBMan.deleteProject(projID);
-          await filldata();
-          res.redirect("/projects");
-      }
-      // code that allows user to remove one or more people from a project
-      if("removePersonnel" in req.body){
-        const projID = req.body.removePersonnel         
-        const people = Array.isArray(req.body.checkRemovePerson)
-        ? req.body.checkRemovePerson
-        : [req.body.checkRemovePerson]; 
-        // like adding a list of people to a project, iterate through the array to remove 1 or more from the list
-        for (person of people){
-          await DBMan.unjoin(projID, person)
+            await filldata();
+            res.redirect("/projects");
         }
-        await filldata();
-        res.redirect("/projects")
+
+        if ("editProject" in req.body) {
+            projName = req.body.projName;
+            projDesc = req.body.projDesc;
+            projID = req.body.editProject;
+            await DBMan.updateProject(projID, {name: projName, description: projDesc});
+            await filldata();
+            res.redirect("/projects");
+        }
+
+        if ("deleteProject" in req.body) {
+            projID = req.body.deleteProject;
+            console.log(`Deleting project with ID: ${projID}`);
+            await DBMan.deleteProject(projID);
+            await filldata();
+            res.redirect("/projects");
+        }
+
+        if ("deletePerson" in req.body) {
+          personID = req.body.deletePerson;
+          console.log(`Deleting person with ID: ${personID}`);
+          await DBMan.deletePerson(personID);
+          await filldata();
+          res.redirect("/projects");
       }
-      // code that allows the user to remove the lead role from
-      if("removeLead" in req.body){
-        const projID = req.body.removeLead;
-        const persID = req.body.checkRemoveLead;
-        const role = "";
-        await DBMan.changeRole(projID, persID, role);
-        await filldata();
-        res.redirect("/projects");
-      }
+      
+        if("removePerson" in req.body){
+          
+        }
     } catch (error) {
         // Handle errors 
         console.error(error);
