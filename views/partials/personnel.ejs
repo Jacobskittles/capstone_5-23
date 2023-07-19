@@ -160,6 +160,29 @@
                     </form>
                   </div>
                 </div>
+                <% // Modal for editing personnel %>
+                <div class="modal fade" id="editPersonModal-<%= person._id %>" tabindex="-1" aria-labelledby="editPersonModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <form  id="editPersonForm" action="/projects" method = "POST">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="editPersonModalLabel">Edit Person</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <label for="firstName">First Name:</label>
+                          <input type="text" id="firstName" name="firstName" value="<%=person.firstName%>"required><br><br>
+                          <label for="lastName">Last Name:</label>
+                          <textarea class="form-control" rows="5" type="lastName" id="lastName" name="lastName" required><%=person.lastName%></textarea><br><br>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button name="editPerson" type="submit" class="btn btn-danger" value="<%=person._id%>" id="<%=person._id%>" >Submit</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
 
               </div>
                 
