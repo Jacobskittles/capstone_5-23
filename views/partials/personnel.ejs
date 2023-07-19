@@ -133,15 +133,27 @@
                   </button>
                   <!-- Lincoln - edit and delete buttons in dropdown list that both pop up modals -->
                   <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editPersonModal-<%= person._id %>">EDIT</button></li>
+                    <li><button 
+                      class="dropdown-item" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#editPersonModal-<%= person._id %>">EDIT PERSON</button></li>
                     
-                    <li><button style="color:red" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deletePersonModal-<%= person._id %>">DELETE</button></li>
+                    <li><button 
+                      style="color:red" 
+                      class="dropdown-item" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#deletePersonModal-<%= person._id %>">DELETE</button></li>
                   </ul>
 
                 </div>
 
                 <% // Modal for deleting personnel %>
-                <div class="modal fade" id="deletePersonModal-<%= person._id %>" tabindex="-1" aria-labelledby="deletePersonModalLabel" aria-hidden="true">
+                <div class="modal fade" 
+                  id="deletePersonModal-<%= person._id %>" 
+                  tabindex="-1" 
+                  aria-labelledby="deletePersonModalLabel" 
+                  aria-hidden="true">
+
                   <div class="modal-dialog">
                     <form  id="deletePersonForm" action="/projects" method = "POST">
                       <div class="modal-content">
@@ -160,8 +172,14 @@
                     </form>
                   </div>
                 </div>
+
                 <% // Modal for editing personnel %>
-                <div class="modal fade" id="editPersonModal-<%= person._id %>" tabindex="-1" aria-labelledby="editPersonModalLabel" aria-hidden="true">
+                <div class="modal fade" 
+                  id="editPersonModal-<%= person._id %>" 
+                  tabindex="-1" 
+                  aria-labelledby="editPersonModalLabel" 
+                  aria-hidden="true">
+
                   <div class="modal-dialog">
                     <form  id="editPersonForm" action="/projects" method = "POST">
                       <div class="modal-content">
@@ -173,7 +191,7 @@
                           <label for="firstName">First Name:</label>
                           <input type="text" id="firstName" name="firstName" value="<%=person.firstName%>"required><br><br>
                           <label for="lastName">Last Name:</label>
-                          <textarea class="form-control" rows="5" type="lastName" id="lastName" name="lastName" required><%=person.lastName%></textarea><br><br>
+                          <input type="text" id="firstName" name="firstName" value="<%=person.lastName%>"required><br><br>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
