@@ -3,8 +3,11 @@
 //  Lincoln's code
 const express = require("express");
 const path = require("path");
+
+// for security
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 //  Used to read the user login information and parse it. Gonzales + Lincoln
 const bodyParser = require("body-parser");
@@ -13,13 +16,15 @@ const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
 
 var utils = require("./utils");
-const DBManager = require("./DBManager")
+const DBManager = require("./DBManager");
 
 const app = express();
 const PORT = 8088;
 
+const secretKey = "this_is_the_key_shhh";
+
 // not used with bcrypt compare
-// const SALT_ROUNDS = 10; 
+// const SALT_ROUNDS = 10;
 
 // Set the view engine to ejs
 app.set("view engine", "ejs");
@@ -50,6 +55,31 @@ function handleErrors(err, req, res, next) {
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
 });
+
+// Middleware to verify the JWT and set the user in the request object
+// Gonzales
+const authenticateToken = (req, res, next) => {
+    const token = req.cookies.jwt; // Assuming you set the JWT as 'jwt' in the cookie
+
+    if (!token) {
+        // No token found, user is not authenticated
+        return res.redirect("/login");
+    }
+
+    // Verify the JWT and extract the payload
+    jwt.verify(token, secretKey, (err, payload) => {
+        if (err) {
+            // Invalid token or expired
+            return res.redirect("/login");
+        }
+
+        // Attach the payload (user information) to the request object for use in the route handler
+        req.user = payload;
+
+        // Proceed to the next middleware or route handler
+        next();
+    });
+};
 
 /*
 ----------------------------------------
@@ -103,19 +133,14 @@ app.get("/login", (req, res) => {
 });
 
 //  Going to the projects page. Lincoln + Gonzales
-app.get("/projects", async (req, res) => {
-    //  This code checks to see if credentials are successful and stored as a cookie
-    if (req.cookies.login == "true") {
-        filldata();
-        res.render("pages/index", {
-            personnel: personnel,
-            projects: projects,
-            utils: utils,
-        });
-    } else {
-        //  Redirects to login page if the credentials are not successfully stored
-        res.redirect("/login");
-    }
+app.get("/projects", authenticateToken, async (req, res) => {
+    console.log(req.user);
+    filldata();
+    res.render("pages/index", {
+        personnel: personnel,
+        projects: projects,
+        utils: utils,
+    });
 });
 
 app.post("/login", async (req, res) => {
@@ -129,12 +154,14 @@ app.post("/login", async (req, res) => {
     console.log(user);
 
     //  Simple code for now to check if login is correct. However, this will change once we access users in the database.
-    if (
-        (username == "admin" && password == "admin123") ||
-        (user && (await bcrypt.compare(password, user.account.password)))
-    ) {
+    if (user && (await bcrypt.compare(password, user.account.password))) {
+        const payload = { user_id: user._id, admin: user.account.admin };
+
+        // Create the JWT and sign it with a secret key
+        const token = jwt.sign(payload, secretKey, { expiresIn: "24h" });
+
         // Assign the cookie. Name of 'login' (change name depending on user or admin), then boolean true since login was successful
-        res.cookie("login", true);
+        res.cookie("jwt", token, { httpOnly: true, secure: true });
         // Take the user to the projects page after successful login
         res.redirect("/projects");
     } else {
@@ -144,16 +171,18 @@ app.post("/login", async (req, res) => {
 });
 
 // DBManager has all of the functions for accessing the database
-const DBMan = new DBManager(db.collection("projects"), db.collection("personnel"));
-
-// Function called during POST to remove a person from a project
-async function unassignPerson(personID, projectID) {}
-// Is this going to be used?
+const DBMan = new DBManager(
+    db.collection("projects"),
+    db.collection("personnel")
+);
 
 // Post new projects into the database, should activate on submit
 // Ensure that the action of the modal corresponds to /projects/upload
 // Lincoln's code
-app.post("/projects", async (req, res) => {
+app.post("/projects", authenticateToken, async (req, res) => {
+    if (req.user.admin) {
+        console.log(req.user.admin);
+
     try {
         //code to input a new user into the database
         if ("addNewPerson" in req.body) {
@@ -221,11 +250,14 @@ app.post("/projects", async (req, res) => {
         console.error(error);
         res.status(500).send("An error occurred.");
     }
+    } else {
+        res.redirect("/projects");
+    }
 });
 
 // code that will allow you to log out and clear your cookie
 app.get("/logout", (req, res) => {
     console.log(req.cookies.login);
-    res.clearCookie("login");
+    res.clearCookie("jwt");
     res.render("pages/logout");
 });
