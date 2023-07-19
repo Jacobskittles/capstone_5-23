@@ -4,6 +4,7 @@
 const express = require("express");
 
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 //  Used to read the user login information and parse it. Gonzales + Lincoln
 const bodyParser = require("body-parser");
@@ -12,13 +13,15 @@ const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
 
 var utils = require("./utils");
-const DBManager = require("./DBManager")
+const DBManager = require("./DBManager");
 
 const app = express();
 const PORT = 8088;
 
+const secretKey = "this_is_the_key_shhh";
+
 // not used with bcrypt compare
-// const SALT_ROUNDS = 10; 
+// const SALT_ROUNDS = 10;
 
 // Set the view engine to ejs
 app.set("view engine", "ejs");
@@ -49,6 +52,31 @@ function handleErrors(err, req, res, next) {
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
 });
+
+// Middleware to verify the JWT and set the user in the request object
+// Gonzales
+const authenticateToken = (req, res, next) => {
+    const token = req.cookies.jwt; // Assuming you set the JWT as 'jwt' in the cookie
+
+    if (!token) {
+        // No token found, user is not authenticated
+        return res.redirect("/login");
+    }
+
+    // Verify the JWT and extract the payload
+    jwt.verify(token, secretKey, (err, payload) => {
+        if (err) {
+            // Invalid token or expired
+            return res.redirect("/login");
+        }
+
+        // Attach the payload (user information) to the request object for use in the route handler
+        req.user = payload;
+
+        // Proceed to the next middleware or route handler
+        next();
+    });
+};
 
 /*
 ----------------------------------------
@@ -102,19 +130,15 @@ app.get("/login", (req, res) => {
 });
 
 //  Going to the projects page. Lincoln + Gonzales
-app.get("/projects", async (req, res) => {
-    //  This code checks to see if credentials are successful and stored as a cookie
-    if (req.cookies.login == "true") {
-        filldata();
-        res.render("pages/index", {
-            personnel: personnel,
-            projects: projects,
-            utils: utils,
-        });
-    } else {
-        //  Redirects to login page if the credentials are not successfully stored
-        res.redirect("/login");
-    }
+app.get("/projects", authenticateToken, async (req, res) => {
+    console.log(req.user);
+    filldata();
+    res.render("pages/index", {
+        personnel: personnel,
+        projects: projects,
+        utils: utils,
+        user: req.user,
+    });
 });
 
 app.post("/login", async (req, res) => {
@@ -128,12 +152,19 @@ app.post("/login", async (req, res) => {
     console.log(user);
 
     //  Simple code for now to check if login is correct. However, this will change once we access users in the database.
-    if (
-        (username == "admin" && password == "admin123") ||
-        (user && (await bcrypt.compare(password, user.account.password)))
-    ) {
+    if (user && (await bcrypt.compare(password, user.account.password))) {
+        const payload = {
+            user_id: user._id,
+            first_name: user.firstName,
+            last_name: user.lastName,
+            admin: user.account.admin,
+        };
+
+        // Create the JWT and sign it with a secret key
+        const token = jwt.sign(payload, secretKey, { expiresIn: "24h" });
+
         // Assign the cookie. Name of 'login' (change name depending on user or admin), then boolean true since login was successful
-        res.cookie("login", true);
+        res.cookie("jwt", token, { httpOnly: true, secure: true });
         // Take the user to the projects page after successful login
         res.redirect("/projects");
     } else {
@@ -143,122 +174,133 @@ app.post("/login", async (req, res) => {
 });
 
 // DBManager has all of the functions for accessing the database
-const DBMan = new DBManager(db.collection("projects"), db.collection("personnel"));
+const DBMan = new DBManager(
+    db.collection("projects"),
+    db.collection("personnel")
+);
 
 // Post new projects into the database, should activate on submit
 // Ensure that the action of the modal corresponds to /projects/upload
 // Lincoln's code
 app.post("/projects", async (req, res) => {
-  try {
-      //code to input a new user into the database
-      if ("addNewPerson" in req.body) {
-        // call createProject from DB manager and fill with inputted data from req.body
-          DBMan.createPerson({
-              firstName: req.body.fName,
-              lastName: req.body.lName,
-              account: {},
-          });
-          // updates the page immediately with the updated database
-          await filldata();
-          res.redirect("/projects");
-      }
-      //code to input a new project into the database
-      if ("addNewProject" in req.body) {
-        // call createProject from DB manager and fill with inputted data from req.body
-          DBMan.createProject({
-              name: req.body.projName,
-              description: req.body.projDesc,
-              members: [],
-          });
-          await filldata();
-          res.redirect("/projects");
-      }
-      // code to add a new lead to the project
-      if ("addNewLead" in req.body) {
-          const projID = req.body.addNewLead;
-          console.log(req.body.addNewLead);
-          console.log(req.body.checkLead)
-          const persID = req.body.checkLead;
-          
-          await DBMan.join(projID, person)
-          const role = "Lead";
-          await DBMan.changeRole(projID, persID, role);
-          await filldata();
-          res.redirect("/projects");
-      }
-      // code to add a person from the list of people to a project
-      if ("addPersonnelToProject" in req.body) {
-          const projID = req.body.addPersonnelToProject;
-          //conditional to check if there is one or more people (if one, turn the object into array. if more, it is already an array.)
-          const people = Array.isArray(req.body.checkPerson)
-              ? req.body.checkPerson
-              : [req.body.checkPerson];
-          // iterate through the array of people to join them to the project
-          for (person of people) {
-              await DBMan.join(projID, person);
-          }
+    if (req.user.admin) {
+        console.log(req.user.admin);
+        try {
+            //code to input a new user into the database
+            if ("addNewPerson" in req.body) {
+                // call createProject from DB manager and fill with inputted data from req.body
+                DBMan.createPerson({
+                    firstName: req.body.fName,
+                    lastName: req.body.lName,
+                    account: {},
+                });
+                // updates the page immediately with the updated database
+                await filldata();
+                res.redirect("/projects");
+            }
+            //code to input a new project into the database
+            if ("addNewProject" in req.body) {
+                // call createProject from DB manager and fill with inputted data from req.body
+                DBMan.createProject({
+                    name: req.body.projName,
+                    description: req.body.projDesc,
+                    members: [],
+                });
+                await filldata();
+                res.redirect("/projects");
+            }
+            // code to add a new lead to the project
+            if ("addNewLead" in req.body) {
+                const projID = req.body.addNewLead;
+                console.log(req.body.addNewLead);
+                console.log(req.body.checkLead);
+                const persID = req.body.checkLead;
+                // check if person is already in the project
+                await DBMan.join(projID, person);
+                const role = "Lead";
+                await DBMan.changeRole(projID, persID, role);
+                await filldata();
+                res.redirect("/projects");
+            }
+            // code to add a person from the list of people to a project
+            if ("addPersonnelToProject" in req.body) {
+                const projID = req.body.addPersonnelToProject;
+                //conditional to check if there is one or more people (if one, turn the object into array. if more, it is already an array.)
+                const people = Array.isArray(req.body.checkPerson)
+                    ? req.body.checkPerson
+                    : [req.body.checkPerson];
+                // iterate through the array of people to join them to the project
+                for (person of people) {
+                    await DBMan.join(projID, person);
+                }
 
-            await filldata();
-            res.redirect("/projects");
+                await filldata();
+                res.redirect("/projects");
+            }
+
+            if ("editProject" in req.body) {
+                projName = req.body.projName;
+                projDesc = req.body.projDesc;
+                projID = req.body.editProject;
+                await DBMan.updateProject(projID, {
+                    name: projName,
+                    description: projDesc,
+                });
+                await filldata();
+                res.redirect("/projects");
+            }
+
+            if ("deleteProject" in req.body) {
+                projID = req.body.deleteProject;
+                console.log(`Deleting project with ID: ${projID}`);
+                await DBMan.deleteProject(projID);
+                await filldata();
+                res.redirect("/projects");
+            }
+
+            if ("deletePerson" in req.body) {
+                personID = req.body.deletePerson;
+                console.log(`Deleting person with ID: ${personID}`);
+                await DBMan.deletePerson(personID);
+                await filldata();
+                res.redirect("/projects");
+            }
+
+            if ("editPerson" in req.body) {
+                personName = req.body.firstName;
+                personLastName = req.body.lastName;
+                personID = req.body.editPerson;
+                await DBMan.updateProject(personID, {
+                    firstname: personName,
+                    lastname: personlastName,
+                });
+                await filldata();
+                res.redirect("/projects");
+            }
+
+            if ("removePersonnel" in req.body) {
+                const projID = req.body.removePersonnel;
+                const people = Array.isArray(req.body.checkRemovePerson)
+                    ? req.body.checkRemovePerson
+                    : [req.body.checkRemovePerson];
+                // like adding a list of people to a project, iterate through the array to remove 1 or more from the list
+                for (person of people) {
+                    await DBMan.unjoin(projID, person);
+                }
+                await filldata();
+                res.redirect("/projects");
+            }
+        } catch (error) {
+            // Handle errors
+            console.error(error);
+            res.status(500).send("An error occurred.");
         }
-
-        if ("editProject" in req.body) {
-            projName = req.body.projName;
-            projDesc = req.body.projDesc;
-            projID = req.body.editProject;
-            await DBMan.updateProject(projID, {name: projName, description: projDesc});
-            await filldata();
-            res.redirect("/projects");
-        }
-
-        if ("deleteProject" in req.body) {
-            projID = req.body.deleteProject;
-            console.log(`Deleting project with ID: ${projID}`);
-            await DBMan.deleteProject(projID);
-            await filldata();
-            res.redirect("/projects");
-        }
-
-        
-        if ("deletePerson" in req.body) {
-          personID = req.body.deletePerson;
-          console.log(`Deleting person with ID: ${personID}`);
-          await DBMan.deletePerson(personID);
-          await filldata();
-          res.redirect("/projects");
-      }
-      
-        if ("editPerson" in req.body) {
-          personName = req.body.firstName;
-          personLastName = req.body.lastName;
-          personID = req.body.editPerson;
-          await DBMan.updateProject(personID, {name: firstName, lastname: lastName});
-          await filldata();
-          res.redirect("/projects");
-      }
-
-        if("removePersonnel" in req.body){
-          const projID = req.body.removePersonnel         
-          const people = Array.isArray(req.body.checkRemovePerson)
-          ? req.body.checkRemovePerson
-          : [req.body.checkRemovePerson]; 
-          // like adding a list of people to a project, iterate through the array to remove 1 or more from the list
-          for (person of people){
-            await DBMan.unjoin(projID, person)
-          }
-          await filldata();
-          res.redirect("/projects")
-        }
-    } catch (error) {
-        // Handle errors 
-        console.error(error);
-        res.status(500).send("An error occurred.");
     }
 });
 
 // code that will allow you to log out and clear your cookie
 app.get("/logout", (req, res) => {
     console.log(req.cookies.login);
-    res.clearCookie("login");
+    res.clearCookie("jwt");
     res.render("pages/logout");
 });
