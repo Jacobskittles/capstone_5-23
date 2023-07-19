@@ -180,6 +180,8 @@ class DBManager {
             console.log("ERROR: " + error);
         }
 
+
+
         const assignments = person.projects;
         const members = project.members;
 
@@ -190,12 +192,15 @@ class DBManager {
             }
         }
 
-        
+
+
         // Find index of assignment and member
+
+        
         const assignmentIndex = assignments.findIndex(
             (assignment) => assignment.id === projectID
         );
-        const memberIndex = members.findIndex(
+            const memberIndex = members.findIndex(
             (member) => member.id === personID
         );
 

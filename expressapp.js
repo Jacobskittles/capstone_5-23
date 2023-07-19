@@ -215,8 +215,7 @@ app.post("/projects", async (req, res) => {
                 console.log(req.body.addNewLead);
                 console.log(req.body.checkLead);
                 const persID = req.body.checkLead;
-                // check if person is already in the project
-                await DBMan.join(projID, person);
+                await DBMan.join(projID, persID)
                 const role = "Lead";
                 await DBMan.changeRole(projID, persID, role);
                 await filldata();
