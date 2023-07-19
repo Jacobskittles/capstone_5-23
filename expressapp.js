@@ -140,6 +140,7 @@ app.get("/projects", authenticateToken, async (req, res) => {
         personnel: personnel,
         projects: projects,
         utils: utils,
+        user: req.user
     });
 });
 
@@ -155,7 +156,12 @@ app.post("/login", async (req, res) => {
 
     //  Simple code for now to check if login is correct. However, this will change once we access users in the database.
     if (user && (await bcrypt.compare(password, user.account.password))) {
-        const payload = { user_id: user._id, admin: user.account.admin };
+        const payload = { 
+            user_id: user._id, 
+            first_name: user.firstName,
+            last_name: user.lastName,
+            admin: user.account.admin 
+        };
 
         // Create the JWT and sign it with a secret key
         const token = jwt.sign(payload, secretKey, { expiresIn: "24h" });
