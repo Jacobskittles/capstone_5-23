@@ -223,12 +223,12 @@ app.post("/projects", async (req, res) => {
           await filldata();
           res.redirect("/projects");
       }
-      
+
         if ("editPerson" in req.body) {
           personName = req.body.firstName;
           personLastName = req.body.lastName;
           personID = req.body.editPerson;
-          await DBMan.updateProject(personID, {name: firstName, lastname: lastName});
+          await DBMan.updateProject(personID, {firstname: personName, lastname: personlastName});
           await filldata();
           res.redirect("/projects");
       }
