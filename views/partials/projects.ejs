@@ -31,6 +31,9 @@
     <% projects.forEach(function(project) { %>
       <div class="card">
         <div class="card-body">
+          
+
+            
             <div class="dropdown float-end">
               <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
@@ -46,28 +49,28 @@
                 <li><button style="color:red" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteProjectModal-<%= project._id %>">DELETE PROJECT</button></li>
               </ul>
 
-            </div>
+          </div>
 
 
           <div class="modal fade" id="deleteProjectModal-<%= project._id %>" tabindex="-1" aria-labelledby="deleteProjectModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <form  id="deleteProjectForm" action="/projects" method = "POST">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="deleteProjectModalLabel">Delete Project</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    Are you sure you want to delete the project "<%=project.name%>"? This action is irreversible.
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button name="deleteProject" type="submit" class="btn btn-danger" value="<%=project._id%>" id="<%=project._id%>" >Delete</button>
-                  </div>
-                </div>
-              </form>
+          <div class="modal-dialog">
+          <form  id="deleteProjectForm" action="/projects" method = "POST">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteProjectModalLabel">Delete Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Are you sure you want to delete the project "<%=project.name%>"? This action is irreversible.
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button name="deleteProject" type="submit" class="btn btn-danger" value="<%=project._id%>" id="<%=project._id%>" >Delete</button>
+              </div>
             </div>
-          </div>
+            </form>
+            </div>
+      </div>
 
       <div class="modal fade" id="removePersonnelModal-<%=project._id%>" tabindex="-1" aria-labelledby="removePersonnelModalLabel-<%=project._id%>" aria-hidden="true">
         <div class="modal-dialog">
@@ -170,27 +173,52 @@
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
+
+
+                      <div class="modal-body">                           
+                          <% 
+                          
+                          personnel.forEach(function(person) { 
+                            let assignments = []
+                            if (person.projects) {person.projects.forEach(function(item) {assignments.push(item.id)})}
+                            if (person.projects) {%>
+                          <div class="form-check" method="POST" action="/projects" >
+                            <input class="form-check-input" name="checkLead" type="radio" value="<%=person._id%>" id="<%=person._id%>" >
+                            
+                            <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
+                              <%= person.firstName+' '+person.lastName %>
+                              <% 
+                              // count how many projects each person has and determine their color
+                              let total = utils.countProjects(person)
+                              
+                              let color = utils.getColor(total)
+                            %>
+                            <span class="badge bg-<%=color%>" style="float: right;">
+                              <%= total %>
+                            </span>
+                            </label>      
+                          </div>
+                        <%}
+                        if(!person.projects){ %>
+                          <div class="form-check">
+                            <input name="checkLead" class="form-check-input" type="radio" value="<%=person._id%>" id="<%=person._id%>">
+                            <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
+                              <%= person.firstName+' '+person.lastName %>
+                            <span class="badge bg-primary" style="float: right;">
+                                  0
+                                </span>
+                            </label>      
+                          </div>
+                          
+                          <% }})%>                         
+
                         
-                          <%
-                          project.members.forEach(function(member) {
-                          person=personnel.find(person=> person._id === member.id)
-                          if (person.projects) { %>
-                          <input class="form-check-input" name="checkLead" type="radio" value="<%=person._id%>" id="<%=person._id%>" >
-                              <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
-                                <%= person.firstName+' '+person.lastName %>
-                                <% 
-                                // count how many projects each person has and determine their color
-                                let total = utils.countProjects(person)
-                                
-                                let color = utils.getColor(total)
-                              %>
-                              <span class="badge bg-<%=color%>" style="float: right;">
-                                <%= total %>
-                              </span>
-                              </label> 
-                              <% }}) %>
+                          
+                        </div>
 
                         </div>
+
+                        
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 

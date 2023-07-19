@@ -54,6 +54,7 @@ class DBManager {
         (assignment) => assignment.id !== projectID
     );
     members = members.filter((member) => member.id !== personID);
+    console.log(members)
 
     // Update the person's projects array or remove it if no assignments remain
     if (assignments.length > 0) {
@@ -73,11 +74,15 @@ class DBManager {
             await this.personnel.updateOne(personQuery, {
                 $unset: { projects: "" },
             });
+            await this.projects.updateOne(projectQuery, {
+                $set: { members: members },
+            });
         } catch (error) {
             console.log("ERROR: " + error);
             return;
         }
     }
+
 }
 
 
@@ -267,19 +272,17 @@ class DBManager {
         }
 
         // get rid of all joins
-        for (let assignment of person.projects) {
-            await this.unjoin(assignment.id, personID);
+        if (person.projects) {
+            for (let assignment of person.projects) {
+                await this.unjoin(assignment.id, personID);
+            }
         }
 
-        const deleteResult = await db
-            .collection("projects")
-            .deleteOne(projectQuery);
-
-        if (deleteResult.deletedCount === 1) {
-            console.log(`Project ${projectID} successfully deleted`);
-        } else {
-            console.log("Failed to delete project");
-        }
+        this.personnel.deleteOne(personQuery, (err, result) => {
+            if (err) {
+                console.error("Failed to delete person: ", err);
+            }
+        });
     }
 
     /**
