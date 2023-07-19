@@ -214,17 +214,17 @@ app.post("/projects", async (req, res) => {
             await filldata();
             res.redirect("/projects");
         }
-
-        if ("deletePerson" in req.body) {
-          personID = req.body.deletePerson;
-          console.log(`Deleting person with ID: ${personID}`);
-          await DBMan.deletePerson(personID);
+        if("removePersonnel" in req.body){
+          const projID = req.body.removePersonnel         
+          const people = Array.isArray(req.body.checkRemovePerson)
+          ? req.body.checkRemovePerson
+          : [req.body.checkRemovePerson]; 
+          // like adding a list of people to a project, iterate through the array to remove 1 or more from the list
+          for (person of people){
+            await DBMan.unjoin(projID, person)
+          }
           await filldata();
-          res.redirect("/projects");
-      }
-      
-        if("removePerson" in req.body){
-          
+          res.redirect("/projects")
         }
     } catch (error) {
         // Handle errors 
