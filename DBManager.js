@@ -190,6 +190,7 @@ class DBManager {
             }
         }
 
+        
         // Find index of assignment and member
         const assignmentIndex = assignments.findIndex(
             (assignment) => assignment.id === projectID
