@@ -168,7 +168,7 @@ class DBManager {
         const personQuery = { _id: personID };
 
         // need to check if the person is in the project, if they aren't call the join function
-        this.join(projectID, personID)
+        await this.join(projectID, personID)
 
         //create and load the person and project objects with queries
         let person, project;
@@ -193,10 +193,9 @@ class DBManager {
             for (let member of members) {
                 if (member.role === "Lead") delete member.role;
             }
+            // need to delete the role from personnel collection
+            
         }
-
-        
-  
 
         // Find index of assignment and member
 

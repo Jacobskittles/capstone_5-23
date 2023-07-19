@@ -213,11 +213,9 @@ app.post("/projects", authenticateToken, async (req, res) => {
             // code to add a new lead to the project
             if ("addNewLead" in req.body) {
                 const projID = req.body.addNewLead;
-                console.log(req.body.addNewLead);
-                console.log(req.body.checkLead);
                 const persID = req.body.checkLead;
-
                 const role = "Lead";
+
                 await DBMan.changeRole(projID, persID, role);
                 await filldata();
                 res.redirect("/projects");
@@ -289,6 +287,15 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 }
                 await filldata();
                 res.redirect("/projects");
+            }
+            if("changeLead" in req.body){
+              const projID = req.body.changeLead
+              const persID = req.body.checkChangeLead
+              const role = "Lead"
+              await DBMan.changeRole(projID, persID, role);
+                await filldata();
+                res.redirect("/projects");
+              
             }
         } catch (error) {
             // Handle errors
