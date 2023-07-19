@@ -86,6 +86,27 @@
                 </ul>
 
               </div>
+
+              <% // Modal for deleting personnel %>
+              <div class="modal fade" id="deletePersonModal-<%= person._id %>" tabindex="-1" aria-labelledby="deletePersonModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <form  id="deletePersonForm" action="/projects" method = "POST">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deletePersonModalLabel">Delete Person</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        Are you sure you want to delete the person "<%=person.firstName+' '+person.lastName%>"? This action is irreversible.
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button name="deletePerson" type="submit" class="btn btn-danger" value="<%=person._id%>" id="<%=person._id%>" >Delete</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
                   
           <% }}); %>
@@ -117,6 +138,27 @@
                     <li><button style="color:red" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deletePersonModal-<%= person._id %>">DELETE</button></li>
                   </ul>
 
+                </div>
+
+                <% // Modal for deleting personnel %>
+                <div class="modal fade" id="deletePersonModal-<%= person._id %>" tabindex="-1" aria-labelledby="deletePersonModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <form  id="deletePersonForm" action="/projects" method = "POST">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="deletePersonModalLabel">Delete Person</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          Are you sure you want to delete the person "<%=person.firstName+' '+person.lastName%>"? This action is irreversible.
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button name="deletePerson" type="submit" class="btn btn-danger" value="<%=person._id%>" id="<%=person._id%>" >Delete</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
                 </div>
 
               </div>
