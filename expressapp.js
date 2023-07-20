@@ -59,6 +59,23 @@ app.listen(PORT, () => {
 
 // Middleware to verify the JWT and set the user in the request object
 // Gonzales
+
+/**
+ * Middleware to authenticate user with JSON Web Token (JWT).
+ *
+ * @param {Object} req - The Express request object.
+ * @param {Object} res - The Express response object.
+ * @param {Function} next - The next middleware function to be called if the user is authenticated.
+ * @returns {undefined}
+ *
+ * @example
+ * // Use this middleware to protect routes that require authentication.
+ * app.get('/protected-route', authenticateToken, (req, res) => {
+ *     // req.user contains the payload from the JWT, representing the authenticated user.
+ *     // Perform actions specific to the authenticated user here.
+ *     res.send('You are authenticated!');
+ * });
+ */
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.jwt; // Assuming you set the JWT as 'jwt' in the cookie
 

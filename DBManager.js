@@ -339,6 +339,14 @@ class DBManager {
         this.projects.updateOne(projectQuery, { $set: { name, description } });
     }
 
+    /**
+     * Export the data from the specified collection.
+     * @param {Collection} collection - The MongoDB Collection to export data from.
+     *                              Use "personnel" or "projects" for valid collections.
+     * @throws {Error} If an invalid collection name is specified.
+     * @returns {Array} An array containing the data exported from the collection.
+     * @async
+     */
     async exportJSON(collection) {
         let data;
         if (collection === this.personnel || collection === this.projects) {
@@ -352,6 +360,14 @@ class DBManager {
         return data;
     }
 
+    /**
+     * Import JSON data into the specified collection.
+     *
+     * @param {Collection} collection - The MongoDB Collection where data will be imported.
+     * @param {string} data - A JSON string representing the data to be imported.
+     * @throws {Error} If there is an issue with saving the backup or importing the data.
+     * @async
+     */
     async importJSON(collection, data) {
         // save backup because we're about to do something very dangerous
         await this.saveBackup(collection);
@@ -364,6 +380,14 @@ class DBManager {
         await collection.insertMany(jsonData);
     }
 
+    /**
+     * Save a backup of the specified collection(s) in JSON format.
+     *
+     * @param {Collection|undefined} collection - The MongoDB Collection to back up.
+     *                                            If not provided, both "personnel" and "projects" collections will be backed up.
+     * @throws {Error} If there is an issue with exporting or saving the backup data.
+     * @async
+     */
     async saveBackup(collection) {
         let collections = [];
 
@@ -402,6 +426,14 @@ class DBManager {
         }
     }
 
+    /**
+     * Restore the latest backup for the specified collection(s) if available.
+     *
+     * @param {Collection|undefined} collection - The MongoDB Collection to restore the backup for.
+     *                                            If not provided, the latest backup of both "personnel" and "projects" collections will be restored.
+     * @throws {Error} If there is an issue with reading or importing the backup data.
+     * @async
+     */
     async restoreLatestBackup(collection) {
         let collections = [];
 
