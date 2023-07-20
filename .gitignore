@@ -32,3 +32,6 @@ npm-debug.log
 .DS_Store
 
 .env
+
+# Don't save backups
+backup

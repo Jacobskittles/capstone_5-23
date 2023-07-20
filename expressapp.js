@@ -240,7 +240,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
             // Lincoln - This code changes a lead from one person to another if the lead position is already filled. Cannot remove a lead and make it empty unless the person is removed entirely from the project.
             if ("changeLead" in req.body) {
                 let projectID = sanitize(req.body.changeLead);
-                let personID = req.body.sanitize(checkChangeLead);
+                let personID = sanitize(req.body.checkChangeLead);
                 let role = "Lead";
                 console.log(
                     `Changing lead role for project ${projectID} to member ${personID}...`
@@ -369,7 +369,7 @@ app.get("/export", authenticateToken, async (req, res) => {
         const format = req.query.format;
         let jsonData;
         if (collection === "personnel") {
-            jsonData = await DBMan.exportJSON("personnel");
+            jsonData = await DBMan.exportJSON(DBMan.personnel);
         } else if (collection === "projects") {
             jsonData = await DBMan.exportJSON("projects");
         } else {
@@ -385,3 +385,11 @@ app.get("/export", authenticateToken, async (req, res) => {
         res.status(403).send("Unauthorized");
     }
 });
+
+app.get("/backup", authenticateToken, async (req, res) => {
+    if (req.user.admin) {
+        DBMan.saveBackup()
+    } else {
+        res.status(403).send("Unauthorized");
+    }
+})

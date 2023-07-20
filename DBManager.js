@@ -1,10 +1,13 @@
 const crypto = require("crypto");
+const fs = require("fs");
 
 /**
  * Manages the personnel and projects collections in a database.
  * Gonzales' code
  */
 class DBManager {
+    static backupDir = "./backup";
+
     /**
      * Constructs a new DBManager instance.
      * @param {Collection} projects - The projects collection object.
@@ -324,10 +327,8 @@ class DBManager {
 
     async exportJSON(collection) {
         let data;
-        if (collection === "personnel") {
-            data = await this.personnel.find().toArray();
-        } else if (collection === "projects") {
-            data = await this.projects.find().toArray();
+        if (collection === this.personnel || collection === this.projects) {
+            data = await collection.find().toArray();
         } else {
             throw new Error(
                 'Invalid collection specified. Use "personnel" or "projects".'
@@ -335,6 +336,54 @@ class DBManager {
         }
 
         return data;
+    }
+
+    async importJSON(collectionName, data) {
+        // save backup because we're about to do something very dangerous
+        this.saveBackup(collectionName);
+
+
+
+        await collection.deleteMany({});
+
+    }
+
+    async saveBackup(collection) {
+        let collections = [];
+
+        // If a specific collectionName is provided, use only that collection
+        if (collection) {
+            collections.push(collection);
+        } else {
+            // If no collectionName is provided, back up both "personnel" and "projects" collections
+            collections = [this.personnel, this.projects];
+        }
+
+        for (const collection of collections) {
+            const collectionName = collection === this.personnel ? "personnel" : "projects"
+            const data = await this.exportJSON(collection);
+
+            const backupFileName = `${collectionName}_backup_${new Date().getTime()}.json`;
+
+            // Create the backup directory if it doesn't exist
+            if (!fs.existsSync(DBManager.backupDir)) {
+                await fs.mkdirSync(DBManager.backupDir);
+            }
+
+            const backupFilePath = `${DBManager.backupDir}/${backupFileName}`;
+
+            fs.writeFile(
+                backupFilePath,
+                JSON.stringify(data, null, 2),
+                (err) => {
+                    if (err) {
+                        console.error("Backup failed:", err);
+                    } else {
+                        console.log(`Backup saved in: ${backupFilePath}`);
+                    }
+                }
+            );
+        }
     }
 }
 
