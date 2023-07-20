@@ -1,46 +1,5 @@
 <nav class="navbar navbar-expand-lg pe-4 ps-2">
-  <a class="navbar-brand">PROJECT TRACKER</a>
-  <a class="btn nav-link" onclick="exportJson()">Export JSON</a>
-  <a class="nav-link ms-auto me-4 text-danger" href="/logout">Logout</a>
-  <script>
-    function exportJson(exportType) {
-      fetch(`/export?collection=personnel&format=json`)
-        .then(response => response.blob())
-        .then(blob => {
-          // Create a temporary URL for the downloaded JSON
-          const url = URL.createObjectURL(blob);
-          // Create an anchor element to initiate the download
-          const a = document.createElement('a');
-
-          a.href = url;
-          a.download = 'personnel.json';
-          a.style.display = 'none';
-          document.body.appendChild(a);
-          // Simulate a click on the anchor element to start the download
-          a.click();
-          // Remove the anchor element after the download is started
-          URL.revokeObjectURL(url);
-        })
-        .catch(error => console.error('Error:', error));
-
-      fetch(`/export?collection=projects&format=json`)
-        .then(response => response.blob())
-        .then(blob => {
-          // Create a temporary URL for the downloaded JSON
-          const url = URL.createObjectURL(blob);
-          // Create an anchor element to initiate the download
-          const a = document.createElement('a');
-
-          a.href = url;
-          a.download = 'projects.json';
-          a.style.display = 'none';
-          document.body.appendChild(a);
-          // Simulate a click on the anchor element to start the download
-          a.click();
-          // Remove the anchor element after the download is started
-          URL.revokeObjectURL(url);
-        })
-        .catch(error => console.error('Error:', error));
-    }
-  </script>
-</nav>
+    <a class="navbar-brand">PROJECT TRACKER</a>
+    <a class="nav-link "><%= user.first_name + " " + user.last_name %></a>
+    <a class="nav-link ms-auto me-4 text-danger" href="/logout" >Logout</a>
+  </nav>

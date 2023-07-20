@@ -1,8 +1,13 @@
 <div class="row">
   <div class="card col-md-8">
-    <div class="card-body">
-    <h1 class="card-title">PROJECTS - <%= projects.length %> <button class="btn border-secondary-subtle" data-bs-toggle="modal" data-bs-target="#projectModal">ADD +</button>
-      </h1>
+    <div class="card-body p-2">
+      <div class="align-items-center d-flex ">
+        <button class="btn border-secondary-subtle float-start mb-2" data-bs-toggle="modal" data-bs-target="#projectModal">ADD +</button>
+        <h1 class="card-title text-center ms-auto">PROJECTS - <%= projects.length %></h1>
+        <button class="btn btn-sm border-secondary-subtle ms-auto mb-2" data-bs-toggle="modal" data-bs-target="#importModal">Import</button>
+        <button class="btn btn-sm border-secondary-subtle mb-2" data-bs-toggle="modal" data-bs-target="#exportModal">Export</button>  
+      </div>
+    
 
     <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -13,10 +18,10 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <label for="projName">Project Name:</label>
-              <input type="text" id="projName" name="projName"><br><br>
-              <label for="projDesc">Description:</label>
-              <textarea class="form-control" rows="5" type="projDesc" id="projDesc" name="projDesc"></textarea><br><br>
+              <label for="projectName">Project Name:</label>
+              <input type="text" id="projectName" name="projectName" required><br><br>
+              <label for="projectDescription">Description:</label>
+              <textarea class="form-control" rows="5" type="projectDescription" id="projectDescription" name="projectDescription" required></textarea><br><br>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -206,10 +211,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                <label for="projName">Project Name:</label>
-                <input type="text" id="projName" name="projName" value="<%=project.name%>"required><br><br>
-                <label for="projDesc">Description:</label>
-                <textarea class="form-control" rows="5" type="projDesc" id="projDesc" name="projDesc" required><%=project.description%></textarea><br><br>
+                <label for="projectName">Project Name:</label>
+                <input type="text" id="projectName" name="projectName" value="<%=project.name%>"required><br><br>
+                <label for="projectDescription">Description:</label>
+                <textarea class="form-control" rows="5" type="projectDescription" id="projectDescription" name="projectDescription" required><%=project.description%></textarea><br><br>
               </div>
               <div class="modal-footer">
                 
