@@ -94,7 +94,7 @@
                       let assignments = []
                       if (person.projects) {person.projects.forEach(function(item) {assignments.push(item.id)})}
                       if (person.projects) { %>
-                        // For each person, turn it into a radio button that, when selected, takes the person's id and assigns it as the new lead.
+                        <!--For each person, turn it into a radio button that, when selected, takes the person id and assigns it as the new lead. -->
                         <div class="form-check" method="POST" action="/projects">
                           <input class="form-check-input" name="checkChangeLead" type="radio" value="<%=person._id%>" id="<%=person._id%>" >  
                           <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
@@ -119,118 +119,97 @@
                           </label>      
                       </div>
                     
-                    <% }})%>                         
-  
-                  
-                    
+                    <% }})%>                          
                   </div>
-
-                
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-
-                  <button name="changeLead" value="<%=project._id%>" id="<%=project._id%>" type="submit" class="btn btn-primary" >Submit</button>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button name="changeLead" value="<%=project._id%>" id="<%=project._id%>" type="submit" class="btn btn-primary" >Submit</button>
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
             </div>
           </div>
 
-
-          <div class="modal fade" 
-            id="deleteProjectModal-<%= project._id %>" 
-            tabindex="-1" 
-            aria-labelledby="deleteProjectModalLabel" 
-            aria-hidden="true">
-
-          <div class="modal-dialog">
-          <form  id="deleteProjectForm" action="/projects" method = "POST">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="deleteProjectModalLabel">Delete Project</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                Are you sure you want to delete the project "<%=project.name%>"? This action is irreversible.
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button name="deleteProject" type="submit" class="btn btn-danger" value="<%=project._id%>" id="<%=project._id%>" >Delete</button>
-              </div>
-            </div>
-            </form>
-            </div>
-          </div>
-          <div class="modal fade" 
-            id="removePersonnelModal-<%=project._id%>" 
-            tabindex="-1" aria-labelledby="removePersonnelModalLabel-<%=project._id%>" 
-            aria-hidden="true">
-
+          <!--This modal deletes a project from the list --> 
+          <div class="modal fade" id="deleteProjectModal-<%= project._id %>" tabindex="-1" aria-labelledby="deleteProjectModalLabel" aria-hidden="true">
             <div class="modal-dialog">
+              <form  id="deleteProjectForm" action="/projects" method = "POST">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="deleteProjectModalLabel">Delete Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    Are you sure you want to delete the project "<%=project.name%>"? This action is irreversible.
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button name="deleteProject" type="submit" class="btn btn-danger" value="<%=project._id%>" id="<%=project._id%>" >Delete</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
 
-            <form action="/projects" method="POST">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="removePersonnelModalLabel-<%=project._id%>"  >Remove member(s) from <%=project.name%></h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>                          
-                <div class="modal-body">                           
+          <!--This modal removes members from a project -->
+          <div class="modal fade" id="removeMembersModal-<%=project._id%>" tabindex="-1" aria-labelledby="removeMembersModalLabel-<%=project._id%>" aria-hidden="true">
+            <div class="modal-dialog">
+              <form action="/projects" method="POST">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="removeMembersModalLabel-<%=project._id%>"  >Remove member(s) from <%=project.name%></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>                          
+                  <div class="modal-body">                           
                   <% 
-                  
                       project.members.forEach(function(member) {
                       person=personnel.find(person=> person._id === member.id)
                       if (person.projects) { %>
-                      <input class="form-check-input" name="selectRemoveMembers" type="checkbox" value="<%=person._id%>" id="<%=person._id%>" >
-                          <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
-                            <%= person.firstName+' '+person.lastName %>
-                            <% 
-                            // count how many projects each person has and determine their color
-                            let total = utils.countProjects(person)
-                            
-                            let color = utils.getColor(total)
+                        <input class="form-check-input" name="selectRemoveMembers" type="checkbox" value="<%=person._id%>" id="<%=person._id%>" >
+                        <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
+                          <%= person.firstName+' '+person.lastName %>
+                          <%// count how many projects each person has and determine their color
+                          let total = utils.countProjects(person)
+                          let color = utils.getColor(total)
                           %>
-                          <span class="badge bg-<%=color%>" style="float: right;">
-                            <%= total %>
-                          </span>
-                          </label> 
-                          <% }}) %>                        
-
-                
-                  
+                          <span class="badge bg-<%=color%>" style="float: right;"><%= total %></span>
+                        </label> 
+                      <% }}) %>                        
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button name="removeMembersFromProject" value="<%=project._id%>" id="<%=project._id%>"  type="submit" class="btn btn-primary">Submit</button>
+                  </div>
                 </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button name="removeMembersFromProject" value="<%=project._id%>" id="<%=project._id%>"  type="submit" class="btn btn-primary">Submit</button>
-                </div>
-              </div>
-            </form>
-
+              </form>
             </div>
           </div>
 
+          <!--This modal edits the project name and/or description-->
           <div class="modal fade" id="editProjectModal-<%= project._id %>" tabindex="-1" aria-labelledby="editProjectModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-          <form  id="editProjectForm" action="/projects" method = "POST">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="editProjectModalLabel">Edit Project</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <label for="projectName">Project Name:</label>
-                <input type="text" id="projectName" name="projectName" value="<%=project.name%>"required><br><br>
-                <label for="projectDescription">Description:</label>
-                <textarea class="form-control" rows="5" type="projectDescription" id="projectDescription" name="projectDescription" required><%=project.description%></textarea><br><br>
-              </div>
-              <div class="modal-footer">
-                
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button name="editProject" type="submit" class="btn btn-primary" value="<%=project._id%>" id="<%=project._id%>" >Submit</button>
-              </div>
+            <div class="modal-dialog">
+              <form  id="editProjectForm" action="/projects" method = "POST">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="editProjectModalLabel">Edit Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <label for="projectName">Project Name:</label>
+                    <input type="text" id="projectName" name="projectName" value="<%=project.name%>"required><br><br>
+                    <label for="projectDescription">Description:</label>
+                    <textarea class="form-control" rows="5" type="projectDescription" id="projectDescription" name="projectDescription" required><%=project.description%></textarea><br><br>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button name="editProject" type="submit" class="btn btn-primary" value="<%=project._id%>" id="<%=project._id%>" >Submit</button>
+                  </div>
+                </div>
+              </form>
             </div>
-            </form>
-            </div>
-      </div>
+          </div>
+
+      <% // Kittle - cards to display relevant project information %>
       <h4 class="card-title"><%= project.name %></h4>
       <p><%= project.description %></p>
       <div class="row">
@@ -238,80 +217,61 @@
           <div class="card-title">Lead:</div>
             <div class="card-body bg-secondary-subtle" ondrop="drop(event)" ondragover="allowDrop(event)">
               <%
-              //kittle's code
-                let empty = true;
-                project.members.forEach(function(member) {
-                  let person=personnel.find(person=> person._id === member.id)
-                  if (person.projects) {
-                    if (person.projects.find(assignment=> assignment.id === project._id).role == 'Lead' ){
-                      empty = false %>
-                      <button id="<%= person._id %>-button" draggable="True" class="btn bg-light border-secondary-subtle noDrop" ondragstart="drag(event)">
-                        <strong><%= person.firstName+' '+person.lastName %></strong>
-                        <% 
-                        // count how many projects each person has and determine their color
-                        let total = utils.countProjects(person)
-                        let color = utils.getColor(total)
-                        %>
-                        <span class="badge bg-<%=color%>"><%= total %></span>
-                      </button>
-                  <%  }}});
-                if (empty) { %>
-                  <button  data-bs-toggle="modal" data-bs-target="#addLeadModal" class="btn bg-light noDrop">ADD LEAD +</button>
-                  <div class="modal fade" id="addLeadModal" tabindex="-1" aria-labelledby="addLeadModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+              // Kittle's code for iterating through members, finding their IDs, and if they are assigned to the project they are displayed on that project.
+              let empty = true;
+              project.members.forEach(function(member) {
+                let person=personnel.find(person=> person._id === member.id)
+                if (person.projects) {
+                  if (person.projects.find(assignment=> assignment.id === project._id).role == 'Lead' ){
+                    empty = false %>
+                    <button id="<%= person._id %>-button" draggable="True" class="btn bg-light border-secondary-subtle noDrop" ondragstart="drag(event)">
+                      <strong><%= person.firstName+' '+person.lastName %></strong>
+                      <% // count how many projects each person has and determine their color
+                      let total = utils.countProjects(person)
+                      let color = utils.getColor(total)
+                      %>
+                      <span class="badge bg-<%=color%>"><%= total %></span>
+                    </button>
+              <% }}});
+              // Add a lead for a project with an empty lead position
+              if (empty) { %>
+                <button  data-bs-toggle="modal" data-bs-target="#addLeadModal" class="btn bg-light noDrop">ADD LEAD +</button>
+                <div class="modal fade" id="addLeadModal" tabindex="-1" aria-labelledby="addLeadModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
                     <form  id="leadForm" action="/projects" method = "POST">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h5 class="modal-title" id="leadModalLabel">Add Lead</h5>
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body">
-
-
-                      <div class="modal-body">                           
-                          <% 
-                          
-                          personnel.forEach(function(person) { 
+                        <div class="modal-body">                           
+                          <% personnel.forEach(function(person) { 
                             let assignments = []
                             if (person.projects) {person.projects.forEach(function(item) {assignments.push(item.id)})}
                             if (person.projects) {%>
-                          <div class="form-check" method="POST" action="/projects" >
-                            <input class="form-check-input" name="checkLead" type="radio" value="<%=person._id%>" id="<%=person._id%>" >
-                            
-                            <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
-                              <%= person.firstName+' '+person.lastName %>
-                              <% 
-                              // count how many projects each person has and determine their color
-                              let total = utils.countProjects(person)
-                              
-                              let color = utils.getColor(total)
-                            %>
-                            <span class="badge bg-<%=color%>" style="float: right;">
-                              <%= total %>
-                            </span>
-                            </label>      
-                          </div>
-                        <%}
-                        if(!person.projects){ %>
-                          <div class="form-check">
-                            <input name="checkLead" class="form-check-input" type="radio" value="<%=person._id%>" id="<%=person._id%>">
-                            <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
-                              <%= person.firstName+' '+person.lastName %>
-                            <span class="badge bg-primary" style="float: right;">
-                                  0
-                                </span>
-                            </label>      
-                          </div>
+                              <div class="form-check" method="POST" action="/projects" >
+                                <input class="form-check-input" name="checkLead" type="radio" value="<%=person._id%>" id="<%=person._id%>" >
+                                <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
+                                  <%= person.firstName+' '+person.lastName %>
+                                  <%// count how many projects each person has and determine their color
+                                  let total = utils.countProjects(person)
+                                  
+                                  let color = utils.getColor(total)%>
+                                  <span class="badge bg-<%=color%>" style="float: right;"><%= total %></span>
+                                </label>      
+                              </div>
+                            <%}
+                            if(!person.projects){ %>
+                              <div class="form-check">
+                                <input name="checkLead" class="form-check-input" type="radio" value="<%=person._id%>" id="<%=person._id%>">
+                                <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
+                                  <%= person.firstName+' '+person.lastName %>
+                                  <span class="badge bg-primary" style="float: right;">0</span>
+                                </label>      
+                              </div>
                           
                           <% }})%>                         
-
-                        
-                          
                         </div>
-
-                        </div>
-
-                        
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
