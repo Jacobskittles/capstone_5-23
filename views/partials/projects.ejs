@@ -212,9 +212,9 @@
   
         <% // Kittle - cards to display relevant project information %>
         <h4 class="card-title">
-          <button class="btn btn-light btn-lg ps-0 dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#collapse-<%=project._id %>" aria-expanded="true" aria-controls="collapse-<%=project._id %>" title="Click to collapse project">
+          <div type="button" class="user-select-none bg-body btn-lg ps-0 dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#collapse-<%=project._id %>" aria-expanded="true" aria-controls="collapse-<%=project._id %>" title="Click to collapse project">
             <strong><%= project.name %></strong>
-          </button>
+          </div>
         </h4>
         <p><%= project.description %></p>
         <div id="collapse-<%=project._id %>" class="row collapse show">
