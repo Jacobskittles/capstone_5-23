@@ -388,8 +388,8 @@ app.get("/export", authenticateToken, async (req, res) => {
 
 app.get("/backup", authenticateToken, async (req, res) => {
     if (req.user.admin) {
-        DBMan.saveBackup()
+        DBMan.saveBackup();
     } else {
         res.status(403).send("Unauthorized");
     }
-})
+});
