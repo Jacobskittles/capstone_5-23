@@ -15,7 +15,7 @@
         <!-- Kittle - PROJECTS title for card + the amount of projects displayed for the user to easily tell how many projects there are -->
         <h1 class="card-title text-center ms-auto">PROJECTS - <%= projects.length %></h1>
         <button class="btn btn-sm border-secondary-subtle ms-auto mb-2" data-bs-toggle="modal" data-bs-target="#importModal">Import</button>
-        <!-- Gonzales - export JSON function -->
+        <!-- Gonzales - export JSON button function -->
         <button class="btn btn-sm border-secondary-subtle mb-2" onclick="exportJson()">Export</button>  
       </div>
       <!-- This modal is triggered by pressing the ADD + button -->
@@ -78,60 +78,52 @@
               </ul>
           </div>
 
+          <!-- Lincoln - This is the modal that, when the button is clicked, you replace the lead of the project. Button found in the project dropdown -->
           <div class="modal fade" id="changeLeadModal-<%= project._id %>" tabindex="-1" aria-labelledby="changeLeadModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-            <form  id="leadForm" action="/projects" method = "POST">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="leadModalLabel">Add Lead</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-
-
-              <div class="modal-body">                           
-                  <% 
-                  
-                  personnel.forEach(function(person) { 
-                    let assignments = []
-                    if (person.projects) {person.projects.forEach(function(item) {assignments.push(item.id)})}
-                    if (person.projects) {%>
-                  <div class="form-check" method="POST" action="/projects" >
-                    
-                    <input class="form-check-input" name="checkChangeLead" type="radio" value="<%=person._id%>" id="<%=person._id%>" >
-                    
-                    <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
-                      <%= person.firstName+' '+person.lastName %>
-                      <% 
-                      // count how many projects each person has and determine their color
-                      let total = utils.countProjects(person)
-                      
-                      let color = utils.getColor(total)
-                    %>
-                    <span class="badge bg-<%=color%>" style="float: right;">
-                      <%= total %>
-                    </span>
-                    </label>      
+              <!-- Form for the change lead selection -->
+              <form id="leadForm" action="/projects" method = "POST">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="leadModalLabel">Change/Add Lead</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                <%}
-                if(!person.projects){ %>
-                  <div class="form-check">
-                    <input name="checkChangeLead" class="form-check-input" type="radio" value="<%=person._id%>" id="<%=person._id%>">
-                    <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
-                      <%= person.firstName+' '+person.lastName %>
-                    <span class="badge bg-primary" style="float: right;">
-                          0
-                        </span>
-                    </label>      
+                  <div class="modal-body">
+                    <!-- Kittle implemented the iteration through all people to change lead -->
+                    <% personnel.forEach(function(person) { 
+                      let assignments = []
+                      if (person.projects) {person.projects.forEach(function(item) {assignments.push(item.id)})}
+                      if (person.projects) { %>
+                        // For each person, turn it into a radio button that, when selected, takes the person's id and assigns it as the new lead.
+                        <div class="form-check" method="POST" action="/projects">
+                          <input class="form-check-input" name="checkChangeLead" type="radio" value="<%=person._id%>" id="<%=person._id%>" >  
+                          <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
+                            <%= person.firstName+' '+person.lastName %>
+                            <% // Kittle - count how many projects each person has and determine their color
+                            let total = utils.countProjects(person)
+                            let color = utils.getColor(total)
+                            %>
+                          <span class="badge bg-<%=color%>" style="float: right;"><%= total %></span>
+                          </label>      
+                        </div>
+                    <%}
+                    // Kittle - different code to display 0 for everyone left without a project
+                    if(!person.projects){ %>
+                      <div class="form-check">
+                        <input name="checkChangeLead" class="form-check-input" type="radio" value="<%=person._id%>" id="<%=person._id%>">
+                          <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
+                            <%= person.firstName+' '+person.lastName %>
+                          <span class="badge bg-primary" style="float: right;">
+                            0
+                          </span>
+                          </label>      
+                      </div>
+                    
+                    <% }})%>                         
+  
+                  
+                    
                   </div>
-                  
-                  <% }})%>                         
-
-                
-                  
-                </div>
-
-                </div>
 
                 
                 <div class="modal-footer">
