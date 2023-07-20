@@ -41,7 +41,7 @@
           <hr><h5 class="card-title">Assigned - <%= assigned %></h5>
           <div class="card-body bg-secondary-subtle" id="cont" ondrop="drop(event)" ondragover="allowDrop(event)">
 
-          <% personnel.forEach(function(person) { if (person.projects) { 
+          <% personnel.forEach(function(person) { if ((person.projects && person.projects.length)) { 
             let assignments = [];
             person.projects.forEach(function(assignment) {
               let projectName = projects.find(project=> project._id === assignment.id).name
@@ -142,7 +142,7 @@
             <hr>
             <h5 class="card-title">Unassigned - <%= unassigned %></h5>
             <div class="card-body bg-secondary-subtle" ondrop="drop(event)" ondragover="allowDrop(event)" id="peopleList">
-            <% personnel.forEach(function(person) { if (!person.projects){ %>
+            <% personnel.forEach(function(person) { if (!person.projects || (person.projects && !person.projects.length)){ %>
               <div class="btn bg-light border-secondary-subtle w-100 d-inline-flex p-0">
                 <div name="persbtn" id="<%= person._id %>-button" draggable="True"  class="btn bg-light noDrop w-100 text-start" data-bs-toggle="popover"  title= "Info for <%=person.firstName%> <%=person.lastName%>" data-bs-placement="left" data-bs-content="No projects assigned." ondragstart="drag(event)">
                   <strong>
