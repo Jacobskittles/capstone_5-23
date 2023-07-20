@@ -18,7 +18,7 @@ const DBManager = require("./DBManager");
 const app = express();
 const PORT = 8088;
 
-const secretKey = "this_is_the_key_shhh";
+const secretKey = "93dc6c4e2962459eb1f71a88888c7e5a5e9d6bae431eaa6d2bd131712e5c317672b9e6b5a7df2a4c4f20ee41ff42e1c07489905c73802fd8f414994770242990";
 
 // not used with bcrypt compare
 // const SALT_ROUNDS = 10;
