@@ -123,13 +123,13 @@
                         </div>
                         <div class="modal-body">
                           <label for="firstName">First Name:</label>
-                          <input type="text" id="firstName" name="firstName" value="<%=person.firstName%>"required><br><br>
+                          <input class="input" type="text" id="firstName" name="firstName" value="<%=person.firstName%>"required><br><br>
                           <label for="lastName">Last Name:</label>
-                          <input type="text" id="lastName" name="lastName" value="<%=person.lastName%>" required><br><br>
+                          <input class="input" type="text" id="lastName" name="lastName" value="<%=person.lastName%>" required><br><br>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button name="editPerson" type="submit" class="btn btn-danger" value="<%=person._id%>" id="<%=person._id%>" >Submit</button>
+                          <button name="editPerson" type="submit" class="btn btn-primary" value="<%=person._id%>" id="<%=person._id%>" >Submit</button>
                         </div>
                       </div>
                     </form>
@@ -223,7 +223,7 @@
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button name="editPerson" type="submit" class="btn btn-danger" value="<%=person._id%>" id="<%=person._id%>" >Submit</button>
+                          <button name="editPerson" type="submit" class="btn btn-primary" value="<%=person._id%>" id="<%=person._id%>" >Submit</button>
                         </div>
                       </div>
                     </form>
@@ -257,10 +257,6 @@ var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
   document.getElementById("dotsButton").classList.remove("d-none");
 });
 
-document.getElementById("dotsButton").addEventListener("click", function() {
-  var myModal = new bootstrap.Modal(document.getElementById("myModal"));
-  myModal.show();
-});
 
 
 

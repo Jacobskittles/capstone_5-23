@@ -116,6 +116,7 @@ const db = client.db("CBProjects");
 let personnel;
 let projects;
 
+// Gonzales - fill page with data
 async function filldata() {
     personnel = await db.collection("personnel").find().toArray();
     projects = await db.collection("projects").find().toArray();
@@ -123,12 +124,12 @@ async function filldata() {
 
 filldata();
 
-//  Going to localhost itself will simply redirect to the login screen
+//  Lincoln - Going to localhost itself will simply redirect to the login screen
 app.get("/", (req, res) => {
     res.redirect("/login");
 });
 
-//  Going to the login page will display the HTML.
+//  Lincoln - Going to the login page will display the HTML.
 app.get("/login", (req, res) => {
     res.render("pages/login");
 });
@@ -145,9 +146,9 @@ app.get("/projects", authenticateToken, async (req, res) => {
     });
 });
 
+// Gonzales/Lincoln - Posting user login requirements to the database
 app.post("/login", async (req, res) => {
-    //  This is a function that exists within the app.post. On submit, this code will execute.
-    //  Body parser into JSON
+
     var { username, password } = sanitize(req.body);
 
     const user = await db
@@ -155,7 +156,7 @@ app.post("/login", async (req, res) => {
         .findOne({ "account.username": username });
     console.log(user);
 
-    //  Simple code for now to check if login is correct. However, this will change once we access users in the database.
+    //  Gonzales - Simple code for now to check if login is correct. However, this will change once we access users in the database.
     if (user && (await bcrypt.compare(password, user.account.password))) {
         const payload = {
             user_id: user._id,
@@ -178,7 +179,7 @@ app.post("/login", async (req, res) => {
     }
 });
 
-// DBManager has all of the functions for accessing the database
+// Gonzales - DBManager has all of the functions for accessing the database
 const DBMan = new DBManager(
     db.collection("projects"),
     db.collection("personnel")
@@ -322,17 +323,39 @@ app.post("/projects", authenticateToken, async (req, res) => {
             }
 
         } catch (error) {
-            // Handle errors
+            // General error handling function
             console.error(error);
             res.status(500).send("An error occurred.");
         }
     }
 });
 
-// code that will allow you to log out and clear your cookie
+// Lincoln/Gonzales - code that will allow you to log out and clear your cookie
 app.get("/logout", (req, res) => {
     console.log(req.cookies.login);
     res.clearCookie("jwt");
     // timed logout splash
     res.render("pages/logout");
+});
+app.get("/export", authenticateToken, async (req, res) => {
+    if (req.user.admin) {
+        const collection = req.query.collection;
+        const format = req.query.format;
+        let jsonData;
+        if (collection === "personnel") {
+            jsonData = await DBMan.exportJSON("personnel");
+        } else if (collection === "projects") {
+            jsonData = await DBMan.exportJSON("projects");
+        } else {
+            return res.status(400).send("Invalid collection.");
+        }
+
+        // if (format === "json") {
+            res.send(JSON.stringify(jsonData, null, 2));
+        // } else {
+        //     return res.status(400).send("Invalid format.");
+        // }
+    } else {
+        res.status(403).send("Unauthorized");
+    }
 });
