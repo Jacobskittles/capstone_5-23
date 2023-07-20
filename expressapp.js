@@ -18,7 +18,8 @@ const DBManager = require("./DBManager");
 const app = express();
 const PORT = 8088;
 
-const secretKey = "this_is_the_key_shhh";
+const secretKey =
+    "93dc6c4e2962459eb1f71a88888c7e5a5e9d6bae431eaa6d2bd131712e5c317672b9e6b5a7df2a4c4f20ee41ff42e1c07489905c73802fd8f414994770242990";
 
 // not used with bcrypt compare
 // const SALT_ROUNDS = 10;
@@ -193,7 +194,9 @@ app.post("/projects", authenticateToken, async (req, res) => {
                     lastName: req.body.lastName,
                     account: {},
                 });
-                console.log(`New person with name ${req.body.fName} ${req.body.lName} successfully created`)
+                console.log(
+                    `New person with name ${req.body.fName} ${req.body.lName} successfully created`
+                );
                 // updates the page immediately with the updated database
                 await filldata();
                 res.redirect("/projects");
@@ -206,7 +209,9 @@ app.post("/projects", authenticateToken, async (req, res) => {
                     description: req.body.projDesc,
                     members: [],
                 });
-                console.log(`New project with name ${req.body.projName} successfully created`)
+                console.log(
+                    `New project with name ${req.body.projName} successfully created`
+                );
                 await filldata();
                 res.redirect("/projects");
             }
@@ -215,23 +220,30 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 const projectID = req.body.addNewLead;
                 const personID = req.body.checkLead;
                 const role = "Lead";
-                console.log(`Adding member ${personID} as lead to ${projectID}...`)
+                console.log(
+                    `Adding member ${personID} as lead to ${projectID}...`
+                );
                 await DBMan.changeRole(projectID, personID, role);
-                console.log(`Member ${personID} successfully added as lead to ${projectID}`)
+                console.log(
+                    `Member ${personID} successfully added as lead to ${projectID}`
+                );
                 await filldata();
                 res.redirect("/projects");
             }
             // Lincoln - This code changes a lead from one person to another if the lead position is already filled. Cannot remove a lead and make it empty unless the person is removed entirely from the project.
-            if("changeLead" in req.body){
-              const projectID = req.body.changeLead
-              const personID = req.body.checkChangeLead
-              const role = "Lead"
-              console.log(`Changing lead role for project ${projectID} to member ${personID}...`)
-              await DBMan.changeRole(projectID, personID, role);
-              console.log(`Lead role for project ${projectID} successfully changed to member ${personID}` )
-              await filldata();
-              res.redirect("/projects");
-              
+            if ("changeLead" in req.body) {
+                const projectID = req.body.changeLead;
+                const personID = req.body.checkChangeLead;
+                const role = "Lead";
+                console.log(
+                    `Changing lead role for project ${projectID} to member ${personID}...`
+                );
+                await DBMan.changeRole(projectID, personID, role);
+                console.log(
+                    `Lead role for project ${projectID} successfully changed to member ${personID}`
+                );
+                await filldata();
+                res.redirect("/projects");
             }
             // Lincoln - This code adds a member or members to a project
             if ("addMembersToProject" in req.body) {
@@ -240,50 +252,62 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 const members = Array.isArray(req.body.selectAddMembers)
                     ? req.body.selectAddMembers
                     : [req.body.selectAddMembers];
-                console.log(`Adding members with IDs ${members} to project ${projectID}...`)
+                console.log(
+                    `Adding members with IDs ${members} to project ${projectID}...`
+                );
                 // iterate through the array of members to join them to the project
                 for (member of members) {
                     await DBMan.join(projectID, member);
                 }
-                console.log(`Members with IDs ${members} successfully added to project ${projectID}`)
+                console.log(
+                    `Members with IDs ${members} successfully added to project ${projectID}`
+                );
                 await filldata();
                 res.redirect("/projects");
             }
             // Lincoln - This code removes a member or members from a project
             if ("removeMembersFromProject" in req.body) {
-              const projectID = req.body.removeMembersFromProject;
-              const members = Array.isArray(req.body.selectRemoveMembers)
-                  ? req.body.selectRemoveMembers
-                  : [req.body.selectRemoveMembers];
-              console.log(`Removing member(s) with IDs: ${members} from project ${projectID}...`)
-              // like adding a list of members to a project, iterate through the array to remove 1 or more from the list
-              for (member of members) {
-                  await DBMan.unjoin(projectID, member);
-              }
-              console.log(`Members successfully removed from project: ${projectID}`)
-              await filldata();
-              res.redirect("/projects");
+                const projectID = req.body.removeMembersFromProject;
+                const members = Array.isArray(req.body.selectRemoveMembers)
+                    ? req.body.selectRemoveMembers
+                    : [req.body.selectRemoveMembers];
+                console.log(
+                    `Removing member(s) with IDs: ${members} from project ${projectID}...`
+                );
+                // like adding a list of members to a project, iterate through the array to remove 1 or more from the list
+                for (member of members) {
+                    await DBMan.unjoin(projectID, member);
+                }
+                console.log(
+                    `Members successfully removed from project: ${projectID}`
+                );
+                await filldata();
+                res.redirect("/projects");
             }
             // Lincoln - This code edits the project name and/or description
             if ("editProject" in req.body) {
                 projectName = req.body.projName;
                 projectDesc = req.body.projDesc;
                 projectID = req.body.editProject;
-                console.log(`Editing project with ID: ${projectID}...`)
+                console.log(`Editing project with ID: ${projectID}...`);
                 await DBMan.updateProject(projectID, {
                     name: projectName,
                     description: projectDesc,
                 });
-                console.log(`Successfully updated project with ID: ${projectID}`)
+                console.log(
+                    `Successfully updated project with ID: ${projectID}`
+                );
                 await filldata();
                 res.redirect("/projects");
             }
-            // Lincoln - This code deletes a project from the database 
+            // Lincoln - This code deletes a project from the database
             if ("deleteProject" in req.body) {
                 projectID = req.body.deleteProject;
                 console.log(`Deleting project with ID: ${projectID}`);
                 await DBMan.deleteProject(projectID);
-                console.log(`Successfully deleted project with ID: ${projectID}`)
+                console.log(
+                    `Successfully deleted project with ID: ${projectID}`
+                );
                 await filldata();
                 res.redirect("/projects");
             }
@@ -299,21 +323,24 @@ app.post("/projects", authenticateToken, async (req, res) => {
             // Slinky - This code edits the first name and/or last name of a person
             if ("editPerson" in req.body) {
                 personID = req.body.editPerson;
-                console.log(`Editing person information with ID: ${personID}...`);
+                console.log(
+                    `Editing person information with ID: ${personID}...`
+                );
                 await DBMan.updatePerson(personID, {
                     firstName: req.body.firstName,
-                    lastName: req.body.lastName
+                    lastName: req.body.lastName,
                 });
                 console.log(`Successfully updated person with ID: ${personID}`);
                 await filldata();
                 res.redirect("/projects");
             }
-
         } catch (error) {
             // Handle errors
             console.error(error);
             res.status(500).send("An error occurred.");
         }
+    } else {
+        res.status(403).send("Unauthorized");
     }
 });
 
@@ -323,4 +350,27 @@ app.get("/logout", (req, res) => {
     res.clearCookie("jwt");
     // timed logout splash
     res.render("pages/logout");
+});
+
+app.get("/export", authenticateToken, async (req, res) => {
+    if (req.user.admin) {
+        const collection = req.query.collection;
+        const format = req.query.format;
+        let jsonData;
+        if (collection === "personnel") {
+            jsonData = await DBMan.exportJSON("personnel");
+        } else if (collection === "projects") {
+            jsonData = await DBMan.exportJSON("projects");
+        } else {
+            return res.status(400).send("Invalid collection.");
+        }
+
+        // if (format === "json") {
+            res.send(JSON.stringify(jsonData, null, 2));
+        // } else {
+        //     return res.status(400).send("Invalid format.");
+        // }
+    } else {
+        res.status(403).send("Unauthorized");
+    }
 });
