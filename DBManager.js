@@ -175,58 +175,67 @@ class DBManager {
         try {
             person = await this.personnel.findOne(personQuery);
             project = await this.projects.findOne(projectQuery);
-            if (!person || !project) {
+            if (!project) {
                 console.log("Result not found");
                 return;
             }
         } catch (error) {
             console.log("ERROR: " + error);
         }
+        if(!person){
+           let members = project.members;
+            // removes lead role from anyone with lead role if nothing is selected
+                for (let member of members) {
+                    if (member.role === "Lead") {
+                        await this.unjoin(projectID, member.id)
+                        await this.join(projectID, member.id)
+                    } 
+            }
+        }else{
+           let assignments = person.projects;
+           let members = project.members;
 
-
-        const assignments = person.projects;
-        const members = project.members;
-
-        // THERE CAN ONLY BE ONE!
-        if (role === "Lead") {
-            for (let member of members) {
-                if (member.role === "Lead") {
-                    await this.unjoin(projectID, member.id)
-                    await this.join(projectID, member.id)
+            // THERE CAN ONLY BE ONE!
+            if (role === "Lead") {
+                for (let member of members) {
+                    if (member.role === "Lead") {
+                        await this.unjoin(projectID, member.id)
+                        await this.join(projectID, member.id)
+                    }
                 }
             }
-        }
+            // Find index of assignment and member
+            const assignmentIndex = assignments.findIndex(
+                (assignment) => assignment.id === projectID
+            );
+                const memberIndex = members.findIndex(
+                (member) => member.id === personID
+            );
 
-        // Find index of assignment and member
+            // Check if assignment and member were found
+            if (assignmentIndex === -1 || memberIndex === -1) {
+                return;
+            }
+
+            // Update the role
+            assignments[assignmentIndex].role = role;
+            members[memberIndex].role = role;
+
+            // push to database
+            try {
+                await this.personnel.updateOne(personQuery, {
+                    $set: { projects: assignments },
+                });
+                await this.projects.updateOne(projectQuery, {
+                    $set: { members: members },
+                });
+            } catch (error) {
+                console.log("ERROR: " + error);
+            } 
+        }
 
         
-        const assignmentIndex = assignments.findIndex(
-            (assignment) => assignment.id === projectID
-        );
-            const memberIndex = members.findIndex(
-            (member) => member.id === personID
-        );
 
-        // Check if assignment and member were found
-        if (assignmentIndex === -1 || memberIndex === -1) {
-            return;
-        }
-
-        // Update the role
-        assignments[assignmentIndex].role = role;
-        members[memberIndex].role = role;
-
-        // push to database
-        try {
-            await this.personnel.updateOne(personQuery, {
-                $set: { projects: assignments },
-            });
-            await this.projects.updateOne(projectQuery, {
-                $set: { members: members },
-            });
-        } catch (error) {
-            console.log("ERROR: " + error);
-        }
     }
 
     /**

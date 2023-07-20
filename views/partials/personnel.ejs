@@ -1,11 +1,11 @@
 
-<div class="col-md-4">
+<div class="col-xl-4 col-lg-12 col-sm-auto">
   <div class="well">
     <div class="card">
-      <div class="card-body">
+      <div class="card-body p-2">
         <div class="align-items-center d-flex ">
-          <h1 class="card-title m-0">PERSONNEL - <%= personnel.length  %> </h1>
-          <button class="btn border-secondary-subtle ms-auto " data-bs-toggle="modal" data-bs-target="#personnelModal">ADD +</button>
+          <h1 class="card-title m-0 text-nowrap ">PERSONNEL - <%= personnel.length  %> </h1>
+          <button class="btn border-secondary-subtle ms-auto text-nowrap" data-bs-toggle="modal" data-bs-target="#personnelModal">ADD +</button>
         </div>
 
       <!-- Modal for adding a new person -->
@@ -33,7 +33,7 @@
       </div>
 
         <% let assigned = 0; let unassigned = 0; personnel.forEach(function(person) {if (person.projects) {assigned+=1} else {unassigned+=1}}) %>
-        <hr><h5 class="card-title">Assigned - <%= assigned %></h5>
+        <hr class="mt-2"><h5 class="card-title">Assigned - <%= assigned %></h5>
         <div class="card-body bg-secondary-subtle" id="cont" ondrop="drop(event)" ondragover="allowDrop(event)">
 
         <% personnel.forEach(function(person) { if ((person.projects && person.projects.length)) { 

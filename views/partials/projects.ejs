@@ -7,16 +7,16 @@
 
 
   <div class="row">
-    <div class="card col-md-8">
+    <div class="card col-xl-8 col-lg-12 col-sm-auto">
       <div class="card-body p-2">
         <div class="align-items-center d-flex ">
           <!-- Lincoln - The ADD, IMPORT and EXPORT buttons target specific modals to pop up when clicked -->
-          <button class="btn border-secondary-subtle float-start mb-2" data-bs-toggle="modal" data-bs-target="#projectModal">ADD +</button>
+          <button class="btn border-secondary-subtle float-start mb-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#projectModal">ADD +</button>
           <!-- Kittle - PROJECTS title for card + the amount of projects displayed for the user to easily tell how many projects there are -->
-          <h1 class="card-title text-center ms-auto">PROJECTS - <%= projects.length %></h1>
-          <button class="btn btn-sm border-secondary-subtle ms-auto mb-2" data-bs-toggle="modal" data-bs-target="#importModal">Import</button>
+          <h1 class="card-title text-center ms-auto text-nowrap">PROJECTS - <%= projects.length %></h1>
+          <button class="btn border-secondary-subtle ms-auto mb-2" data-bs-toggle="modal" data-bs-target="#importModal">Import</button>
           <!-- Gonzales - export JSON button function -->
-          <button class="btn btn-sm border-secondary-subtle mb-2" onclick="exportJson()">Export</button>  
+          <button class="btn border-secondary-subtle mb-2" onclick="exportJson()">Export</button>  
         </div>
         <!-- This modal is triggered by pressing the ADD + button -->
         <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
@@ -85,9 +85,13 @@
                 <!-- Form for the change lead selection -->
                 <form id="leadForm" action="/projects" method = "POST">
                   <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="leadModalLabel">Change/Add Lead</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header align-items-start">
+                      <div class="col mt-1"><h5 class="modal-title " id="leadModalLabel">Change/Add/Remove Lead</h5>
+                      <h6 class="text-secondary fst-italic">Selecting nothing will remove the current lead.</h6></div>
+                      <button type="button" class="btn-close m-1" data-bs-dismiss="modal" aria-label="Close"></button>
+                      
+                      
+                      
                     </div>
                     <div class="modal-body">
                       <!-- Kittle implemented the iteration through all people to change lead -->
@@ -249,6 +253,7 @@
                         <div class="modal-content">
                           <div class="modal-header">
                             <h5 class="modal-title" id="leadModalLabel">Add Lead</h5>
+                            
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <div class="modal-body">                           
