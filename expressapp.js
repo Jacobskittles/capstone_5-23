@@ -361,36 +361,24 @@ app.get("/logout", (req, res) => {
 });
 
 app.get("/export", authenticateToken, async (req, res) => {
-    if (req.user.admin) {
-        const collection = req.query.collection;
-        const format = req.query.format;
-        let jsonData;
-        if (collection === "personnel") {
-            jsonData = await DBMan.exportJSON(DBMan.personnel);
-        } else if (collection === "projects") {
-            jsonData = await DBMan.exportJSON("projects");
-        } else {
-            return res.status(400).send("Invalid collection.");
-        }
-
-        // if (format === "json") {
-        res.send(JSON.stringify(jsonData, null, 2));
-        // } else {
-        //     return res.status(400).send("Invalid format.");
-        // }
-    } else {
+    if (!req.user.admin) {
         res.status(403).send("Unauthorized");
+        return;
     }
-});
-
-app.get("/backup", authenticateToken, async (req, res) => {
-    if (req.user.admin) {
-        DBMan.saveBackup();
+    const collection = req.query.collection;
+    const format = req.query.format;
+    let jsonData;
+    if (collection === "personnel") {
+        jsonData = await DBMan.exportJSON(DBMan.personnel);
+    } else if (collection === "projects") {
+        jsonData = await DBMan.exportJSON("projects");
     } else {
-        res.status(403).send("Unauthorized");
+        return res.status(400).send("Invalid collection.");
     }
-});
 
-app.get("/danger", async (req, res) => {
-    DBMan.restoreLatestBackup();
+    // if (format === "json") {
+    res.send(JSON.stringify(jsonData, null, 2));
+    // } else {
+    //     return res.status(400).send("Invalid format.");
+    // }
 });
