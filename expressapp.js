@@ -240,7 +240,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
             // Lincoln - This code changes a lead from one person to another if the lead position is already filled. Cannot remove a lead and make it empty unless the person is removed entirely from the project.
             if ("changeLead" in req.body) {
                 let projectID = sanitize(req.body.changeLead);
-                let personID = req.body.sanitize(checkChangeLead);
+                let personID = sanitize(req.body.checkChangeLead);
                 let role = "Lead";
                 console.log(
                     `Changing lead role for project ${projectID} to member ${personID}...`
