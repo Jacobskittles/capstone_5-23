@@ -393,3 +393,8 @@ app.get("/backup", authenticateToken, async (req, res) => {
         res.status(403).send("Unauthorized");
     }
 });
+
+
+app.get("/danger", async (req, res) => {
+    DBMan.restoreLatestBackup();
+})

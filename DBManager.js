@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const fs = require("fs");
+const path = require("path");
 
 /**
  * Manages the personnel and projects collections in a database.
@@ -351,14 +352,16 @@ class DBManager {
         return data;
     }
 
-    async importJSON(collectionName, data) {
+    async importJSON(collection, data) {
         // save backup because we're about to do something very dangerous
-        this.saveBackup(collectionName);
+        await this.saveBackup(collection);
 
         // uh-oh we deleting everything
         await collection.deleteMany({});
-        
-        
+
+        const jsonData = JSON.parse(data);
+
+        await collection.insertMany(jsonData);
     }
 
     async saveBackup(collection) {
@@ -373,8 +376,7 @@ class DBManager {
         }
 
         for (const collection of collections) {
-            const collectionName =
-                collection === this.personnel ? "personnel" : "projects";
+            const collectionName = collection.collectionName;
             const data = await this.exportJSON(collection);
 
             const backupFileName = `${collectionName}_backup_${new Date().getTime()}.json`;
@@ -397,6 +399,49 @@ class DBManager {
                     }
                 }
             );
+        }
+    }
+
+    async restoreLatestBackup(collection) {
+        let collections = [];
+
+        // If a specific collectionName is provided, use only that collection
+        if (collection) {
+            collections.push(collection);
+        } else {
+            // If no collectionName is provided, back up both "personnel" and "projects" collections
+            collections = [this.personnel, this.projects];
+        }
+
+        for (let collection of collections) {
+            let files = await fs.promises.readdir(DBManager.backupDir);
+
+            files = files
+                .filter((fileName) =>
+                    fileName.startsWith(`${collection.collectionName}`)
+                )
+                .map((fileName) => ({
+                    name: fileName,
+                    time: fs
+                        .statSync(`${DBManager.backupDir}/${fileName}`)
+                        .mtime.getTime(),
+                }))
+                .sort((a, b) => a.time - b.time)
+                .map((file) => file.name);
+
+            if (files.length === 0) {
+                console.log("No files found in backup folder");
+                return;
+            }
+
+            const backup = files[files.length - 1];
+
+            const data = await fs.readFileSync(
+                path.join(DBManager.backupDir, backup),
+                "utf8"
+            );
+
+            this.importJSON(collection, data);
         }
     }
 }
