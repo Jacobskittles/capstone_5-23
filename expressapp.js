@@ -1,11 +1,12 @@
 //  6/2/2023 run using command `npm run dev` can be found in package.json under scripts
 
-// Lincoln - Sanitize function: call this on req.params to sanitize them.
+// Lincoln - Sanitize
+/** Sanitize function: call this on any input req.params to sanitize them from SQL injections */ 
 var sanitize = require("mongo-sanitize");
 
-//  Lincoln's code
 const express = require("express");
 
+// Gonzales - tokens and encryption requirements
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -16,6 +17,8 @@ const bodyParser = require("body-parser");
 var cookieParser = require("cookie-parser");
 
 var utils = require("./utils");
+
+// Import the DBManager file
 const DBManager = require("./DBManager");
 
 const app = express();
@@ -24,59 +27,45 @@ const PORT = 8088;
 const secretKey =
     "93dc6c4e2962459eb1f71a88888c7e5a5e9d6bae431eaa6d2bd131712e5c317672b9e6b5a7df2a4c4f20ee41ff42e1c07489905c73802fd8f414994770242990";
 
-// not used with bcrypt compare
-// const SALT_ROUNDS = 10;
-
-// Set the view engine to ejs
+// Lincoln - Set the view engine to ejs
 app.set("view engine", "ejs");
 
+// Lincoln / Gonzales - Use the body parser and cookie parser 
 app.use(bodyParser.urlencoded({ extended: false }));
-
 app.use(cookieParser());
 
-//  This is Express middleware that is used to log access to certain pages in the console.
-//  Mostly for reference.
+// Lincoln - This is Express middleware that is used to log access to certain pages in the console. The logger tracks when requests are made.
 function logger(req, res, next) {
     console.log(
         `Received request ... [${Date.now()}] ${req.method} ${req.url}`
     );
     next();
 }
+// Use the logger
 app.use(logger);
 
-//  Express JSON middleware
+//  Use the Express JSON middleware
 app.use(express.json());
-
-//This is error handling middleware to catch errors in page requests
-function handleErrors(err, req, res, next) {
-    console.log(err);
-    res.status(err.httpStatusCode || 500).send("Oh no, an error occurred!");
-}
 
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
 });
 
-// Middleware to verify the JWT and set the user in the request object
-// Gonzales
+// Gonzales - Middleware to verify the JWT and set the user in the request object
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.jwt; // Assuming you set the JWT as 'jwt' in the cookie
-
     if (!token) {
         // No token found, user is not authenticated
         return res.redirect("/login");
     }
-
     // Verify the JWT and extract the payload
     jwt.verify(token, secretKey, (err, payload) => {
         if (err) {
             // Invalid token or expired
             return res.redirect("/login");
         }
-
         // Attach the payload (user information) to the request object for use in the route handler
         req.user = payload;
-
         // Proceed to the next middleware or route handler
         next();
     });
@@ -88,13 +77,13 @@ const authenticateToken = (req, res, next) => {
 ----------------------------------------
 */
 
-//  Lincoln - This is some code I assembled to connect a web-hosted database to the javascript.
+// Gonzales - connect to Mongo database
 const { MongoClient } = require("mongodb");
 const { error } = require("console");
 const { create } = require("domain");
 
-const uri =
-    "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.9.0";
+// Can be locally hosted or hosted on the web
+const uri = "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.9.0";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri);
@@ -111,17 +100,19 @@ async function dbconnect() {
 }
 dbconnect().catch(console.dir);
 
+// Identify the database you will be using 
 const db = client.db("CBProjects");
 
 let personnel;
 let projects;
 
-// Gonzales - fill page with data
+// Gonzales - function to fill page with data
 async function filldata() {
     personnel = await db.collection("personnel").find().toArray();
     projects = await db.collection("projects").find().toArray();
 }
 
+// Call function to initially fill page with data 
 filldata();
 
 //  Lincoln - Going to localhost itself will simply redirect to the login screen
@@ -240,7 +231,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
             // Lincoln - This code changes a lead from one person to another if the lead position is already filled. Cannot remove a lead and make it empty unless the person is removed entirely from the project.
             if ("changeLead" in req.body) {
                 let projectID = sanitize(req.body.changeLead);
-                let personID = req.body.sanitize(checkChangeLead);
+                let personID = sanitize(req.body.checkChangeLead);
                 let role = "Lead";
                 console.log(
                     `Changing lead role for project ${projectID} to member ${personID}...`
@@ -363,6 +354,7 @@ app.get("/logout", (req, res) => {
     res.render("pages/logout");
 });
 
+// Gonzales - get request for exporting as JSON
 app.get("/export", authenticateToken, async (req, res) => {
     if (req.user.admin) {
         const collection = req.query.collection;
