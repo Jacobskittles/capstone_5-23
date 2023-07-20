@@ -58,6 +58,19 @@ class DBManager {
             (assignment) => assignment.id !== projectID
         );
         members = members.filter((member) => member.id !== personID);
+
+        // push to db
+        try {
+            await this.personnel.updateOne(personQuery, {
+                $set: { projects: assignments },
+            });
+            await this.projects.updateOne(projectQuery, {
+                $set: { members: members },
+            });
+        } catch (error) {
+            console.log("ERROR: " + error);
+            return;
+        }
     }
 
     /**
@@ -342,10 +355,10 @@ class DBManager {
         // save backup because we're about to do something very dangerous
         this.saveBackup(collectionName);
 
-
-
+        // uh-oh we deleting everything
         await collection.deleteMany({});
-
+        
+        
     }
 
     async saveBackup(collection) {
@@ -360,7 +373,8 @@ class DBManager {
         }
 
         for (const collection of collections) {
-            const collectionName = collection === this.personnel ? "personnel" : "projects"
+            const collectionName =
+                collection === this.personnel ? "personnel" : "projects";
             const data = await this.exportJSON(collection);
 
             const backupFileName = `${collectionName}_backup_${new Date().getTime()}.json`;
