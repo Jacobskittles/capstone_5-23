@@ -166,15 +166,17 @@
                         project.members.forEach(function(member) {
                         person=personnel.find(person=> person._id === member.id)
                         if (person.projects) { %>
-                          <input class="form-check-input" name="selectRemoveMembers" type="checkbox" value="<%=person._id%>" id="<%=person._id%>" >
-                          <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
-                            <%= person.firstName+' '+person.lastName %>
-                            <%// count how many projects each person has and determine their color
-                            let total = utils.countProjects(person)
-                            let color = utils.getColor(total)
-                            %>
-                            <span class="badge bg-<%=color%>" style="float: right;"><%= total %></span>
-                          </label> 
+                          <div class="form-check" method="POST" action="/projects" >
+                            <input class="form-check-input" name="selectRemoveMembers" type="checkbox" value="<%=person._id%>" id="<%=person._id%>" >
+                            <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
+                              <%= person.firstName+' '+person.lastName %>
+                              <%// count how many projects each person has and determine their color
+                              let total = utils.countProjects(person)
+                              let color = utils.getColor(total)
+                              %>
+                              <span class="badge bg-<%=color%>" style="float: right;"><%= total %></span>
+                            </label> 
+                          </div>
                         <% }}) %>                        
                     </div>
                     <div class="modal-footer">
@@ -337,7 +339,6 @@
                                 if (person.projects && !alreadyAssigned) {%>
                               <div class="form-check" method="POST" action="/projects" >
                                 <input class="form-check-input" name="selectAddMembers" type="checkbox" value="<%=person._id%>" id="<%=person._id%>" >
-                                
                                 <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
                                   <%= person.firstName+' '+person.lastName %>
                                   <% 
