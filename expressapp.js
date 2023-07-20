@@ -144,7 +144,7 @@ filldata();
 
 //  Lincoln - Going to localhost itself will simply redirect to the login screen
 app.get("/", (req, res) => {
-    res.redirect("/login");
+    res.redirect("/projects");
 });
 
 //  Lincoln - Going to the login page will display the HTML.
