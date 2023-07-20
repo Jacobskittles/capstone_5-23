@@ -1,5 +1,9 @@
 //  6/2/2023 run using command `npm run dev` can be found in package.json under scripts
 
+// Lincoln - Sanitize function: call this on req.params to sanitize them.
+var sanitize = require('mongo-sanitize');
+
+
 //  Lincoln's code
 const express = require("express");
 
@@ -144,7 +148,7 @@ app.get("/projects", authenticateToken, async (req, res) => {
 app.post("/login", async (req, res) => {
     //  This is a function that exists within the app.post. On submit, this code will execute.
     //  Body parser into JSON
-    var { username, password } = req.body;
+    var { username, password } = sanitize(req.body);
 
     const user = await db
         .collection("personnel")
@@ -188,33 +192,37 @@ app.post("/projects", authenticateToken, async (req, res) => {
             //code to input a new user into the database
             if ("addNewPerson" in req.body) {
                 // call createProject from DB manager and fill with inputted data from req.body
+                let firstName = sanitize(req.body.firstName)
+                let lastName = sanitize(req.body.lastName)
                 await DBMan.createPerson({
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName,
+                    firstName: firstName,
+                    lastName: lastName,
                     account: {},
                 });
-                console.log(`New person with name ${req.body.fName} ${req.body.lName} successfully created`)
+                console.log(`New person with name ${firstName} ${lastName} successfully created`)
                 // updates the page immediately with the updated database
                 await filldata();
                 res.redirect("/projects");
             }
             // Lincoln - This code adds a new project to the database
             if ("addNewProject" in req.body) {
+                let projectName = sanitize(req.body.projectName)
+                let projectDescription = sanitize(req.body.projectDescription)
                 // call createProject from DB manager and fill with inputted data from req.body
                 await DBMan.createProject({
-                    name: req.body.projName,
-                    description: req.body.projDesc,
+                    name: projectName,
+                    description: projectDescription,
                     members: [],
                 });
-                console.log(`New project with name ${req.body.projName} successfully created`)
+                console.log(`New project with name ${projectName} successfully created`)
                 await filldata();
                 res.redirect("/projects");
             }
             // Lincoln - This code adds a new lead to a project without a lead
             if ("addNewLead" in req.body) {
-                const projectID = req.body.addNewLead;
-                const personID = req.body.checkLead;
-                const role = "Lead";
+                let projectID = sanitize(req.body.addNewLead);
+                let personID = sanitize(req.body.checkLead);
+                let role = "Lead";
                 console.log(`Adding member ${personID} as lead to ${projectID}...`)
                 await DBMan.changeRole(projectID, personID, role);
                 console.log(`Member ${personID} successfully added as lead to ${projectID}`)
@@ -223,9 +231,9 @@ app.post("/projects", authenticateToken, async (req, res) => {
             }
             // Lincoln - This code changes a lead from one person to another if the lead position is already filled. Cannot remove a lead and make it empty unless the person is removed entirely from the project.
             if("changeLead" in req.body){
-              const projectID = req.body.changeLead
-              const personID = req.body.checkChangeLead
-              const role = "Lead"
+              let projectID = sanitize(req.body.changeLead)
+              let personID = req.body.sanitize(checkChangeLead)
+              let role = "Lead"
               console.log(`Changing lead role for project ${projectID} to member ${personID}...`)
               await DBMan.changeRole(projectID, personID, role);
               console.log(`Lead role for project ${projectID} successfully changed to member ${personID}` )
@@ -235,11 +243,12 @@ app.post("/projects", authenticateToken, async (req, res) => {
             }
             // Lincoln - This code adds a member or members to a project
             if ("addMembersToProject" in req.body) {
-                const projectID = req.body.addMembersToProject;
+                let projectID = sanitize(req.body.addMembersToProject);
+                selectAddMembers = sanitize(req.body.selectAddMembers)
                 //conditional to check if there is one or more members (if one, turn the object into array. if more, it is already an array.)
-                const members = Array.isArray(req.body.selectAddMembers)
-                    ? req.body.selectAddMembers
-                    : [req.body.selectAddMembers];
+                let members = Array.isArray(selectAddMembers)
+                    ? selectAddMembers
+                    : [selectAddMembers];
                 console.log(`Adding members with IDs ${members} to project ${projectID}...`)
                 // iterate through the array of members to join them to the project
                 for (member of members) {
@@ -251,10 +260,11 @@ app.post("/projects", authenticateToken, async (req, res) => {
             }
             // Lincoln - This code removes a member or members from a project
             if ("removeMembersFromProject" in req.body) {
-              const projectID = req.body.removeMembersFromProject;
-              const members = Array.isArray(req.body.selectRemoveMembers)
-                  ? req.body.selectRemoveMembers
-                  : [req.body.selectRemoveMembers];
+              let projectID = sanitize(req.body.removeMembersFromProject);
+              let selectRemoveMembers = sanitize(req.body.selectRemoveMembers)
+              let members = Array.isArray(selectRemoveMembers)
+                  ? selectRemoveMembers
+                  : [selectRemoveMembers];
               console.log(`Removing member(s) with IDs: ${members} from project ${projectID}...`)
               // like adding a list of members to a project, iterate through the array to remove 1 or more from the list
               for (member of members) {
@@ -266,9 +276,9 @@ app.post("/projects", authenticateToken, async (req, res) => {
             }
             // Lincoln - This code edits the project name and/or description
             if ("editProject" in req.body) {
-                projectName = req.body.projName;
-                projectDesc = req.body.projDesc;
-                projectID = req.body.editProject;
+                let projectName = sanitize(req.body.projectName);
+                let projectDesc = sanitize(req.body.projectDescription);
+                let projectID = sanitize(req.body.editProject);
                 console.log(`Editing project with ID: ${projectID}...`)
                 await DBMan.updateProject(projectID, {
                     name: projectName,
@@ -280,7 +290,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
             }
             // Lincoln - This code deletes a project from the database 
             if ("deleteProject" in req.body) {
-                projectID = req.body.deleteProject;
+                let projectID = sanitize(req.body.deleteProject);
                 console.log(`Deleting project with ID: ${projectID}`);
                 await DBMan.deleteProject(projectID);
                 console.log(`Successfully deleted project with ID: ${projectID}`)
@@ -289,7 +299,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
             }
             // Slivinski - This code deletes a person entirely from the database
             if ("deletePerson" in req.body) {
-                personID = req.body.deletePerson;
+                personID = sanitize(req.body.deletePerson);
                 console.log(`Deleting person with ID: ${personID}`);
                 await DBMan.deletePerson(personID);
                 console.log(`Successfully deleted person with ID: ${personID}`);
@@ -298,11 +308,13 @@ app.post("/projects", authenticateToken, async (req, res) => {
             }
             // Slinky - This code edits the first name and/or last name of a person
             if ("editPerson" in req.body) {
-                personID = req.body.editPerson;
+                let personID = sanitize(req.body.editPerson);
+                let firstName = sanitize(req.body.firstName)
+                let lastName = sanitize(req.body.lastName)
                 console.log(`Editing person information with ID: ${personID}...`);
                 await DBMan.updatePerson(personID, {
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName
+                    firstName: firstName,
+                    lastName: lastName
                 });
                 console.log(`Successfully updated person with ID: ${personID}`);
                 await filldata();

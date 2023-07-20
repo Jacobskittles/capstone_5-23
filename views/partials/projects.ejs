@@ -13,10 +13,10 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <label for="projName">Project Name:</label>
-              <input type="text" id="projName" name="projName"><br><br>
-              <label for="projDesc">Description:</label>
-              <textarea class="form-control" rows="5" type="projDesc" id="projDesc" name="projDesc"></textarea><br><br>
+              <label for="projectName">Project Name:</label>
+              <input type="text" id="projectName" name="projectName" required><br><br>
+              <label for="projectDescription">Description:</label>
+              <textarea class="form-control" rows="5" type="projectDescription" id="projectDescription" name="projectDescription" required></textarea><br><br>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -206,10 +206,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                <label for="projName">Project Name:</label>
-                <input type="text" id="projName" name="projName" value="<%=project.name%>"required><br><br>
-                <label for="projDesc">Description:</label>
-                <textarea class="form-control" rows="5" type="projDesc" id="projDesc" name="projDesc" required><%=project.description%></textarea><br><br>
+                <label for="projectName">Project Name:</label>
+                <input type="text" id="projectName" name="projectName" value="<%=project.name%>"required><br><br>
+                <label for="projectDescription">Description:</label>
+                <textarea class="form-control" rows="5" type="projectDescription" id="projectDescription" name="projectDescription" required><%=project.description%></textarea><br><br>
               </div>
               <div class="modal-footer">
                 
