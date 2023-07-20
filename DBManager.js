@@ -321,6 +321,21 @@ class DBManager {
 
         this.projects.updateOne(projectQuery, { $set: { name, description } });
     }
+
+    async exportJSON(collection) {
+        let data;
+        if (collection === "personnel") {
+            data = await this.personnel.find().toArray();
+        } else if (collection === "projects") {
+            data = await this.projects.find().toArray();
+        } else {
+            throw new Error(
+                'Invalid collection specified. Use "personnel" or "projects".'
+            );
+        }
+
+        return data;
+    }
 }
 
 module.exports = DBManager;

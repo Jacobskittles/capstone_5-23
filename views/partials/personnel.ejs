@@ -41,7 +41,7 @@
           <hr><h5 class="card-title">Assigned - <%= assigned %></h5>
           <div class="card-body bg-secondary-subtle" id="cont" ondrop="drop(event)" ondragover="allowDrop(event)">
 
-          <% personnel.forEach(function(person) { if (person.projects && person.projects.length) { 
+          <% personnel.forEach(function(person) { if ((person.projects && person.projects.length)) { 
             let assignments = [];
             person.projects.forEach(function(assignment) {
               let projectName = projects.find(project=> project._id === assignment.id).name
@@ -123,13 +123,13 @@
                         </div>
                         <div class="modal-body">
                           <label for="firstName">First Name:</label>
-                          <input type="text" id="firstName" name="firstName" value="<%=person.firstName%>"required><br><br>
+                          <input class="input" type="text" id="firstName" name="firstName" value="<%=person.firstName%>"required><br><br>
                           <label for="lastName">Last Name:</label>
-                          <input type="text" id="lastName" name="lastName" value="<%=person.lastName%>" required><br><br>
+                          <input class="input" type="text" id="lastName" name="lastName" value="<%=person.lastName%>" required><br><br>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button name="editPerson" type="submit" class="btn btn-danger" value="<%=person._id%>" id="<%=person._id%>" >Submit</button>
+                          <button name="editPerson" type="submit" class="btn btn-primary" value="<%=person._id%>" id="<%=person._id%>" >Submit</button>
                         </div>
                       </div>
                     </form>
@@ -223,7 +223,7 @@
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button name="editPerson" type="submit" class="btn btn-danger" value="<%=person._id%>" id="<%=person._id%>" >Submit</button>
+                          <button name="editPerson" type="submit" class="btn btn-primary" value="<%=person._id%>" id="<%=person._id%>" >Submit</button>
                         </div>
                       </div>
                     </form>
@@ -248,18 +248,17 @@
 
 <script>
 
-  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-    return new bootstrap.Popover(popoverTriggerEl)
-  });
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+  return new bootstrap.Popover(popoverTriggerEl)
+});
 
   document.getElementsByName("persbtn").addEventListener("hover", function() {
-    document.getElementById("dotsButton").classList.remove("d-none");
-  });
+  document.getElementById("dotsButton").classList.remove("d-none");
+});
 
-  document.getElementById("dotsButton").addEventListener("click", function() {
-    var myModal = new bootstrap.Modal(document.getElementById("myModal"));
-    myModal.show();
-  });
+
+
+
 
 </script>
