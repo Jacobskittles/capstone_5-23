@@ -262,7 +262,7 @@
                               if (person.projects) {person.projects.forEach(function(item) {assignments.push(item.id)})}
                               if (person.projects) {%>
                                 <div class="form-check" method="POST" action="/projects" >
-                                  <input class="form-check-input" name="checkLead" type="radio" value="<%=person._id%>" id="<%=person._id%>" >
+                                  <input class="form-check-input" name="checkChangeLead" type="radio" value="<%=person._id%>" id="<%=person._id%>" >
                                   <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
                                     <%= person.firstName+' '+person.lastName %>
                                     <%// count how many projects each person has and determine their color
@@ -275,7 +275,7 @@
                               <%}
                               if(!person.projects){ %>
                                 <div class="form-check">
-                                  <input name="checkLead" class="form-check-input" type="radio" value="<%=person._id%>" id="<%=person._id%>">
+                                  <input name="checkChangeLead" class="form-check-input" type="radio" value="<%=person._id%>" id="<%=person._id%>">
                                   <label class="form-check-label" style="width: 100%; text-align: left; position: relative; z-index: 1000" for="<%=person._id%>">
                                     <%= person.firstName+' '+person.lastName %>
                                     <span class="badge bg-primary" style="float: right;">0</span>
@@ -287,7 +287,7 @@
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
   
-                            <button name="addNewLead" value="<%=project._id%>" id="<%=project._id%>" type="submit" class="btn btn-primary" >Submit</button>
+                            <button name="changeLead" value="<%=project._id%>" id="<%=project._id%>" type="submit" class="btn btn-primary" >Submit</button>
                           </div>
                         </div>
                       </form>

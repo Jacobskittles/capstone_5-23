@@ -222,22 +222,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 await filldata();
                 res.redirect("/projects");
             }
-            // Lincoln - This code adds a new lead to a project without a lead
-            if ("addNewLead" in req.body) {
-                let projectID = sanitize(req.body.addNewLead);
-                let personID = sanitize(req.body.checkLead);
-                let role = "Lead";
-                console.log(
-                    `Adding member ${personID} as lead to ${projectID}...`
-                );
-                await DBMan.changeRole(projectID, personID, role);
-                console.log(
-                    `Member ${personID} successfully added as lead to ${projectID}`
-                );
-                await filldata();
-                res.redirect("/projects");
-            }
-            // Lincoln - This code changes a lead from one person to another if the lead position is already filled. Cannot remove a lead and make it empty unless the person is removed entirely from the project.
+            // Lincoln - This code changes a lead from one person to another if the lead position is already filled. 
             if ("changeLead" in req.body) {
                 let projectID = sanitize(req.body.changeLead);
                 let personID = sanitize(req.body.checkChangeLead);
