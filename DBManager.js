@@ -437,17 +437,18 @@ class DBManager {
     async restoreLatestBackup(collection) {
         let collections = [];
 
-        // If a specific collectionName is provided, use only that collection
+        // If a specific collection is provided, use only that collection
         if (collection) {
             collections.push(collection);
         } else {
-            // If no collectionName is provided, back up both "personnel" and "projects" collections
+            // If no collection is provided, back up both "personnel" and "projects" collections
             collections = [this.personnel, this.projects];
         }
 
         for (let collection of collections) {
             let files = await fs.promises.readdir(DBManager.backupDir);
 
+            // for every file that starts with the right name, get the time then sort it
             files = files
                 .filter((fileName) =>
                     fileName.startsWith(`${collection.collectionName}`)
@@ -466,6 +467,7 @@ class DBManager {
                 return;
             }
 
+            // get the last file, grab the data and import
             const backup = files[files.length - 1];
 
             const data = await fs.readFileSync(
