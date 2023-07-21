@@ -13,7 +13,7 @@
           <!-- Lincoln - The ADD, IMPORT and EXPORT buttons target specific modals to pop up when clicked -->
           <button class="btn border-secondary-subtle float-start mb-2 text-nowrap" data-bs-toggle="modal" data-bs-target="#projectModal">ADD +</button>
           <!-- Kittle - PROJECTS title for card + the amount of projects displayed for the user to easily tell how many projects there are -->
-          <h1 class="card-title text-center ms-auto text-nowrap">PROJECTS - <%= projects.length %></h1>
+          <h2 class="card-title text-center ms-auto text-nowrap">PROJECTS - <%= projects.length %></h2>
           <button class="btn border-secondary-subtle ms-auto mb-2" data-bs-toggle="modal" data-bs-target="#importModal">Import</button>
           <!-- Gonzales - export JSON button function -->
           <button class="btn border-secondary-subtle mb-2" onclick="exportJson()">Export</button>  
@@ -226,7 +226,7 @@
         <div id="collapse-<%=project._id %>" class="row collapse show">
           <div class="col-sm-auto">
             <div class="card-title">Lead:</div>
-              <div class="card-body bg-secondary-subtle" ondrop="drop(event)" ondragover="allowDrop(event)">
+              <div class="card-body bg-secondary-subtle rounded" ondrop="drop(event)" ondragover="allowDrop(event)">
                 <%
                 // Kittle's code for iterating through members, finding their IDs, and if they are assigned to the project they are displayed on that project.
                 let empty = true;
@@ -299,7 +299,7 @@
             </div>
             <div class="col-sm-auto">
               <div class="card-title">Members:</div>
-              <div class="card-body bg-secondary-subtle" ondrop="drop(event)" ondragover="allowDrop(event)">
+              <div class="card-body bg-secondary-subtle rounded" ondrop="drop(event)" ondragover="allowDrop(event)">
                 <%
                   empty = true;
                   project.members.forEach(function(member) { // Create elements for all the other members

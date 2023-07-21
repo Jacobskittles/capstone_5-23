@@ -4,8 +4,8 @@
     <div class="card">
       <div class="card-body p-2">
         <div class="align-items-center d-flex ">
-          <h1 class="card-title m-0 text-nowrap ">PERSONNEL - <%= personnel.length  %> </h1>
-          <button class="btn border-secondary-subtle ms-auto text-nowrap" data-bs-toggle="modal" data-bs-target="#personnelModal">ADD +</button>
+          <h2 class="card-title m-0 text-nowrap ">PERSONNEL - <%= personnel.length  %> </h2>
+          <button class="btn border-secondary-subtle ms-auto text-nowrap" data-bs-toggle="modal" data-bs-target="#addNewPersonModal">ADD +</button>
         </div>
 
       <!-- Modal for adding a new person -->
@@ -34,7 +34,7 @@
 
         <% let assigned = 0; let unassigned = 0; personnel.forEach(function(person) {if (person.projects) {assigned+=1} else {unassigned+=1}}) %>
         <hr class="mt-2"><h5 class="card-title">Assigned - <%= assigned %></h5>
-        <div class="card-body bg-secondary-subtle" id="cont" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <div class="card-body bg-secondary-subtle rounded" id="cont" ondrop="drop(event)" ondragover="allowDrop(event)">
 
         <% personnel.forEach(function(person) { if ((person.projects && person.projects.length)) { 
           let assignments = [];
@@ -136,7 +136,7 @@
         </div>
           <hr>
           <h5 class="card-title">Unassigned - <%= unassigned %></h5>
-          <div class="card-body bg-secondary-subtle" ondrop="drop(event)" ondragover="allowDrop(event)" id="peopleList">
+          <div class="card-body bg-secondary-subtle rounded" ondrop="drop(event)" ondragover="allowDrop(event)" id="peopleList">
           <% personnel.forEach(function(person) { if (!person.projects || (person.projects && !person.projects.length)){ %>
             <div class="btn bg-light border-secondary-subtle w-100 d-inline-flex p-0">
               <div name="persbtn" id="<%= person._id %>-button" draggable="True"  class="btn bg-light noDrop w-100 text-start" data-bs-toggle="popover"  title= "Info for <%=person.firstName%> <%=person.lastName%>" data-bs-placement="left" data-bs-content="No projects assigned." ondragstart="drag(event)">
