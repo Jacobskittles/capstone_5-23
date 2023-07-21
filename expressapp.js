@@ -59,6 +59,22 @@ app.listen(PORT, () => {
 
 // Middleware to verify the JWT and set the user in the request object
 // Gonzales
+/**
+ * Middleware to authenticate user with JSON Web Token (JWT).
+ *
+ * @param {Object} req - The Express request object.
+ * @param {Object} res - The Express response object.
+ * @param {Function} next - The next middleware function to be called if the user is authenticated.
+ * @returns {undefined}
+ *
+ * @example
+ * // Use this middleware to protect routes that require authentication.
+ * app.get('/protected-route', authenticateToken, (req, res) => {
+ *     // req.user contains the payload from the JWT, representing the authenticated user.
+ *     // Perform actions specific to the authenticated user here.
+ *     res.send('You are authenticated!');
+ * });
+ */
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.jwt; // Assuming you set the JWT as 'jwt' in the cookie
 
@@ -124,9 +140,9 @@ async function filldata() {
 
 filldata();
 
-//  Lincoln - Going to localhost itself will simply redirect to the login screen
+//  Lincoln - Going to localhost itself will simply redirect to the project screen, which will redirect to login if fail credentials
 app.get("/", (req, res) => {
-    res.redirect("/login");
+    res.redirect("/projects");
 });
 
 //  Lincoln - Going to the login page will display the HTML.
@@ -186,157 +202,140 @@ const DBMan = new DBManager(
 
 // Lincoln and Slivinski's Code - Posts to the database depending on the name and values associated with the modal or submit buttons that you are pressing in order to keep the site limited to one page.
 app.post("/projects", authenticateToken, async (req, res) => {
-    if (req.user.admin) {
-        console.log(req.user.admin);
-        try {
-            //code to input a new user into the database
-            if ("addNewPerson" in req.body) {
-                // call createProject from DB manager and fill with inputted data from req.body
-                let firstName = sanitize(req.body.firstName);
-                let lastName = sanitize(req.body.lastName);
-                await DBMan.createPerson({
-                    firstName: firstName,
-                    lastName: lastName,
-                    account: {},
-                });
-                console.log(
-                    `New person with name ${firstName} ${lastName} successfully created`
-                );
-                // updates the page immediately with the updated database
-                await filldata();
-                res.redirect("/projects");
-            }
-            // Lincoln - This code adds a new project to the database
-            if ("addNewProject" in req.body) {
-                let projectName = sanitize(req.body.projectName);
-                let projectDescription = sanitize(req.body.projectDescription);
-                // call createProject from DB manager and fill with inputted data from req.body
-                await DBMan.createProject({
-                    name: projectName,
-                    description: projectDescription,
-                    members: [],
-                });
-                console.log(
-                    `New project with name ${projectName} successfully created`
-                );
-                await filldata();
-                res.redirect("/projects");
-            }
-            // Lincoln - This code changes a lead from one person to another if the lead position is already filled. 
-            if ("changeLead" in req.body) {
-                let projectID = sanitize(req.body.changeLead);
-                let personID = sanitize(req.body.checkChangeLead);
-                let role = "Lead";
-                console.log(
-                    `Changing lead role for project ${projectID} to member ${personID}...`
-                );
-                await DBMan.changeRole(projectID, personID, role);
-                console.log(
-                    `Lead role for project ${projectID} successfully changed to member ${personID}`
-                );
-                await filldata();
-                res.redirect("/projects");
-            }
-            // Lincoln - This code adds a member or members to a project
-            if ("addMembersToProject" in req.body) {
-                let projectID = sanitize(req.body.addMembersToProject);
-                selectAddMembers = sanitize(req.body.selectAddMembers);
-                //conditional to check if there is one or more members (if one, turn the object into array. if more, it is already an array.)
-                let members = Array.isArray(selectAddMembers)
-                    ? selectAddMembers
-                    : [selectAddMembers];
-                console.log(
-                    `Adding members with IDs ${members} to project ${projectID}...`
-                );
-                // iterate through the array of members to join them to the project
-                for (member of members) {
-                    await DBMan.join(projectID, member);
-                }
-                console.log(
-                    `Members with IDs ${members} successfully added to project ${projectID}`
-                );
-                await filldata();
-                res.redirect("/projects");
-            }
-            // Lincoln - This code removes a member or members from a project
-            if ("removeMembersFromProject" in req.body) {
-                let projectID = sanitize(req.body.removeMembersFromProject);
-                let selectRemoveMembers = sanitize(
-                    req.body.selectRemoveMembers
-                );
-                let members = Array.isArray(selectRemoveMembers)
-                    ? selectRemoveMembers
-                    : [selectRemoveMembers];
-                console.log(
-                    `Removing member(s) with IDs: ${members} from project ${projectID}...`
-                );
-                // like adding a list of members to a project, iterate through the array to remove 1 or more from the list
-                for (member of members) {
-                    await DBMan.unjoin(projectID, member);
-                }
-                console.log(
-                    `Members successfully removed from project: ${projectID}`
-                );
-                await filldata();
-                res.redirect("/projects");
-            }
-            // Lincoln - This code edits the project name and/or description
-            if ("editProject" in req.body) {
-                let projectName = sanitize(req.body.projectName);
-                let projectDesc = sanitize(req.body.projectDescription);
-                let projectID = sanitize(req.body.editProject);
-                console.log(`Editing project with ID: ${projectID}...`);
-                await DBMan.updateProject(projectID, {
-                    name: projectName,
-                    description: projectDesc,
-                });
-                console.log(
-                    `Successfully updated project with ID: ${projectID}`
-                );
-                await filldata();
-                res.redirect("/projects");
-            }
-            // Lincoln - This code deletes a project from the database
-            if ("deleteProject" in req.body) {
-                let projectID = sanitize(req.body.deleteProject);
-                console.log(`Deleting project with ID: ${projectID}`);
-                await DBMan.deleteProject(projectID);
-                console.log(
-                    `Successfully deleted project with ID: ${projectID}`
-                );
-                await filldata();
-                res.redirect("/projects");
-            }
-            // Slivinski - This code deletes a person entirely from the database
-            if ("deletePerson" in req.body) {
-                personID = sanitize(req.body.deletePerson);
-                console.log(`Deleting person with ID: ${personID}`);
-                await DBMan.deletePerson(personID);
-                console.log(`Successfully deleted person with ID: ${personID}`);
-                await filldata();
-                res.redirect("/projects");
-            }
-            // Slinky - This code edits the first name and/or last name of a person
-            if ("editPerson" in req.body) {
-                let personID = sanitize(req.body.editPerson);
-                let firstName = sanitize(req.body.firstName);
-                let lastName = sanitize(req.body.lastName);
-                console.log(
-                    `Editing person information with ID: ${personID}...`
-                );
-                await DBMan.updatePerson(personID, {
-                    firstName: firstName,
-                    lastName: lastName,
-                });
-                console.log(`Successfully updated person with ID: ${personID}`);
-                await filldata();
-                res.redirect("/projects");
-            }
-        } catch (error) {
-            // General error handling function
-            console.error(error);
-            res.status(500).send("An error occurred.");
+    if (!req.user.admin) {
+        res.status(403).send("Unauthorized");
+        return;
+    }
+
+    try {
+        //code to input a new user into the database
+        if ("addNewPerson" in req.body) {
+            // call createProject from DB manager and fill with inputted data from req.body
+            const firstName = sanitize(req.body.firstName);
+            const lastName = sanitize(req.body.lastName);
+            await DBMan.createPerson({
+                firstName: firstName,
+                lastName: lastName,
+                account: {},
+            });
+            console.log(
+                `New person with name ${firstName} ${lastName} successfully created`
+            );
         }
+        // Lincoln - This code adds a new project to the database
+        else if ("addNewProject" in req.body) {
+            const projectName = sanitize(req.body.projectName);
+            const projectDescription = sanitize(req.body.projectDescription);
+            // call createProject from DB manager and fill with inputted data from req.body
+            await DBMan.createProject({
+                name: projectName,
+                description: projectDescription,
+                members: [],
+            });
+            console.log(
+                `New project with name ${projectName} successfully created`
+            );
+        }
+        // Lincoln - This code changes a lead from one person to another if the lead position is already filled.
+        else if ("changeLead" in req.body) {
+            const projectID = sanitize(req.body.changeLead);
+            const personID = sanitize(req.body.checkChangeLead);
+            const role = "Lead";
+            console.log(
+                `Changing lead role for project ${projectID} to member ${personID}...`
+            );
+            await DBMan.changeRole(projectID, personID, role);
+            console.log(
+                `Lead role for project ${projectID} successfully changed to member ${personID}`
+            );
+        }
+        // Lincoln - This code adds a member or members to a project
+        else if ("addMembersToProject" in req.body) {
+            const projectID = sanitize(req.body.addMembersToProject);
+            const selectAddMembers = sanitize(req.body.selectAddMembers);
+            //conditional to check if there is one or more members (if one, turn the object into array. if more, it is already an array.)
+            const members = Array.isArray(selectAddMembers)
+                ? selectAddMembers
+                : [selectAddMembers];
+            console.log(
+                `Adding members with IDs ${members} to project ${projectID}...`
+            );
+            // iterate through the array of members to join them to the project
+            for (let member of members) {
+                await DBMan.join(projectID, member);
+            }
+            console.log(
+                `Members with IDs ${members} successfully added to project ${projectID}`
+            );
+        }
+        // Lincoln - This code removes a member or members from a project
+        else if ("removeMembersFromProject" in req.body) {
+            const projectID = sanitize(req.body.removeMembersFromProject);
+            const selectRemoveMembers = sanitize(req.body.selectRemoveMembers);
+            const members = Array.isArray(selectRemoveMembers)
+                ? selectRemoveMembers
+                : [selectRemoveMembers];
+            console.log(
+                `Removing member(s) with IDs: ${members} from project ${projectID}...`
+            );
+            // like adding a list of members to a project, iterate through the array to remove 1 or more from the list
+            for (let member of members) {
+                await DBMan.unjoin(projectID, member);
+            }
+            console.log(
+                `Members successfully removed from project: ${projectID}`
+            );
+        }
+        // Lincoln - This code edits the project name and/or description
+        else if ("editProject" in req.body) {
+            const projectName = sanitize(req.body.projectName);
+            const projectDesc = sanitize(req.body.projectDescription);
+            const projectID = sanitize(req.body.editProject);
+            console.log(`Editing project with ID: ${projectID}...`);
+            await DBMan.updateProject(projectID, {
+                name: projectName,
+                description: projectDesc,
+            });
+            console.log(`Successfully updated project with ID: ${projectID}`);
+        }
+        // Lincoln - This code deletes a project from the database
+        else if ("deleteProject" in req.body) {
+            const projectID = sanitize(req.body.deleteProject);
+            console.log(`Deleting project with ID: ${projectID}`);
+            await DBMan.deleteProject(projectID);
+            console.log(`Successfully deleted project with ID: ${projectID}`);
+        }
+        // Slivinski - This code deletes a person entirely from the database
+        else if ("deletePerson" in req.body) {
+            const personID = sanitize(req.body.deletePerson);
+            console.log(`Deleting person with ID: ${personID}`);
+            await DBMan.deletePerson(personID);
+            console.log(`Successfully deleted person with ID: ${personID}`);
+        }
+        // Slinky - This code edits the first name and/or last name of a person
+        else if ("editPerson" in req.body) {
+            const personID = sanitize(req.body.editPerson);
+            const firstName = sanitize(req.body.firstName);
+            const lastName = sanitize(req.body.lastName);
+            console.log(`Editing person information with ID: ${personID}...`);
+            await DBMan.updatePerson(personID, {
+                firstName: firstName,
+                lastName: lastName,
+            });
+            console.log(`Successfully updated person with ID: ${personID}`);
+        } else {
+            // If none of the expected operations are present in req.body
+            res.status(400).send("Invalid request");
+            return;
+        }
+
+        // updates the page immediately with the updated database
+        await filldata();
+        res.redirect("/projects");
+    } catch (error) {
+        // General error handling function
+        console.error(error);
+        res.status(500).send("An error occurred.");
     }
 });
 
@@ -349,24 +348,25 @@ app.get("/logout", (req, res) => {
 });
 
 app.get("/export", authenticateToken, async (req, res) => {
-    if (req.user.admin) {
-        const collection = req.query.collection;
-        const format = req.query.format;
-        let jsonData;
-        if (collection === "personnel") {
-            jsonData = await DBMan.exportJSON("personnel");
-        } else if (collection === "projects") {
-            jsonData = await DBMan.exportJSON("projects");
-        } else {
-            return res.status(400).send("Invalid collection.");
-        }
-
-        // if (format === "json") {
-        res.send(JSON.stringify(jsonData, null, 2));
-        // } else {
-        //     return res.status(400).send("Invalid format.");
-        // }
-    } else {
+    if (!req.user.admin) {
         res.status(403).send("Unauthorized");
+        return;
     }
+    
+    const collection = req.query.collection;
+    const format = req.query.format;
+    let jsonData;
+    if (collection === "personnel") {
+        jsonData = await DBMan.exportJSON(DBMan.personnel);
+    } else if (collection === "projects") {
+        jsonData = await DBMan.exportJSON(DBMan.projects);
+    } else {
+        return res.status(400).send("Invalid collection.");
+    }
+
+    // if (format === "json") {
+    res.send(JSON.stringify(jsonData, null, 2));
+    // } else {
+    //     return res.status(400).send("Invalid format.");
+    // }
 });

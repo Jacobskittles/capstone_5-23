@@ -1,9 +1,14 @@
+const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
+
 /**
  * Manages the personnel and projects collections in a database.
  * Gonzales' code
  */
-const crypto = require("crypto");
 class DBManager {
+    static backupDir = "./backup";
+
     /**
      * Constructs a new DBManager instance.
      * @param {Collection} projects - The projects collection object.
@@ -21,43 +26,41 @@ class DBManager {
      * @returns {Promise<void>} - A promise that resolves once the operation is complete.
      */
 
-    async  unjoin(projectID, personID) {
-    let projectQuery = { _id: projectID };
-    let personQuery = { _id: personID };
+    async unjoin(projectID, personID) {
+        let projectQuery = { _id: projectID };
+        let personQuery = { _id: personID };
 
-    let person, project;
-    try {
-        person = await this.personnel.findOne(personQuery);
-        project = await this.projects.findOne(projectQuery);
+        let person, project;
+        try {
+            person = await this.personnel.findOne(personQuery);
+            project = await this.projects.findOne(projectQuery);
 
-        if (!person || !project) {
-            console.log("Result not found");
-            return;
+            if (!person || !project) {
+                console.log("Result not found");
+                return;
+            }
+        } catch (error) {
+            console.log("ERROR: " + error);
         }
-    } catch (error) {
-        console.log("ERROR: " + error);
-    }
 
-    let assignments = person.projects;
-    let members = project.members;
+        let assignments = person.projects;
+        let members = project.members;
 
-    if (!assignments || !members) return; // this person has no projects
+        if (!assignments || !members) return; // this person has no projects
 
-    // this isn't joined
-    if (
-        !assignments.find((assignment) => assignment.id === projectID) ||
-        !members.find((member) => member.id === personID)
-    )
-        return;
+        // this isn't joined
+        if (
+            !assignments.find((assignment) => assignment.id === projectID) ||
+            !members.find((member) => member.id === personID)
+        )
+            return;
 
-    assignments = assignments.filter(
-        (assignment) => assignment.id !== projectID
-    );
-    members = members.filter((member) => member.id !== personID);
-    
+        assignments = assignments.filter(
+            (assignment) => assignment.id !== projectID
+        );
+        members = members.filter((member) => member.id !== personID);
 
-    // Update the person's projects array or remove it if no assignments remain
-    if (assignments.length > 0) {
+        // push to db
         try {
             await this.personnel.updateOne(personQuery, {
                 $set: { projects: assignments },
@@ -69,22 +72,7 @@ class DBManager {
             console.log("ERROR: " + error);
             return;
         }
-    } else {
-        try {
-            await this.personnel.updateOne(personQuery, {
-                $unset: { projects: "" },
-            });
-            await this.projects.updateOne(projectQuery, {
-                $set: { members: members },
-            });
-        } catch (error) {
-            console.log("ERROR: " + error);
-            return;
-        }
     }
-
-}
-
 
     /**
      * Joins a person to a project in the database.
@@ -168,74 +156,63 @@ class DBManager {
         const personQuery = { _id: personID };
 
         // need to check if the person is in the project, if they aren't call the join function
-        await this.join(projectID, personID)
+        await this.join(projectID, personID);
 
         //create and load the person and project objects with queries
         let person, project;
         try {
             person = await this.personnel.findOne(personQuery);
             project = await this.projects.findOne(projectQuery);
-            if (!project) {
+            if (!person || !project) {
                 console.log("Result not found");
                 return;
             }
         } catch (error) {
             console.log("ERROR: " + error);
         }
-        if(!person){
-           let members = project.members;
-            // removes lead role from anyone with lead role if nothing is selected
-                for (let member of members) {
-                    if (member.role === "Lead") {
-                        await this.unjoin(projectID, member.id)
-                        await this.join(projectID, member.id)
-                    } 
-            }
-        }else{
-           let assignments = person.projects;
-           let members = project.members;
 
-            // THERE CAN ONLY BE ONE!
-            if (role === "Lead") {
-                for (let member of members) {
-                    if (member.role === "Lead") {
-                        await this.unjoin(projectID, member.id)
-                        await this.join(projectID, member.id)
-                    }
+        const assignments = person.projects;
+        const members = project.members;
+
+        // THERE CAN ONLY BE ONE!
+        if (role === "Lead") {
+            for (let member of members) {
+                if (member.role === "Lead") {
+                    await this.unjoin(projectID, member.id);
+                    await this.join(projectID, member.id);
                 }
             }
-            // Find index of assignment and member
-            const assignmentIndex = assignments.findIndex(
-                (assignment) => assignment.id === projectID
-            );
-                const memberIndex = members.findIndex(
-                (member) => member.id === personID
-            );
-
-            // Check if assignment and member were found
-            if (assignmentIndex === -1 || memberIndex === -1) {
-                return;
-            }
-
-            // Update the role
-            assignments[assignmentIndex].role = role;
-            members[memberIndex].role = role;
-
-            // push to database
-            try {
-                await this.personnel.updateOne(personQuery, {
-                    $set: { projects: assignments },
-                });
-                await this.projects.updateOne(projectQuery, {
-                    $set: { members: members },
-                });
-            } catch (error) {
-                console.log("ERROR: " + error);
-            } 
         }
 
-        
+        // Find index of assignment and member
 
+        const assignmentIndex = assignments.findIndex(
+            (assignment) => assignment.id === projectID
+        );
+        const memberIndex = members.findIndex(
+            (member) => member.id === personID
+        );
+
+        // Check if assignment and member were found
+        if (assignmentIndex === -1 || memberIndex === -1) {
+            return;
+        }
+
+        // Update the role
+        assignments[assignmentIndex].role = role;
+        members[memberIndex].role = role;
+
+        // push to database
+        try {
+            await this.personnel.updateOne(personQuery, {
+                $set: { projects: assignments },
+            });
+            await this.projects.updateOne(projectQuery, {
+                $set: { members: members },
+            });
+        } catch (error) {
+            console.log("ERROR: " + error);
+        }
     }
 
     /**
@@ -362,19 +339,144 @@ class DBManager {
         this.projects.updateOne(projectQuery, { $set: { name, description } });
     }
 
+    /**
+     * Export the data from the specified collection.
+     * @param {Collection} collection - The MongoDB Collection to export data from.
+     *                              Use "personnel" or "projects" for valid collections.
+     * @throws {Error} If an invalid collection name is specified.
+     * @returns {Array} An array containing the data exported from the collection.
+     * @async
+     */
     async exportJSON(collection) {
         let data;
-        if (collection === "personnel") {
-            data = await this.personnel.find().toArray();
-        } else if (collection === "projects") {
-            data = await this.projects.find().toArray();
+        if (collection === this.personnel || collection === this.projects) {
+            data = await collection.find().toArray();
         } else {
             throw new Error(
                 'Invalid collection specified. Use "personnel" or "projects".'
             );
         }
-        
+
         return data;
+    }
+
+    /**
+     * Import JSON data into the specified collection.
+     *
+     * @param {Collection} collection - The MongoDB Collection where data will be imported.
+     * @param {string} data - A JSON string representing the data to be imported.
+     * @throws {Error} If there is an issue with saving the backup or importing the data.
+     * @async
+     */
+    async importJSON(collection, data) {
+        // save backup because we're about to do something very dangerous
+        await this.saveBackup(collection);
+
+        // uh-oh we deleting everything
+        await collection.deleteMany({});
+
+        const jsonData = JSON.parse(data);
+
+        await collection.insertMany(jsonData);
+    }
+
+    /**
+     * Save a backup of the specified collection(s) in JSON format.
+     *
+     * @param {Collection|undefined} collection - The MongoDB Collection to back up.
+     *                                            If not provided, both "personnel" and "projects" collections will be backed up.
+     * @throws {Error} If there is an issue with exporting or saving the backup data.
+     * @async
+     */
+    async saveBackup(collection) {
+        let collections = [];
+
+        // If a specific collectionName is provided, use only that collection
+        if (collection) {
+            collections.push(collection);
+        } else {
+            // If no collectionName is provided, back up both "personnel" and "projects" collections
+            collections = [this.personnel, this.projects];
+        }
+
+        for (const collection of collections) {
+            const collectionName = collection.collectionName;
+            const data = await this.exportJSON(collection);
+
+            const backupFileName = `${collectionName}_backup_${new Date().getTime()}.json`;
+
+            // Create the backup directory if it doesn't exist
+            if (!fs.existsSync(DBManager.backupDir)) {
+                await fs.mkdirSync(DBManager.backupDir);
+            }
+
+            const backupFilePath = `${DBManager.backupDir}/${backupFileName}`;
+
+            fs.writeFile(
+                backupFilePath,
+                JSON.stringify(data, null, 2),
+                (err) => {
+                    if (err) {
+                        console.error("Backup failed:", err);
+                    } else {
+                        console.log(`Backup saved in: ${backupFilePath}`);
+                    }
+                }
+            );
+        }
+    }
+
+    /**
+     * Restore the latest backup for the specified collection(s) if available.
+     *
+     * @param {Collection|undefined} collection - The MongoDB Collection to restore the backup for.
+     *                                            If not provided, the latest backup of both "personnel" and "projects" collections will be restored.
+     * @throws {Error} If there is an issue with reading or importing the backup data.
+     * @async
+     */
+    async restoreLatestBackup(collection) {
+        let collections = [];
+
+        // If a specific collection is provided, use only that collection
+        if (collection) {
+            collections.push(collection);
+        } else {
+            // If no collection is provided, back up both "personnel" and "projects" collections
+            collections = [this.personnel, this.projects];
+        }
+
+        for (let collection of collections) {
+            let files = await fs.promises.readdir(DBManager.backupDir);
+
+            // for every file that starts with the right name, get the time then sort it
+            files = files
+                .filter((fileName) =>
+                    fileName.startsWith(`${collection.collectionName}`)
+                )
+                .map((fileName) => ({
+                    name: fileName,
+                    time: fs
+                        .statSync(`${DBManager.backupDir}/${fileName}`)
+                        .mtime.getTime(),
+                }))
+                .sort((a, b) => a.time - b.time)
+                .map((file) => file.name);
+
+            if (files.length === 0) {
+                console.log("No files found in backup folder");
+                return;
+            }
+
+            // get the last file, grab the data and import
+            const backup = files[files.length - 1];
+
+            const data = await fs.readFileSync(
+                path.join(DBManager.backupDir, backup),
+                "utf8"
+            );
+
+            this.importJSON(collection, data);
+        }
     }
 }
 
