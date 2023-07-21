@@ -52,7 +52,6 @@ function handleErrors(err, req, res, next) {
     console.log(err);
     res.status(err.httpStatusCode || 500).send("Oh no, an error occurred!");
 }
-// are we using this?
 
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
@@ -60,7 +59,6 @@ app.listen(PORT, () => {
 
 // Middleware to verify the JWT and set the user in the request object
 // Gonzales
-
 /**
  * Middleware to authenticate user with JSON Web Token (JWT).
  *
@@ -142,7 +140,7 @@ async function filldata() {
 
 filldata();
 
-//  Lincoln - Going to localhost itself will simply redirect to the login screen
+//  Lincoln - Going to localhost itself will simply redirect to the project screen, which will redirect to login if fail credentials
 app.get("/", (req, res) => {
     res.redirect("/projects");
 });
@@ -238,18 +236,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 `New project with name ${projectName} successfully created`
             );
         }
-        // Lincoln - This code adds a new lead to a project without a lead
-        else if ("addNewLead" in req.body) {
-            const projectID = sanitize(req.body.addNewLead);
-            const personID = sanitize(req.body.checkLead);
-            const role = "Lead";
-            console.log(`Adding member ${personID} as lead to ${projectID}...`);
-            await DBMan.changeRole(projectID, personID, role);
-            console.log(
-                `Member ${personID} successfully added as lead to ${projectID}`
-            );
-        }
-        // Lincoln - This code changes a lead from one person to another if the lead position is already filled. Cannot remove a lead and make it empty unless the person is removed entirely from the project.
+        // Lincoln - This code changes a lead from one person to another if the lead position is already filled.
         else if ("changeLead" in req.body) {
             const projectID = sanitize(req.body.changeLead);
             const personID = sanitize(req.body.checkChangeLead);
@@ -365,13 +352,14 @@ app.get("/export", authenticateToken, async (req, res) => {
         res.status(403).send("Unauthorized");
         return;
     }
+    
     const collection = req.query.collection;
     const format = req.query.format;
     let jsonData;
     if (collection === "personnel") {
         jsonData = await DBMan.exportJSON(DBMan.personnel);
     } else if (collection === "projects") {
-        jsonData = await DBMan.exportJSON("projects");
+        jsonData = await DBMan.exportJSON(DBMan.projects);
     } else {
         return res.status(400).send("Invalid collection.");
     }
