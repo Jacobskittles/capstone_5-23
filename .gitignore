@@ -33,5 +33,4 @@ npm-debug.log
 
 .env
 
-# Don't save backups
 backup
