@@ -478,6 +478,49 @@ class DBManager {
             this.importJSON(collection, data);
         }
     }
+
+    /**
+     * Adds an account for a person identified by their unique ID.
+     * If the username and password are provided, it creates an account with the specified details.
+     * If the 'admin' flag is not provided, it defaults to false.
+     * 
+     * @async
+     * @param {string} personId - The unique ID of the person to whom the account will be associated.
+     * @param {string} username - The username for the new account.
+     * @param {string} password - The HASHED password for the new account.
+     * @param {boolean} [admin=false] - (Optional) Set to true if the account should have admin privileges, false otherwise.
+     * @returns {Promise<{ status: string, message: string }>} A promise that resolves to an object containing the status and message.
+     * 
+     * @example
+     * const result = await addAccount(personId, "john_doe", "{hashed password}", true);
+     * if (result.status === "success") {
+     *     console.log(result.message); // Output: "Account creation successful"
+     * } else {
+     *     console.error(result.message); // Output: "Account must have username and password."
+     * }
+     */
+    async addAccount(personId, username, password, admin) {
+        if (!(username && password)) {
+            return { status: "error", message: "Account must have username and password." };
+        }
+    
+        if (admin === undefined) {
+            admin = false;
+        }
+    
+        const personQuery = { _id: personId };
+        const person = await this.personnel.find(personQuery);
+    
+        if (!person) {
+            return { status: "error", message: "Person not found." };
+        }
+    
+        await this.personnel.updateOne(personQuery, {
+            $set: { account: { username, password, admin } },
+        });
+    
+        return { status: "success", message: "Account creation successful" };
+    }
 }
 
 module.exports = DBManager;
