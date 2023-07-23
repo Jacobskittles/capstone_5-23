@@ -106,6 +106,15 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
+function adminAuth(req, res, next) {
+    // Check if the user is authorized as an admin
+    if (!req.user || !req.user.admin) {
+        return res.status(403).render("pages/403");
+    }
+    // If the user is authorized, proceed to the next middleware or route handler
+    next();
+}
+
 /*
 ----------------------------------------
 |            Mongo Stuff               |
@@ -355,52 +364,45 @@ app.get("/logout", (req, res) => {
     res.render("pages/logout");
 });
 
+// Gonzales
 app.get("/export", authenticateToken, async (req, res) => {
     if (!req.user.admin) {
         res.status(403).send("Unauthorized");
         return;
     }
-
+    // Retrieve the collection and format from the query parameters
     const collection = req.query.collection;
     const format = req.query.format;
+
     let jsonData;
+
+    // Check the requested collection and fetch the corresponding data
     if (collection === "personnel") {
         jsonData = await DBMan.exportJSON(DBMan.personnel);
     } else if (collection === "projects") {
         jsonData = await DBMan.exportJSON(DBMan.projects);
     } else {
+        // Return a 400 Bad Request response if an invalid collection is requested
         return res.status(400).send("Invalid collection.");
     }
 
-    // if (format === "json") {
+    // Send the JSON data in the specified format (defaulting to pretty-printed JSON)
     res.send(JSON.stringify(jsonData, null, 2));
-    // } else {
-    //     return res.status(400).send("Invalid format.");
-    // }
 });
 
-app.get("/import", authenticateToken, async (req, res) => {
-    if (!req.user.admin) {
-        res.status(403).render("pages/403");
-        return;
-    }
-
+app.get("/import", authenticateToken, adminAuth, async (req, res) => {
     res.render("pages/import");
 });
 
 app.post(
     "/import",
     authenticateToken,
+    adminAuth,
     upload.fields([
         { name: "personnel", maxCount: 1 },
         { name: "projects", maxCount: 1 },
     ]),
     async (req, res) => {
-        if (!req.user.admin) {
-            res.status(403).render("pages/403");
-            return;
-        }
-
         const personnelFile = req.files["personnel"];
         const projectsFile = req.files["projects"];
 
@@ -420,11 +422,7 @@ app.post(
             }
 
             // Delete the personnel file after importing
-            fs.unlink(personnelFile[0].path, (err) => {
-                if (err) {
-                    console.error("Error deleting personnel file:", err);
-                }
-            });
+            fs.unlink(personnelFile[0].path);
         }
 
         if (projectsFile && projectsFile[0]) {
@@ -440,11 +438,7 @@ app.post(
             }
 
             // Delete the projects file after importing
-            fs.unlink(projectsFile[0].path, (err) => {
-                if (err) {
-                    console.error("Error deleting projects file:", err);
-                }
-            });
+            fs.unlink(projectsFile[0].path);
         }
 
         res.render("pages/import-success");
