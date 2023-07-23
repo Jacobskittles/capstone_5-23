@@ -24,7 +24,7 @@ The Project Organizer is a web-based application designed to simplify project ma
 
 ## Data
 
-- Import and export personnel data in CSV format.
+- Import and export personnel data in JSON format.
 - Utilize a database backend for data storage and retrieval.
 
 Please note that the features mentioned above are subject to change as the project progresses.

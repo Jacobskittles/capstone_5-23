@@ -18,8 +18,11 @@ var cookieParser = require("cookie-parser");
 var utils = require("./utils");
 const DBManager = require("./DBManager");
 
+const multer = require("multer");
+const fs = require("fs");
+
 const app = express();
-const PORT = 8088;
+const PORT = 80;
 
 const secretKey =
     "93dc6c4e2962459eb1f71a88888c7e5a5e9d6bae431eaa6d2bd131712e5c317672b9e6b5a7df2a4c4f20ee41ff42e1c07489905c73802fd8f414994770242990";
@@ -46,6 +49,11 @@ app.use(logger);
 
 //  Express JSON middleware
 app.use(express.json());
+
+const upload = multer({
+    dest: "./uploads/",
+    limits: { fileSize: 2 * 1024 * 1024 },
+});
 
 //This is error handling middleware to catch errors in page requests
 function handleErrors(err, req, res, next) {
@@ -203,7 +211,7 @@ const DBMan = new DBManager(
 // Lincoln and Slivinski's Code - Posts to the database depending on the name and values associated with the modal or submit buttons that you are pressing in order to keep the site limited to one page.
 app.post("/projects", authenticateToken, async (req, res) => {
     if (!req.user.admin) {
-        res.status(403).send("Unauthorized");
+        res.status(403).redirect("/projects");
         return;
     }
 
@@ -352,7 +360,7 @@ app.get("/export", authenticateToken, async (req, res) => {
         res.status(403).send("Unauthorized");
         return;
     }
-    
+
     const collection = req.query.collection;
     const format = req.query.format;
     let jsonData;
@@ -369,4 +377,81 @@ app.get("/export", authenticateToken, async (req, res) => {
     // } else {
     //     return res.status(400).send("Invalid format.");
     // }
+});
+
+app.get("/import", authenticateToken, async (req, res) => {
+    if (!req.user.admin) {
+        res.status(403).render("pages/403");
+        return;
+    }
+
+    res.render("pages/import");
+});
+
+app.post(
+    "/import",
+    authenticateToken,
+    upload.fields([
+        { name: "personnel", maxCount: 1 },
+        { name: "projects", maxCount: 1 },
+    ]),
+    async (req, res) => {
+        if (!req.user.admin) {
+            res.status(403).render("pages/403");
+            return;
+        }
+
+        const personnelFile = req.files["personnel"];
+        const projectsFile = req.files["projects"];
+
+        if (personnelFile && personnelFile[0]) {
+            const personnelData = fs.readFileSync(
+                personnelFile[0].path,
+                "utf8"
+            );
+
+            try {
+                await DBMan.importJSON(DBMan.personnel, personnelData);
+            } catch (error) {
+                res.status(400).render("pages/import-error", {
+                    error: error.message,
+                });
+                return;
+            }
+
+            // Delete the personnel file after importing
+            fs.unlink(personnelFile[0].path, (err) => {
+                if (err) {
+                    console.error("Error deleting personnel file:", err);
+                }
+            });
+        }
+
+        if (projectsFile && projectsFile[0]) {
+            const projectsData = fs.readFileSync(projectsFile[0].path, "utf8");
+
+            try {
+                await DBMan.importJSON(DBMan.projects, projectsData);
+            } catch (error) {
+                res.status(400).render("pages/import-error", {
+                    error: error.message,
+                });
+                return;
+            }
+
+            // Delete the projects file after importing
+            fs.unlink(projectsFile[0].path, (err) => {
+                if (err) {
+                    console.error("Error deleting projects file:", err);
+                }
+            });
+        }
+
+        res.render("pages/import-success");
+    }
+);
+
+// 404 Error Handler
+app.use((req, res, next) => {
+    res.status(404).render("pages/404");
 });

@@ -361,16 +361,20 @@ class DBManager {
     }
 
     /**
-     * Import JSON data into the specified collection.
+     * Imports JSON data into the specified collection after validating its format.
      *
      * @param {Collection} collection - The MongoDB Collection where data will be imported.
      * @param {string} data - A JSON string representing the data to be imported.
-     * @throws {Error} If there is an issue with saving the backup or importing the data.
+     * @throws {Error} If there is an issue with saving the backup, JSON format validation, or data import.
+     * @returns {Promise<void>} Resolves once the data is imported successfully.
      * @async
      */
     async importJSON(collection, data) {
         // save backup because we're about to do something very dangerous
         await this.saveBackup(collection);
+
+        // run validation, hopefully it errors if there is a problem
+        await this.validateData(collection, data);
 
         // uh-oh we deleting everything
         await collection.deleteMany({});
@@ -378,6 +382,77 @@ class DBManager {
         const jsonData = JSON.parse(data);
 
         await collection.insertMany(jsonData);
+    }
+
+    /**
+     * Validates the format of JSON data for a specified collection.
+     *
+     * @param {Collection} collection - The MongoDB Collection where data will be imported.
+     * @param {string} data - A JSON string representing the data to be validated.
+     * @throws {Error} If there is an issue with the JSON format or data validation.
+     * @async
+     */
+    async validateData(collection, data) {
+        let JSONData;
+        try {
+            JSONData = await JSON.parse(data);
+        } catch (error) {
+            throw new Error("Invalid JSON format.");
+        }
+
+        if (!Array.isArray(JSONData)) {
+            throw new Error("JSON must be an array.");
+        }
+
+        if (collection === this.personnel) {
+            for (let person of JSONData) {
+                if (!person._id || typeof person._id !== "string") {
+                    throw new Error(
+                        "Each personnel document must have an _id field of type string."
+                    );
+                }
+                if (!person.firstName || typeof person.firstName !== "string") {
+                    throw new Error(
+                        "Each personnel document must have a firstName field of type string."
+                    );
+                }
+                if (!person.lastName || typeof person.lastName !== "string") {
+                    throw new Error(
+                        "Each personnel document must have a lastName field of type string."
+                    );
+                }
+            }
+        } else if (collection === this.projects) {
+            for (let project of JSONData) {
+                if (!project._id || typeof project._id !== "string") {
+                    throw new Error(
+                        "Each project document must have an _id field of type string."
+                    );
+                }
+                if (!project.name || typeof project.name !== "string") {
+                    throw new Error(
+                        "Each project document must have an name field of type string."
+                    );
+                }
+                if (
+                    !project.description ||
+                    typeof project.description !== "string"
+                ) {
+                    throw new Error(
+                        "Each project document must have an description field of type string."
+                    );
+                }
+                if (!project.members || !Array.isArray(project.members)) {
+                    throw new Error(
+                        "Each project document must have an members field of type array."
+                    );
+                }
+            }
+        } else {
+            throw new Error(
+                "Collection must be either this.personnel or this.projects"
+            );
+        }
     }
 
     /**
@@ -483,42 +558,37 @@ class DBManager {
      * Adds an account for a person identified by their unique ID.
      * If the username and password are provided, it creates an account with the specified details.
      * If the 'admin' flag is not provided, it defaults to false.
-     * 
+     *
      * @async
      * @param {string} personId - The unique ID of the person to whom the account will be associated.
      * @param {string} username - The username for the new account.
      * @param {string} password - The HASHED password for the new account.
      * @param {boolean} [admin=false] - (Optional) Set to true if the account should have admin privileges, false otherwise.
      * @returns {Promise<{ status: string, message: string }>} A promise that resolves to an object containing the status and message.
-     * 
-     * @example
-     * const result = await addAccount(personId, "john_doe", "{hashed password}", true);
-     * if (result.status === "success") {
-     *     console.log(result.message); // Output: "Account creation successful"
-     * } else {
-     *     console.error(result.message); // Output: "Account must have username and password."
-     * }
      */
     async addAccount(personId, username, password, admin) {
         if (!(username && password)) {
-            return { status: "error", message: "Account must have username and password." };
+            return {
+                status: "error",
+                message: "Account must have username and password.",
+            };
         }
-    
+
         if (admin === undefined) {
             admin = false;
         }
-    
+
         const personQuery = { _id: personId };
         const person = await this.personnel.find(personQuery);
-    
+
         if (!person) {
             return { status: "error", message: "Person not found." };
         }
-    
+
         await this.personnel.updateOne(personQuery, {
             $set: { account: { username, password, admin } },
         });
-    
+
         return { status: "success", message: "Account creation successful" };
     }
 }
