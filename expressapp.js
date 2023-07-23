@@ -422,7 +422,9 @@ app.post(
             }
 
             // Delete the personnel file after importing
-            fs.unlink(personnelFile[0].path);
+            fs.unlink(personnelFile[0].path, (err) => {
+                console.log(err)
+            });
         }
 
         if (projectsFile && projectsFile[0]) {
@@ -438,7 +440,9 @@ app.post(
             }
 
             // Delete the projects file after importing
-            fs.unlink(projectsFile[0].path);
+            fs.unlink(projectsFile[0].path, (err) => {
+                console.log(err)
+            });
         }
 
         res.render("pages/import-success");

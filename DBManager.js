@@ -466,11 +466,11 @@ class DBManager {
     async saveBackup(collection) {
         let collections = [];
 
-        // If a specific collectionName is provided, use only that collection
+        // If a specific collection is provided, use only that collection
         if (collection) {
             collections.push(collection);
         } else {
-            // If no collectionName is provided, back up both "personnel" and "projects" collections
+            // If no collection is provided, back up both "personnel" and "projects" collections
             collections = [this.personnel, this.projects];
         }
 
@@ -478,13 +478,30 @@ class DBManager {
             const collectionName = collection.collectionName;
             const data = await this.exportJSON(collection);
 
-            const backupFileName = `${collectionName}_backup_${new Date().getTime()}.json`;
-
             // Create the backup directory if it doesn't exist
             if (!fs.existsSync(DBManager.backupDir)) {
                 await fs.mkdirSync(DBManager.backupDir);
             }
 
+            // Get the list of existing backup files for the current collection
+            const backupFiles = fs
+                .readdirSync(DBManager.backupDir)
+                .filter((file) => file.startsWith(`${collectionName}_backup_`))
+                .sort(); // Sort files in ascending order, as they contain the backup timestamp
+
+            // If the number of backup files exceeds 5, delete the oldest one(s)
+            if (backupFiles.length >= 5) {
+                for (let i = 0; i < backupFiles.length - 4; i++) {
+                    const oldestBackup = backupFiles[i];
+                    const oldestBackupPath = `${DBManager.backupDir}/${oldestBackup}`;
+                    fs.unlinkSync(oldestBackupPath);
+                    console.log(
+                        `Deleted the oldest backup: ${oldestBackupPath}`
+                    );
+                }
+            }
+
+            const backupFileName = `${collectionName}_backup_${new Date().getTime()}.json`;
             const backupFilePath = `${DBManager.backupDir}/${backupFileName}`;
 
             fs.writeFile(

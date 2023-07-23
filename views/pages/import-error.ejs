@@ -14,22 +14,19 @@
             justify-content: center;
             align-items: center;
             background-color: #ff4b4b;
-        }
-
-        .main {
             text-align: center;
             font-family: monospace;
         }
-        .main h1 {
+        h1 {
             font-size: 80pt;
             margin-bottom: 0px;
             margin-top: 0;
         }
-        .main h2 {
+        h2 {
             font-size: 30pt;
             margin-top: 0;
         }
-        .main a {
+        a {
             font-size: 24px;
             color: #ffffff;
             text-decoration: none;
@@ -37,14 +34,18 @@
             padding: 10px 20px;
             border-radius: 5px;
         }
+        p {
+            margin-top: 50px;
+        }
     </style>
 </head>
 
 <body>
-    <div class="main">
+    <div>
         <h1>Error importing JSON</h1>
         <h2><%= error %></h2>
         <a href="/import">Go back</a>
+        <p>Did you select the right file?</p>
     </div>
 </body>
 
