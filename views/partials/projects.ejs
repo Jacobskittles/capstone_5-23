@@ -233,7 +233,8 @@
                 project.members.forEach(function(member) {
                   let person=personnel.find(person=> person._id === member.id)
                   if (person.projects) {
-                    if (person.projects.find(assignment=> assignment.id === project._id).role == 'Lead' ){ // Create an element to display leads
+                    let assignment = person.projects.find(assignment=> assignment.id === project._id)
+                    if (assignment.role && assignment.role == 'Lead' ){ // Create an element to display leads
                       empty = false %>
                       <div id="<%= person._id %>-button" draggable="True" class="btn bg-light border-secondary-subtle noDrop" ondragstart="drag(event)">
                         <strong><%= person.firstName+' '+person.lastName %></strong>
