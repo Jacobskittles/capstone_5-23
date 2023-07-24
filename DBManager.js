@@ -252,6 +252,7 @@ class DBManager {
      * @param {string} personID - The ID of the person document to be deleted.
      * @returns {Promise<void>} - A promise that resolves once the deletion operation is complete.
      */
+    //Slivinski
     async deletePerson(personID) {
         const personQuery = { _id: personID };
 
@@ -317,6 +318,7 @@ class DBManager {
      * @param {Object} person - The updated person object containing the new values for firstName and lastName properties.
      * @returns {Promise<void>} - A promise that resolves once the update operation is complete.
      */
+    // SLivinski
     async updatePerson(personID, person) {
         const personQuery = { _id: personID };
         let { firstName, lastName } = person;
