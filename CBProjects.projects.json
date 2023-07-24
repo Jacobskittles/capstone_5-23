@@ -1,111 +1,142 @@
-[{
-  "_id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05",
-  "name": "Invisible Cloak",
-  "description": "Develop a cloak that can make the wearer invisible.",
-  "members": [
-    {
-      "id": "d506edfb-737a-4681-be14-688d82770d76"
-    },
-    {
-      "id": "534f101a-9ca5-4b85-93f9-f39c87f39711",
-      "role": "Lead"
-    },
-    {
-      "id": "bff0f2df-19e4-4112-b236-7ae2103398ec"
-    }
-  ]
-},
-{
-  "_id": "062f631e-e913-4338-aeae-ceab2ba66dec",
-  "name": "Mind Reader",
-  "description": "Create a device that can read people's thoughts.",
-  "members": [
-    {
-      "id": "534f101a-9ca5-4b85-93f9-f39c87f39711",
-      "role": "Lead"
-    },
-    {
-      "id": "22dd52ea-1b4a-4cee-be2e-f118916797e9"
-    }
-  ]
-},
-{
-  "_id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb",
-  "name": "Pit Analysis",
-  "description": "Explore and study the massive, perfectly circular pit that mysteriously appeared in the center of the Nevada desert.",
-  "members": [
-    {
-      "id": "c6a38ff2-02fb-41aa-9cca-c48620955b12"
-    },
-    {
-      "id": "f34ad31b-227f-443f-9799-9b5c306187e4",
-      "role": "Lead"
-    },
-    {
-      "id": "39c5a5d2-1674-47e5-ad98-09218577a478"
-    },
-    {
-      "id": "d348ac42-419c-4328-be39-c504bde9f8ae",
-      "weight": 0
-    }
-  ]
-},
-{
-  "_id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b",
-  "name": "Human Stepladder",
-  "description": "The Squadron broke the last of our stepladders. Who wants to volunteer? Just kidding, you already volunteered.",
-  "members": [
-    {
-      "id": "39c5a5d2-1674-47e5-ad98-09218577a478",
-      "role": "Lead"
-    },
-    {
-      "id": "d348ac42-419c-4328-be39-c504bde9f8ae"
-    },
-    {
-      "id": "72f0b825-1bbf-4c99-a879-64de0e867815"
-    }
-  ]
-},
-{
-  "_id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe",
-  "name": "Pit Rescue Team",
-  "description": "Find the people we sent into the Nevada pit and ask them why they haven't come out for weeks.",
-  "members": [
-    {
-      "id": "c6a38ff2-02fb-41aa-9cca-c48620955b12",
-      "weight": 0
-    },
-    {
-      "id": "f34ad31b-227f-443f-9799-9b5c306187e4"
-    },
-    {
-      "id": "72f0b825-1bbf-4c99-a879-64de0e867815"
-    }
-  ]
-},
-{
-  "_id": "fa799529-bc18-4264-9105-5526121d4e66",
-  "name": "Operation Cross-Platform Proactive Paradigm Shift ",
-  "description": "Our project embarks on the synergistic endeavor of disrupting the parochial ecosystem by leveraging end-to-end scalable omni-channel capacities. By integrating an array of actionable insights from data-driven verticals, we convoke to implement a holistic User-Centric Experience (UCE), fostering the seamless infusion of content within a solution-driven cross-functional framework. A strategic blend of growth hacking pragmatism and game-changing blockchain will constitute the foundation of this initiative, circumnavigating the redundancies of the existing operations, thus galvanizing an extrinsic culture of value and innovation. The project solemnly commits to pivoting blue-sky thinking to conceive a next-level mindshare that elevates our bandwidth for achieving holistic, forward-leaning outcomes in an agile workspace milieu. Together, we will incubate a transformative, synergistic design thinking strategy that will launch us onto an enterprise-grade trajectory of strategic win-win outcomes.",
-  "members": [
-    {
-      "id": "5153798e-7830-4eac-99e6-dbfdad91a3c5",
-      "role": "Lead"
-    },
-    {
-      "id": "fcf956b3-974a-40a2-b81a-cb5f5b61f4a4"
-    }
-  ]
-},
-{
-  "_id": "74616ab0-b667-4775-8c22-c3cdc47e3514",
-  "name": "Pit Rescue Team Rescue Team",
-  "description": "I'm sure you get the drill by now.",
-  "members": [
-    {
-      "id": "f1ee63b3-e725-4166-8af1-c5b86556bf81",
-      "role": "Lead"
-    }
-  ]
-}]
+[
+  {
+    "_id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05",
+    "name": "Invisible Cloak",
+    "description": "Develop a cloak that can make the wearer invisible.",
+    "members": [
+      {
+        "id": "d506edfb-737a-4681-be14-688d82770d76"
+      },
+      {
+        "id": "534f101a-9ca5-4b85-93f9-f39c87f39711",
+        "role": "Lead"
+      },
+      {
+        "id": "bff0f2df-19e4-4112-b236-7ae2103398ec",
+        "role": "Lead"
+      },
+      {
+        "id": "0e9d1d41-7517-4916-aa5e-b654fb550169",
+        "role": "Lead"
+      }
+    ]
+  },
+  {
+    "_id": "062f631e-e913-4338-aeae-ceab2ba66dec",
+    "name": "Mind Reader",
+    "description": "Create a device that can read people's thoughts.",
+    "members": [
+      {
+        "id": "22dd52ea-1b4a-4cee-be2e-f118916797e9",
+        "role": "Lead"
+      },
+      {
+        "id": "c6a38ff2-02fb-41aa-9cca-c48620955b12",
+        "role": "Lead"
+      },
+      {
+        "id": "534f101a-9ca5-4b85-93f9-f39c87f39711",
+        "role": "Lead"
+      },
+      {
+        "id": "72f0b825-1bbf-4c99-a879-64de0e867815",
+        "role": "Lead"
+      }
+    ]
+  },
+  {
+    "_id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb",
+    "name": "Pit Analysis",
+    "description": "Explore and study the massive, perfectly circular pit that mysteriously appeared in the center of the Nevada desert.",
+    "members": [
+      {
+        "id": "c6a38ff2-02fb-41aa-9cca-c48620955b12"
+      },
+      {
+        "id": "f34ad31b-227f-443f-9799-9b5c306187e4",
+        "role": "Lead"
+      },
+      {
+        "id": "39c5a5d2-1674-47e5-ad98-09218577a478"
+      },
+      {
+        "id": "d348ac42-419c-4328-be39-c504bde9f8ae",
+        "weight": 0
+      }
+    ]
+  },
+  {
+    "_id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b",
+    "name": "Human Stepladder",
+    "description": "The Squadron broke the last of our stepladders. Who wants to volunteer? Just kidding, you already volunteered.",
+    "members": [
+      {
+        "id": "39c5a5d2-1674-47e5-ad98-09218577a478",
+        "role": "Lead"
+      },
+      {
+        "id": "d348ac42-419c-4328-be39-c504bde9f8ae"
+      },
+      {
+        "id": "72f0b825-1bbf-4c99-a879-64de0e867815"
+      }
+    ]
+  },
+  {
+    "_id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe",
+    "name": "Pit Rescue Team",
+    "description": "Find the people we sent into the Nevada pit and ask them why they haven't come out for weeks.",
+    "members": [
+      {
+        "id": "bff0f2df-19e4-4112-b236-7ae2103398ec"
+      },
+      {
+        "id": "22dd52ea-1b4a-4cee-be2e-f118916797e9"
+      },
+      {
+        "id": "0e9d1d41-7517-4916-aa5e-b654fb550169",
+        "role": "Lead"
+      }
+    ]
+  },
+  {
+    "_id": "fa799529-bc18-4264-9105-5526121d4e66",
+    "name": "Operation Cross-Platform Proactive Paradigm Shift ",
+    "description": "Our project embarks on the synergistic endeavor of disrupting the parochial ecosystem by leveraging end-to-end scalable omni-channel capacities. By integrating an array of actionable insights from data-driven verticals, we convoke to implement a holistic User-Centric Experience (UCE), fostering the seamless infusion of content within a solution-driven cross-functional framework. A strategic blend of growth hacking pragmatism and game-changing blockchain will constitute the foundation of this initiative, circumnavigating the redundancies of the existing operations, thus galvanizing an extrinsic culture of value and innovation. The project solemnly commits to pivoting blue-sky thinking to conceive a next-level mindshare that elevates our bandwidth for achieving holistic, forward-leaning outcomes in an agile workspace milieu. Together, we will incubate a transformative, synergistic design thinking strategy that will launch us onto an enterprise-grade trajectory of strategic win-win outcomes.",
+    "members": [
+      {
+        "id": "5153798e-7830-4eac-99e6-dbfdad91a3c5",
+        "role": "Lead"
+      },
+      {
+        "id": "fcf956b3-974a-40a2-b81a-cb5f5b61f4a4"
+      },
+      {
+        "id": "d506edfb-737a-4681-be14-688d82770d76"
+      },
+      {
+        "id": "35f8d863-c821-4909-a893-16884607a1aa"
+      }
+    ]
+  },
+  {
+    "_id": "74616ab0-b667-4775-8c22-c3cdc47e3514",
+    "name": "Pit Rescue Team Rescue Team",
+    "description": "I'm sure you get the drill by now.",
+    "members": [
+      {
+        "id": "3a156af6-0fb4-43ce-a4e2-99ac01006b29",
+        "role": "Lead"
+      },
+      {
+        "id": "08b990b3-feb5-4f41-84d0-dc09eb534df8"
+      },
+      {
+        "id": "ecae6c87-81fa-492d-99d2-4e62a6f1ef0f"
+      },
+      {
+        "id": "597d7d53-5062-4b2d-8f92-d94fbaf847d1"
+      }
+    ]
+  }
+]

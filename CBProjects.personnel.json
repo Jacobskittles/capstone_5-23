@@ -1,243 +1,298 @@
-[{
-  "_id": "d506edfb-737a-4681-be14-688d82770d76",
-  "firstName": "Michael",
-  "lastName": "McCann",
-  "projects": [
-    {
-      "id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05"
+[
+  {
+    "_id": "d506edfb-737a-4681-be14-688d82770d76",
+    "firstName": "Michael",
+    "lastName": "McCann",
+    "projects": [
+      {
+        "id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05"
+      },
+      {
+        "id": "fa799529-bc18-4264-9105-5526121d4e66"
+      }
+    ],
+    "account": {
+      "username": "johnM123",
+      "password": "$2b$10$UH6rTAWfyGIy8eW1S9TgQ.X66O3qiPXNZdQly/x3qXK2E6COoJbwK",
+      "admin": false
     }
-  ],
-  "account": {
-    "username": "johnM123",
-    "password": "$2b$10$UH6rTAWfyGIy8eW1S9TgQ.X66O3qiPXNZdQly/x3qXK2E6COoJbwK",
-    "admin": false
-  }
-},
-{
-  "_id": "534f101a-9ca5-4b85-93f9-f39c87f39711",
-  "firstName": "Janet",
-  "lastName": "Smith",
-  "projects": [
-    {
-      "id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05",
-      "role": "Lead"
-    },
-    {
-      "id": "062f631e-e913-4338-aeae-ceab2ba66dec",
-      "role": "Lead"
-    }
-  ],
-  "account": {
-    "username": "janetSmith456",
-    "password": "$2b$10$IQyS962DbOFnFtTx5tKz7eElXoxwlXaKsjeuYCrDJIAd1Ft67Yx1u",
-    "admin": false
-  }
-},
-{
-  "_id": "bff0f2df-19e4-4112-b236-7ae2103398ec",
-  "firstName": "Mike",
-  "lastName": "Davis",
-  "projects": [
-    {
-      "id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05"
-    }
-  ],
-  "account": {
-    "username": "mikeD123",
-    "password": "$2b$10$TZfw0hBIO6h2cWkPzz2T4uWCzsLoDSSgW8lyhP6vPy3BdWwmqJBri",
-    "admin": false
-  }
-},
-{
-  "_id": "22dd52ea-1b4a-4cee-be2e-f118916797e9",
-  "firstName": "Emily",
-  "lastName": "Lakes",
-  "projects": [
-    {
-      "id": "062f631e-e913-4338-aeae-ceab2ba66dec"
-    }
-  ],
-  "account": {
-    "username": "emilyLakes789",
-    "password": "$2b$10$xcbON1V2/CgiuL0wnTlYtOSXV9L53buFBPukRB.HmB3RCTGxlLeim",
-    "admin": false
-  }
-},
-{
-  "_id": "c6a38ff2-02fb-41aa-9cca-c48620955b12",
-  "firstName": "Sean",
-  "lastName": "Rattan",
-  "projects": [
-    {
-      "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb"
-    },
-    {
-      "id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe"
-    }
-  ],
-  "account": {
-    "username": "ratman123",
-    "password": "$2b$10$XvugEY63H1/AO7zZ/L1b9eSO1am4ungyfSg2CRWcWBhzAf3XXXDLi",
-    "admin": false
-  }
-},
-{
-  "_id": "f34ad31b-227f-443f-9799-9b5c306187e4",
-  "firstName": "Jacob",
-  "lastName": "Simmons",
-  "projects": [
-    {
-      "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb",
-      "role": "Lead"
-    },
-    {
-      "id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe"
-    }
-  ],
-  "account": {
-    "username": "jakesimmons456",
-    "password": "$2b$10$84xOt10edJjJ4ed0aChKe.th/q2fHYVp0FBroYJFJLb0uMdkgWhRO",
-    "admin": false
-  }
-},
-{
-  "_id": "39c5a5d2-1674-47e5-ad98-09218577a478",
-  "firstName": "Michael",
-  "lastName": "Johnson",
-  "projects": [
-    {
-      "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb"
-    },
-    {
-      "id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b",
-      "role": "Lead"
-    }
-  ],
-  "account": {
-    "username": "mjohnson789",
-    "password": "$2b$10$3kCHx400E6zdeTz3NsQk2uTKmSL5kJshF/z1zAHKE8L.X//VckudK",
-    "admin": false
-  }
-},
-{
-  "_id": "d348ac42-419c-4328-be39-c504bde9f8ae",
-  "firstName": "Emily",
-  "lastName": "Wilson",
-  "projects": [
-    {
-      "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb"
-    },
-    {
-      "id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b"
-    }
-  ],
-  "account": {
-    "username": "emilyw456",
-    "password": "$2b$10$mIK4SWV36H6mdb85LAYv7Ok.5CeZDqHKTVnBRjAKomi.eGOpanv0.",
-    "admin": false
-  }
-},
-{
-  "_id": "72f0b825-1bbf-4c99-a879-64de0e867815",
-  "firstName": "William",
-  "lastName": "Anderson",
-  "projects": [
-    {
-      "id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b"
-    },
-    {
-      "id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe"
-    }
-  ],
-  "account": {
-    "username": "wanderson789",
-    "password": "$2b$10$Fx2aEkAWW0vq87dj./bZkuFiocAuk8JjC8.ZJtOISGJatlMhtLtXa",
-    "admin": false
-  }
-},
-{
-  "_id": "5153798e-7830-4eac-99e6-dbfdad91a3c5",
-  "firstName": "Kaden",
-  "lastName": "Langston",
-  "projects": [
-    {
-      "id": "fa799529-bc18-4264-9105-5526121d4e66",
-      "role": "Lead"
-    }
-  ],
-  "account": {
-    "username": "johndoe45",
-    "password": "$2b$10$vG2gcIReb1i96WXn6Q1wmeuIqyVkFJr7URsrJz.ayNYLOavDSlEz2",
-    "admin": false
-  }
-},
-{
-  "_id": "fcf956b3-974a-40a2-b81a-cb5f5b61f4a4",
-  "firstName": "Carl",
-  "lastName": "Hanratty",
-  "projects": [
-    {
-      "id": "fa799529-bc18-4264-9105-5526121d4e66"
-    }
-  ],
-  "account": {
-    "username": "janesmith23",
-    "password": "$2b$10$dPN4uOhsfLh64HLcbCTYEug4DoBzGexodWiQ4jtIMfv9GvLiuj/4q",
-    "admin": false
-  }
-},
-{
-  "_id": "f1ee63b3-e725-4166-8af1-c5b86556bf81",
-  "firstName": "Emily",
-  "lastName": "Johnson",
-  "projects": [
-    {
-      "id": "74616ab0-b667-4775-8c22-c3cdc47e3514",
-      "role": "Lead"
-    }
-  ],
-  "account": {
-    "username": "emilyj",
-    "password": "$2b$10$zur.tdLbHmrt8Rr9a6uZZOWf218.nCt11gnZ98YlksXLAtI8wR5la",
-    "admin": false
-  }
-},
-{
-  "_id": "649c5ec6a0e9e7a5ec492945",
-  "firstName": "Norville",
-  "lastName": "Rogers",
-  "account": {
-    "username": "zoinksScoob23",
-    "password": "$2b$10$1w0jbm6STkQnuDRgGAYexOHeoZQYl9dsK8X.CZZIKSWIequx.jk6e",
-    "admin": true
-  }
-},
-{
-  "_id": "649c6040a0e9e7a5ec492946a",
-  "account": {
-    "username": "sausageDude",
-    "password": "$2b$10$veYqrCxRYrmW8.IXTNhEweMTOqeXzciWfbaz4dMDK8c/Y6Rq5fkYu"
   },
-  "firstName": "Jimmy",
-  "lastName": "Dean"
-},
-{
-  "_id": "3146a291-aede-4ab3-894c-49b5947c269e",
-  "firstName": "Goobie",
-  "lastName": "Smoobie"
-},
-{
-  "_id": "9c12ffa9-d098-4bba-8bec-e4b2beade497",
-  "firstName": "John",
-  "lastName": "Doe"
-},
-{
-  "_id": "9ba4b6cb-6335-4a49-8070-877bb97d3245",
-  "firstName": "Testy",
-  "lastName": "McTestman"
-},
-{
-  "_id": "0e9d1d41-7517-4916-aa5e-b654fb550169",
-  "firstName": "Jimmy",
-  "lastName": "John"
-}]
+  {
+    "_id": "534f101a-9ca5-4b85-93f9-f39c87f39711",
+    "firstName": "Janet",
+    "lastName": "Smith",
+    "projects": [
+      {
+        "id": "062f631e-e913-4338-aeae-ceab2ba66dec",
+        "role": "Lead"
+      },
+      {
+        "id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05",
+        "role": "Lead"
+      }
+    ],
+    "account": {
+      "username": "janetSmith456",
+      "password": "$2b$10$IQyS962DbOFnFtTx5tKz7eElXoxwlXaKsjeuYCrDJIAd1Ft67Yx1u",
+      "admin": false
+    }
+  },
+  {
+    "_id": "bff0f2df-19e4-4112-b236-7ae2103398ec",
+    "firstName": "Mike",
+    "lastName": "Davis",
+    "account": {
+      "username": "mikeD123",
+      "password": "$2b$10$TZfw0hBIO6h2cWkPzz2T4uWCzsLoDSSgW8lyhP6vPy3BdWwmqJBri",
+      "admin": false
+    },
+    "projects": [
+      {
+        "id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05"
+      },
+      {
+        "id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe"
+      }
+    ]
+  },
+  {
+    "_id": "22dd52ea-1b4a-4cee-be2e-f118916797e9",
+    "firstName": "Emily",
+    "lastName": "Lakes",
+    "account": {
+      "username": "emilyLakes789",
+      "password": "$2b$10$xcbON1V2/CgiuL0wnTlYtOSXV9L53buFBPukRB.HmB3RCTGxlLeim",
+      "admin": false
+    },
+    "projects": [
+      {
+        "id": "062f631e-e913-4338-aeae-ceab2ba66dec"
+      },
+      {
+        "id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe"
+      }
+    ]
+  },
+  {
+    "_id": "c6a38ff2-02fb-41aa-9cca-c48620955b12",
+    "firstName": "Sean",
+    "lastName": "Rattan",
+    "projects": [
+      {
+        "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb"
+      },
+      {
+        "id": "062f631e-e913-4338-aeae-ceab2ba66dec"
+      }
+    ],
+    "account": {
+      "username": "ratman123",
+      "password": "$2b$10$XvugEY63H1/AO7zZ/L1b9eSO1am4ungyfSg2CRWcWBhzAf3XXXDLi",
+      "admin": false
+    }
+  },
+  {
+    "_id": "f34ad31b-227f-443f-9799-9b5c306187e4",
+    "firstName": "Jacob",
+    "lastName": "Simmons",
+    "projects": [
+      {
+        "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb",
+        "role": "Lead"
+      }
+    ],
+    "account": {
+      "username": "jakesimmons456",
+      "password": "$2b$10$84xOt10edJjJ4ed0aChKe.th/q2fHYVp0FBroYJFJLb0uMdkgWhRO",
+      "admin": false
+    }
+  },
+  {
+    "_id": "39c5a5d2-1674-47e5-ad98-09218577a478",
+    "firstName": "Michael",
+    "lastName": "Johnson",
+    "projects": [
+      {
+        "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb"
+      },
+      {
+        "id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b",
+        "role": "Lead"
+      }
+    ],
+    "account": {
+      "username": "mjohnson789",
+      "password": "$2b$10$3kCHx400E6zdeTz3NsQk2uTKmSL5kJshF/z1zAHKE8L.X//VckudK",
+      "admin": false
+    }
+  },
+  {
+    "_id": "d348ac42-419c-4328-be39-c504bde9f8ae",
+    "firstName": "Hank",
+    "lastName": "Hill",
+    "projects": [
+      {
+        "id": "1da44f77-0017-4f6d-bf6a-9a1779d2fbeb"
+      },
+      {
+        "id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b"
+      }
+    ],
+    "account": {
+      "username": "emilyw456",
+      "password": "$2b$10$mIK4SWV36H6mdb85LAYv7Ok.5CeZDqHKTVnBRjAKomi.eGOpanv0.",
+      "admin": false
+    }
+  },
+  {
+    "_id": "72f0b825-1bbf-4c99-a879-64de0e867815",
+    "firstName": "William",
+    "lastName": "Anderson",
+    "projects": [
+      {
+        "id": "9b39fc1a-f258-49b4-83d4-3f89227ab88b"
+      },
+      {
+        "id": "062f631e-e913-4338-aeae-ceab2ba66dec"
+      }
+    ],
+    "account": {
+      "username": "wanderson789",
+      "password": "$2b$10$Fx2aEkAWW0vq87dj./bZkuFiocAuk8JjC8.ZJtOISGJatlMhtLtXa",
+      "admin": false
+    }
+  },
+  {
+    "_id": "5153798e-7830-4eac-99e6-dbfdad91a3c5",
+    "firstName": "Kaden",
+    "lastName": "Langston",
+    "projects": [
+      {
+        "id": "fa799529-bc18-4264-9105-5526121d4e66",
+        "role": "Lead"
+      }
+    ],
+    "account": {
+      "username": "johndoe45",
+      "password": "$2b$10$vG2gcIReb1i96WXn6Q1wmeuIqyVkFJr7URsrJz.ayNYLOavDSlEz2",
+      "admin": false
+    }
+  },
+  {
+    "_id": "fcf956b3-974a-40a2-b81a-cb5f5b61f4a4",
+    "firstName": "Carl",
+    "lastName": "Hanratty",
+    "projects": [
+      {
+        "id": "fa799529-bc18-4264-9105-5526121d4e66"
+      }
+    ],
+    "account": {
+      "username": "janesmith23",
+      "password": "$2b$10$dPN4uOhsfLh64HLcbCTYEug4DoBzGexodWiQ4jtIMfv9GvLiuj/4q",
+      "admin": false
+    }
+  },
+  {
+    "_id": "f1ee63b3-e725-4166-8af1-c5b86556bf81",
+    "firstName": "Emily",
+    "lastName": "Johnson",
+    "projects": [],
+    "account": {
+      "username": "emilyj",
+      "password": "$2b$10$zur.tdLbHmrt8Rr9a6uZZOWf218.nCt11gnZ98YlksXLAtI8wR5la",
+      "admin": false
+    }
+  },
+  {
+    "_id": "649c5ec6a0e9e7a5ec492945",
+    "firstName": "Norville",
+    "lastName": "Rogers",
+    "account": {
+      "username": "zoinksScoob23",
+      "password": "$2b$10$1w0jbm6STkQnuDRgGAYexOHeoZQYl9dsK8X.CZZIKSWIequx.jk6e",
+      "admin": true
+    },
+    "projects": []
+  },
+  {
+    "_id": "649c6040a0e9e7a5ec492946a",
+    "account": {
+      "username": "sausageDude",
+      "password": "$2b$10$veYqrCxRYrmW8.IXTNhEweMTOqeXzciWfbaz4dMDK8c/Y6Rq5fkYu"
+    },
+    "firstName": "Jimmy",
+    "lastName": "Dean",
+    "projects": []
+  },
+  {
+    "_id": "0e9d1d41-7517-4916-aa5e-b654fb550169",
+    "firstName": "Jimmy",
+    "lastName": "John",
+    "projects": [
+      {
+        "id": "4c5a68aa-0725-4f18-b74b-89bb75c85f05"
+      },
+      {
+        "id": "74ae8817-4629-4e4e-a5ca-b37b24b966fe",
+        "role": "Lead"
+      }
+    ]
+  },
+  {
+    "_id": "35f8d863-c821-4909-a893-16884607a1aa",
+    "firstName": "Tyler",
+    "lastName": "Franklin",
+    "account": {},
+    "projects": [
+      {
+        "id": "fa799529-bc18-4264-9105-5526121d4e66"
+      }
+    ]
+  },
+  {
+    "_id": "08b990b3-feb5-4f41-84d0-dc09eb534df8",
+    "firstName": "James",
+    "lastName": "Murray",
+    "account": {},
+    "projects": [
+      {
+        "id": "74616ab0-b667-4775-8c22-c3cdc47e3514"
+      }
+    ]
+  },
+  {
+    "_id": "ecae6c87-81fa-492d-99d2-4e62a6f1ef0f",
+    "firstName": "Brian",
+    "lastName": "Quinn",
+    "account": {},
+    "projects": [
+      {
+        "id": "74616ab0-b667-4775-8c22-c3cdc47e3514"
+      }
+    ]
+  },
+  {
+    "_id": "3a156af6-0fb4-43ce-a4e2-99ac01006b29",
+    "firstName": "Sal",
+    "lastName": "Vulcano",
+    "account": {},
+    "projects": [
+      {
+        "id": "74616ab0-b667-4775-8c22-c3cdc47e3514",
+        "role": "Lead"
+      }
+    ]
+  },
+  {
+    "_id": "597d7d53-5062-4b2d-8f92-d94fbaf847d1",
+    "firstName": "Joe",
+    "lastName": "Gatto",
+    "account": {},
+    "projects": [
+      {
+        "id": "74616ab0-b667-4775-8c22-c3cdc47e3514"
+      }
+    ]
+  }
+]
