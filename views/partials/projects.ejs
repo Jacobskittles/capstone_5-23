@@ -135,7 +135,7 @@
               </div>
             </div>
   
-            <!--This modal deletes a project from the list --> 
+            <% // This modal deletes a project from the list %>
             <div class="modal fade" id="deleteProjectModal-<%= project._id %>" tabindex="-1" aria-labelledby="deleteProjectModalLabel" aria-hidden="true">
               <div class="modal-dialog">
                 <form  id="deleteProjectForm" action="/projects" method = "POST">
@@ -156,7 +156,7 @@
               </div>
             </div>
   
-            <!--This modal removes members from a project -->
+            <%//This modal removes members from a project%>
             <div class="modal fade" id="removeMembersModal-<%=project._id%>" tabindex="-1" aria-labelledby="removeMembersModalLabel-<%=project._id%>" aria-hidden="true">
               <div class="modal-dialog">
                 <form action="/projects" method="POST">
@@ -192,7 +192,7 @@
               </div>
             </div>
   
-            <!--This modal edits the project name and/or description-->
+            <%//This modal edits the project name and/or description%>
             <div class="modal fade" id="editProjectModal-<%= project._id %>" tabindex="-1" aria-labelledby="editProjectModalLabel" aria-hidden="true">
               <div class="modal-dialog">
                 <form  id="editProjectForm" action="/projects" method = "POST">
@@ -312,7 +312,6 @@
                   <% 
                     // count how many projects each person has and determine their color
                     let total = utils.countProjects(person)
-                    
                     let color = utils.getColor(total)
                   %>
                           <span class="badge bg-<%=color%>">
@@ -323,11 +322,10 @@
                       }
                      })
                      %>
-                       <button class="btn bg-light noDrop" data-bs-toggle="modal" data-bs-target="#addMembers-<%=project._id%>">+</button>
+                      <button class="btn bg-light noDrop" data-bs-toggle="modal" data-bs-target="#addMembers-<%=project._id%>">+</button>
   
                       <div class="modal fade" id="addMembers-<%=project._id%>" tabindex="-1" aria-labelledby="addMembersLabel-<%=project._id%>" aria-hidden="true">
                         <div class="modal-dialog">
-  
                         <form action="/projects" method="POST">
                           <div class="modal-content">
                             <div class="modal-header">
@@ -335,8 +333,7 @@
                               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>                          
                             <div class="modal-body">                           
-                              <% 
-                              
+                              <%  
                               personnel.forEach(function(person) { 
                                 let assignments = []
                                 if (person.projects) {person.projects.forEach(function(item) {assignments.push(item.id)})}
@@ -368,12 +365,8 @@
                                       0
                                     </span>
                                 </label>      
-                              </div>
-                              
+                              </div>  
                               <% }})%>                         
-  
-                            
-                              
                             </div>
                             <div class="modal-footer">
                               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -381,7 +374,6 @@
                             </div>
                           </div>
                         </form>
-  
                         </div>
                       </div>
               </div>
