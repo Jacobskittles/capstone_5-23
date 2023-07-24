@@ -394,6 +394,12 @@ app.post("/projects", authenticateToken, async (req, res) => {
             const personID = sanitize(req.body.personID);
 
             await DBMan.unassignPerson(personID)
+        } else if (req.body.function === "addAccount") {
+            const personID = sanitize(req.body.personID);
+            const username = sanitize(req.body.username);
+            const password = sanitize(req.body.password);
+
+            await DBMan.addAccount(personID, username, password)
         } else {
             return showError(req, res, "Invalid Request", 400);
         }
