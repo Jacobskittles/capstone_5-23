@@ -34,18 +34,14 @@
             padding: 10px 20px;
             border-radius: 5px;
         }
-        p {
-            margin-top: 50px;
-        }
     </style>
 </head>
 
 <body>
     <div>
-        <h1>Error importing JSON</h1>
+        <h1><%= code %></h1>
         <h2><%= error %></h2>
-        <a href="/import">Go back</a>
-        <p>Did you select the right file?</p>
+        <a onclick="window.history.back()" href="#">Go back</a>
     </div>
 </body>
 

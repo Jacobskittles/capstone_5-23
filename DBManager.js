@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { json } = require("express");
 const fs = require("fs");
 const path = require("path");
 
@@ -25,7 +26,6 @@ class DBManager {
      * @param {string} personID - The ID of the person to join.
      * @returns {Promise<void>} - A promise that resolves once the operation is complete.
      */
-
     async unjoin(projectID, personID) {
         let projectQuery = { _id: projectID };
         let personQuery = { _id: personID };
@@ -36,11 +36,11 @@ class DBManager {
             project = await this.projects.findOne(projectQuery);
 
             if (!person || !project) {
-                console.log("Result not found");
+                throw new Error("Result not found");
                 return;
             }
         } catch (error) {
-            console.log("ERROR: " + error);
+            throw new Error("There was a problem connecting to the database.");
         }
 
         let assignments = person.projects;
@@ -69,8 +69,7 @@ class DBManager {
                 $set: { members: members },
             });
         } catch (error) {
-            console.log("ERROR: " + error);
-            return;
+            throw new Error("There was a problem connecting to the database");
         }
     }
 
@@ -91,11 +90,10 @@ class DBManager {
             person = await this.personnel.findOne(personQuery);
             project = await this.projects.findOne(projectQuery);
             if (!person || !project) {
-                console.log("Result not found");
-                return;
+                throw new Error("Result not found");
             }
         } catch (error) {
-            console.log("ERROR: " + error);
+            throw new Error("There was a problem connecting to the database");
         }
 
         // create projects and members if they don't exist
@@ -140,7 +138,7 @@ class DBManager {
                 $set: { members: project.members },
             });
         } catch (error) {
-            console.log("ERROR: " + error);
+            throw new Error("There was a problem connecting to the database");
         }
     }
 
@@ -164,11 +162,10 @@ class DBManager {
             person = await this.personnel.findOne(personQuery);
             project = await this.projects.findOne(projectQuery);
             if (!person || !project) {
-                console.log("Result not found");
-                return;
+                throw new Error("Result not found");
             }
         } catch (error) {
-            console.log("ERROR: " + error);
+            throw new Error("Result not found: " + error.message);
         }
 
         const assignments = person.projects;
@@ -211,7 +208,7 @@ class DBManager {
                 $set: { members: members },
             });
         } catch (error) {
-            console.log("ERROR: " + error);
+            throw new Error("There was a problem connecting to the database");
         }
     }
 
@@ -223,9 +220,12 @@ class DBManager {
     async createPerson(person) {
         //generate new ID and insert into db
         person._id = crypto.randomUUID();
+
+        this.validateData(this.personnel, [person]);
+
         this.personnel.insertOne(person, (err, result) => {
             if (err) {
-                console.error("Failed to insert person:", err);
+                throw new Error("Failed to insert person:" + err.message);
             }
         });
         return person._id;
@@ -239,9 +239,12 @@ class DBManager {
     async createProject(project) {
         //generate new ID and insert into db
         project._id = crypto.randomUUID();
+
+        this.validateData(this.projects, [project])
+
         this.projects.insertOne(project, (err, result) => {
             if (err) {
-                console.error("Failed to insert person:", err);
+                throw new Error("Failed to insert person:" + err.message);
             }
         });
         return project._id;
@@ -259,11 +262,10 @@ class DBManager {
         try {
             person = await this.personnel.findOne(personQuery);
             if (!person) {
-                console.log("Result not found");
-                return;
+                throw new Error("Person not found");
             }
         } catch (error) {
-            console.log("ERROR: " + error);
+            throw new Error("ERROR: " + error.message);
         }
 
         // get rid of all joins
@@ -275,7 +277,7 @@ class DBManager {
 
         this.personnel.deleteOne(personQuery, (err, result) => {
             if (err) {
-                console.error("Failed to delete person: ", err);
+                throw new Error("Failed to delete person: " + err.message);
             }
         });
     }
@@ -292,11 +294,10 @@ class DBManager {
         try {
             project = await this.projects.findOne(projectQuery);
             if (!project) {
-                console.log("Result not found");
-                return;
+                throw new Error("Project not found");
             }
         } catch (error) {
-            console.log("ERROR: " + error);
+            throw new Error("Failed to find project: " + err.message);
         }
 
         // get rid of all joins
@@ -306,7 +307,7 @@ class DBManager {
 
         this.projects.deleteOne(projectQuery, (err, result) => {
             if (err) {
-                console.error("Failed to delete project: ", err);
+                throw new Error("Failed to delete project: " + err.message);
             }
         });
     }
@@ -319,6 +320,11 @@ class DBManager {
      */
     async updatePerson(personID, person) {
         const personQuery = { _id: personID };
+
+        if (!person.firstName || !person.lastName) {
+            throw new Error("Person must have a first and last name.")
+        }
+
         let { firstName, lastName } = person;
 
         this.personnel.updateOne(personQuery, {
@@ -334,6 +340,11 @@ class DBManager {
      */
     async updateProject(projectID, project) {
         const projectQuery = { _id: projectID };
+
+        if (!project.name || !project.description) {
+            throw new Error("Project must have name and a description.");
+        }
+
         let { name, description } = project;
 
         this.projects.updateOne(projectQuery, { $set: { name, description } });
@@ -373,39 +384,33 @@ class DBManager {
         // save backup because we're about to do something very dangerous
         await this.saveBackup(collection);
 
+        const JSONData = JSON.parse(data);
+
         // run validation, hopefully it errors if there is a problem
-        await this.validateData(collection, data);
+        await this.validateData(collection, JSONData);
 
         // uh-oh we deleting everything
         await collection.deleteMany({});
 
-        const jsonData = JSON.parse(data);
-
-        await collection.insertMany(jsonData);
+        await collection.insertMany(JSONData);
     }
 
     /**
      * Validates the format of JSON data for a specified collection.
      *
      * @param {Collection} collection - The MongoDB Collection where data will be imported.
-     * @param {string} data - A JSON string representing the data to be validated.
+     * @param {Object} data - An array representing the data to be validated.
      * @throws {Error} If there is an issue with the JSON format or data validation.
      * @async
      */
     async validateData(collection, data) {
-        let JSONData;
-        try {
-            JSONData = await JSON.parse(data);
-        } catch (error) {
-            throw new Error("Invalid JSON format.");
-        }
-
-        if (!Array.isArray(JSONData)) {
+        // this function was originally intended to validate data before importing, but we ended up using it anywhere data needed validation
+        if (!Array.isArray(data)) {
             throw new Error("JSON must be an array.");
         }
 
         if (collection === this.personnel) {
-            for (let person of JSONData) {
+            for (let person of data) {
                 if (!person._id || typeof person._id !== "string") {
                     throw new Error(
                         "Each personnel document must have an _id field of type string."
@@ -423,7 +428,7 @@ class DBManager {
                 }
             }
         } else if (collection === this.projects) {
-            for (let project of JSONData) {
+            for (let project of data) {
                 if (!project._id || typeof project._id !== "string") {
                     throw new Error(
                         "Each project document must have an _id field of type string."
@@ -450,7 +455,7 @@ class DBManager {
             }
         } else {
             throw new Error(
-                "Collection must be either this.personnel or this.projects"
+                "Collection must be either personnel or projects"
             );
         }
     }

@@ -109,10 +109,24 @@ const authenticateToken = (req, res, next) => {
 function adminAuth(req, res, next) {
     // Check if the user is authorized as an admin
     if (!req.user || !req.user.admin) {
-        return res.status(403).render("pages/403");
+        return showError(req, res, "Unauthorized", "403");
     }
     // If the user is authorized, proceed to the next middleware or route handler
     next();
+}
+
+function showError(req, res, error, code) {
+    if (!code) {
+        code = "Error";
+    }
+    if (!error) {
+        error = "";
+    }
+
+    return res.status(400).render("pages/error", {
+        error: error,
+        code: code,
+    });
 }
 
 /*
@@ -169,14 +183,19 @@ app.get("/login", (req, res) => {
 
 //  Going to the projects page. Lincoln + Gonzales
 app.get("/projects", authenticateToken, async (req, res) => {
-    console.log(req.user);
-    filldata();
-    res.render("pages/index", {
-        personnel: personnel,
-        projects: projects,
-        utils: utils,
-        user: req.user,
-    });
+    try {
+        console.log(req.user);
+        filldata();
+        
+        res.render("pages/index", {
+            personnel: personnel,
+            projects: projects,
+            utils: utils,
+            user: req.user,
+        });
+    } catch (error) {
+        showError(req, res, error.message, "Internal Server Error")
+    }
 });
 
 // Gonzales/Lincoln - Posting user login requirements to the database
@@ -206,8 +225,8 @@ app.post("/login", async (req, res) => {
         // Take the user to the projects page after successful login
         res.redirect("/projects");
     } else {
-        // If credentials are incorrect, redirect to the login page
-        res.redirect("/login");
+        // If credentials are incorrect, show scary error screen
+        return showError(req, res, "Username or password incorrect.", "Login Failed");
     }
 });
 
@@ -220,6 +239,7 @@ const DBMan = new DBManager(
 // Lincoln and Slivinski's Code - Posts to the database depending on the name and values associated with the modal or submit buttons that you are pressing in order to keep the site limited to one page.
 app.post("/projects", authenticateToken, async (req, res) => {
     if (!req.user.admin) {
+        // just redirect instead of showing error screen
         res.status(403).redirect("/projects");
         return;
     }
@@ -341,18 +361,14 @@ app.post("/projects", authenticateToken, async (req, res) => {
             });
             console.log(`Successfully updated person with ID: ${personID}`);
         } else {
-            // If none of the expected operations are present in req.body
-            res.status(400).send("Invalid request");
-            return;
+            return showError(req, res, "Invalid Request", 400)
         }
 
         // updates the page immediately with the updated database
         await filldata();
         res.redirect("/projects");
     } catch (error) {
-        // General error handling function
-        console.error(error);
-        res.status(500).send("An error occurred.");
+        return showError(req, res, error.message);
     }
 });
 
@@ -365,14 +381,9 @@ app.get("/logout", (req, res) => {
 });
 
 // Gonzales
-app.get("/export", authenticateToken, async (req, res) => {
-    if (!req.user.admin) {
-        res.status(403).send("Unauthorized");
-        return;
-    }
+app.get("/export", authenticateToken, adminAuth, async (req, res) => {
     // Retrieve the collection and format from the query parameters
     const collection = req.query.collection;
-    const format = req.query.format;
 
     let jsonData;
 
@@ -383,7 +394,7 @@ app.get("/export", authenticateToken, async (req, res) => {
         jsonData = await DBMan.exportJSON(DBMan.projects);
     } else {
         // Return a 400 Bad Request response if an invalid collection is requested
-        return res.status(400).send("Invalid collection.");
+        return showError(req, res, "Invalid collection name.");
     }
 
     // Send the JSON data in the specified format (defaulting to pretty-printed JSON)
@@ -406,43 +417,40 @@ app.post(
         const personnelFile = req.files["personnel"];
         const projectsFile = req.files["projects"];
 
-        if (personnelFile && personnelFile[0]) {
-            const personnelData = fs.readFileSync(
-                personnelFile[0].path,
-                "utf8"
-            );
+        try {
+            if (personnelFile && personnelFile[0]) {
+                const personnelData = fs.readFileSync(
+                    personnelFile[0].path,
+                    "utf8"
+                );
 
-            try {
                 await DBMan.importJSON(DBMan.personnel, personnelData);
-            } catch (error) {
-                res.status(400).render("pages/import-error", {
-                    error: error.message,
+
+                // Delete the personnel file after importing
+                fs.unlink(personnelFile[0].path, (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
                 });
-                return;
             }
 
-            // Delete the personnel file after importing
-            fs.unlink(personnelFile[0].path, (err) => {
-                console.log(err)
-            });
-        }
+            if (projectsFile && projectsFile[0]) {
+                const projectsData = fs.readFileSync(
+                    projectsFile[0].path,
+                    "utf8"
+                );
 
-        if (projectsFile && projectsFile[0]) {
-            const projectsData = fs.readFileSync(projectsFile[0].path, "utf8");
-
-            try {
                 await DBMan.importJSON(DBMan.projects, projectsData);
-            } catch (error) {
-                res.status(400).render("pages/import-error", {
-                    error: error.message,
-                });
-                return;
-            }
 
-            // Delete the projects file after importing
-            fs.unlink(projectsFile[0].path, (err) => {
-                console.log(err)
-            });
+                // Delete the projects file after importing
+                fs.unlink(projectsFile[0].path, (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        } catch (error) {
+            return showError(req, res, error.message, "Error Importing JSON");
         }
 
         res.render("pages/import-success");
