@@ -261,8 +261,7 @@ const DBMan = new DBManager(
 app.post("/projects", authenticateToken, async (req, res) => {
     if (!req.user.admin) {
         // just redirect instead of showing error screen
-        res.status(403).redirect("/projects");
-        return;
+        return res.status(403).redirect("/projects");
     }
 
     try {
@@ -386,7 +385,8 @@ app.post("/projects", authenticateToken, async (req, res) => {
         }
 
         // updates the page immediately with the updated database
-        await filldata();
+        // I have no idea why but express won't wait for filldata to finish unless I use the result (undefined), so here we are, technically, doing the thing
+        console.log(await filldata()); 
         res.redirect("/projects");
     } catch (error) {
         return showError(req, res, error.message);
