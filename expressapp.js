@@ -6,8 +6,14 @@ var sanitize = require("mongo-sanitize");
 //  Lincoln's code
 const express = require("express");
 
+// for comparing hashed passwords
 const bcrypt = require("bcrypt");
+
+// for tokens
 const jwt = require("jsonwebtoken");
+
+// used only for generating a secret key
+const crypto = require("crypto");
 
 //  Used to read the user login information and parse it. Gonzales + Lincoln
 const bodyParser = require("body-parser");
@@ -15,17 +21,23 @@ const bodyParser = require("body-parser");
 //  The cookie parser is used to store login information. Gonzales + Lincoln
 var cookieParser = require("cookie-parser");
 
+// gonzales' other files
 var utils = require("./utils");
 const DBManager = require("./DBManager");
 
+// for uploading to server
 const multer = require("multer");
 const fs = require("fs");
+const path = require("path")
 
 const app = express();
 const PORT = 80;
 
-const secretKey =
-    "93dc6c4e2962459eb1f71a88888c7e5a5e9d6bae431eaa6d2bd131712e5c317672b9e6b5a7df2a4c4f20ee41ff42e1c07489905c73802fd8f414994770242990";
+// for release:
+const secretKey = crypto.randomBytes(32).toString("hex");
+
+// for dev:
+// const secretKey = "93dc6c4e2962459eb1f71a88888c7e5a5e9d6bae431eaa6d2bd131712e5c317672b9e6b5a7df2a4c4f20ee41ff42e1c07489905c73802fd8f414994770242990";
 
 // not used with bcrypt compare
 // const SALT_ROUNDS = 10;
@@ -55,12 +67,6 @@ const upload = multer({
     limits: { fileSize: 2 * 1024 * 1024 },
 });
 
-//This is error handling middleware to catch errors in page requests
-function handleErrors(err, req, res, next) {
-    console.log(err);
-    res.status(err.httpStatusCode || 500).send("Oh no, an error occurred!");
-}
-
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
 });
@@ -73,15 +79,6 @@ app.listen(PORT, () => {
  * @param {Object} req - The Express request object.
  * @param {Object} res - The Express response object.
  * @param {Function} next - The next middleware function to be called if the user is authenticated.
- * @returns {undefined}
- *
- * @example
- * // Use this middleware to protect routes that require authentication.
- * app.get('/protected-route', authenticateToken, (req, res) => {
- *     // req.user contains the payload from the JWT, representing the authenticated user.
- *     // Perform actions specific to the authenticated user here.
- *     res.send('You are authenticated!');
- * });
  */
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.jwt; // Assuming you set the JWT as 'jwt' in the cookie
@@ -106,6 +103,17 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
+
+/**
+ * Middleware to check if the user is authorized as an admin.
+ *
+ * Checks if the user is authorized as an admin based on the presence of the `req.user` object and its `admin` 
+ * property. If the user is not authorized, it renders an error page with a "403 Unauthorized" status code.
+ *
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {Function} next - The next middleware function in the chain.
+ */
 function adminAuth(req, res, next) {
     // Check if the user is authorized as an admin
     if (!req.user || !req.user.admin) {
@@ -115,6 +123,15 @@ function adminAuth(req, res, next) {
     next();
 }
 
+/**
+ * Renders an error page with a custom error message and error code.
+ * If no custom error code or message is provided, a default value will be used.
+ *
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {string} error - The custom error message to display. If not provided, a default empty string will be used.
+ * @param {string} code - The custom error code to display. If not provided, a default value of "Error" will be used.
+ */
 function showError(req, res, error, code) {
     if (!code) {
         code = "Error";
@@ -450,6 +467,14 @@ app.post(
                 });
             }
         } catch (error) {
+            // Delete all files within the "uploads" folder, just in case
+            const uploadsFolder = path.join(__dirname, "uploads");
+            const files = fs.readdirSync(uploadsFolder);
+
+            for (const file of files) {
+                const filePath = path.join(uploadsFolder, file);
+                fs.unlinkSync(filePath);
+            }
             return showError(req, res, error.message, "Error Importing JSON");
         }
 
