@@ -380,6 +380,20 @@ app.post("/projects", authenticateToken, async (req, res) => {
                 lastName: lastName,
             });
             console.log(`Successfully updated person with ID: ${personID}`);
+        } else if (req.body.function === "join") {
+            const personID = sanitize(req.body.personID);
+            const projectID = sanitize(req.body.projectID);
+
+            await DBMan.join(projectID, personID);
+        } else if (req.body.function === "changeLead") {
+            const personID = sanitize(req.body.personID);
+            const projectID = sanitize(req.body.projectID);
+
+            await DBMan.changeRole(projectID, personID, "Lead");
+        } else if (req.body.function === "unassign") {
+            const personID = sanitize(req.body.personID);
+
+            await DBMan.unassignPerson(personID)
         } else {
             return showError(req, res, "Invalid Request", 400);
         }
@@ -492,7 +506,7 @@ app.post("/restore", authenticateToken, adminAuth, (req, res) => {
     res.redirect("/");
 });
 
-// 404 Error Handler
-app.use((req, res, next) => {
+// 404 Error Handler; anyone who gets this far is not welcome
+app.use((req, res) => {
     res.status(404).render("pages/404");
 });

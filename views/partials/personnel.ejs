@@ -136,7 +136,7 @@
         </div>
           <hr>
           <h5 class="card-title">Unassigned - <%= unassigned %></h5>
-          <div class="card-body bg-secondary-subtle rounded" ondrop="drop(event)" ondragover="allowDrop(event)" id="peopleList">
+          <div id="unassigned" class="card-body bg-secondary-subtle rounded" ondrop="drop(event)" ondragover="allowDrop(event)" id="peopleList">
           <% personnel.forEach(function(person) { if (!person.projects || (person.projects && !person.projects.length)){ %>
             <div class="btn bg-light border-secondary-subtle w-100 d-inline-flex p-0">
               <div name="persbtn" id="<%= person._id %>-button" draggable="True"  class="btn bg-light noDrop w-100 text-start" data-bs-toggle="popover"  title= "Info for <%=person.firstName%> <%=person.lastName%>" data-bs-placement="left" data-bs-content="No projects assigned." ondragstart="drag(event)">
@@ -237,12 +237,141 @@
 
 
 <script>
-var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-  return new bootstrap.Popover(popoverTriggerEl)
-});
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl)
+  });
 
-  document.getElementsByName("persbtn").addEventListener("hover", function() {
-  document.getElementById("dotsButton").classList.remove("d-none");
-});
+  // Gonzales - drag and drop
+
+  // this strange query is how you search for slices of names
+  const projectMembers = document.querySelectorAll('[id$="-members"]');
+  const projectLeads = document.querySelectorAll('[id$="-lead"]');
+  const personnel = document.querySelectorAll('[id$="-button"]');
+  const unassignedCard = document.querySelector("#unassigned");
+
+  for (let person of personnel) {
+    // dataTransfer adds data to the drag event I don't quite get it.
+    person.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', e.target.id);
+    });
+  }
+
+  for (let project of projectMembers) {
+    project.addEventListener('drop', e => {
+      // data gets to the drop event through the e.dataTransfer
+      e.preventDefault();
+      const personID = e.dataTransfer.getData('text/plain').slice(0, -7); // extract the personID from the dataTransfer (-7 for -button)
+      const projectID = project.id.slice(0, -8); // Extract the project ID from the element ID (-8 for -members)
+      joinPersonToProject(personID, projectID);
+    })
+  }
+
+  for (let project of projectLeads) {
+    project.addEventListener('drop', e => {
+      e.preventDefault();
+      const personID = e.dataTransfer.getData('text/plain').slice(0, -7); // extract the personID from the dataTransfer
+      const projectID = project.id.slice(0, -5); // Extract the project ID from the element ID (-5 for -lead)
+      changeLead(personID, projectID);
+    })
+  }
+
+  unassignedCard.addEventListener('drop', e => {
+    e.preventDefault();
+    const personID = e.dataTransfer.getData('text/plain').slice(0, -7); // extract the personID from the dataTransfer
+    unassign(personID);
+  })
+
+  // okay so this function posts by creating a hidden form and then submitting it
+  function joinPersonToProject(personID, projectID) {
+    // create the form
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/projects';
+    form.display = "hidden"
+
+    // create the three parts of the form
+    const functionInput = document.createElement('input');
+    functionInput.name = 'function';
+    functionInput.value = 'join';
+
+    const personIDInput = document.createElement('input');
+    personIDInput.name = 'personID';
+    personIDInput.value = personID;
+
+    const projectIDInput = document.createElement('input');
+    projectIDInput.name = 'projectID';
+    projectIDInput.value = projectID;
+
+    // add them to the form
+    form.appendChild(functionInput);
+    form.appendChild(personIDInput);
+    form.appendChild(projectIDInput);
+
+    // okay so you have to add the form to the webpage
+    document.body.appendChild(form);
+
+    // submit form
+    form.submit();
+  }
+
+  function changeLead(personID, projectID) {
+    // create the form
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/projects';
+    form.display = "hidden"
+
+    // create the three parts of the form
+    const functionInput = document.createElement('input');
+    functionInput.name = 'function';
+    functionInput.value = 'changeLead';
+
+    const personIDInput = document.createElement('input');
+    personIDInput.name = 'personID';
+    personIDInput.value = personID;
+
+    const projectIDInput = document.createElement('input');
+    projectIDInput.name = 'projectID';
+    projectIDInput.value = projectID;
+
+    // add them to the form
+    form.appendChild(functionInput);
+    form.appendChild(personIDInput);
+    form.appendChild(projectIDInput);
+
+    // okay so you have to add the form to the webpage
+    document.body.appendChild(form);
+
+    // submit form
+    form.submit();
+  }
+
+  function unassign(personID) {
+    // create the form
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/projects';
+    form.display = "hidden"
+
+    // create the three parts of the form
+    const functionInput = document.createElement('input');
+    functionInput.name = 'function';
+    functionInput.value = 'unassign';
+
+    const personIDInput = document.createElement('input');
+    personIDInput.name = 'personID';
+    personIDInput.value = personID;
+
+    // add them to the form
+    form.appendChild(functionInput);
+    form.appendChild(personIDInput);
+
+    // okay so you have to add the form to the webpage
+    document.body.appendChild(form);
+
+    // submit form
+    form.submit();
+  }
+
 </script>

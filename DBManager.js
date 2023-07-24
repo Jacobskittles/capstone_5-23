@@ -91,7 +91,7 @@ class DBManager {
                 throw new Error("Result not found");
             }
         } catch (error) {
-            throw new Error("There was a problem connecting to the database");
+            throw new Error("There was a problem connecting to the database" + error);
         }
 
         // create projects and members if they don't exist
@@ -138,6 +138,7 @@ class DBManager {
         } catch (error) {
             throw new Error("There was a problem connecting to the database");
         }
+        console.log("hooray!")
     }
 
     /**
@@ -340,6 +341,31 @@ class DBManager {
         let { name, description } = project;
 
         this.projects.updateOne(projectQuery, { $set: { name, description } });
+    }
+
+    /**
+     * Removes all assignments from person with matching ID
+     * @param {string} personID - The ID of the person to be unassigned
+     */
+    async unassignPerson(personID) {
+        const personQuery = { _id: personID };
+
+        let person;
+        try {
+            person = await this.personnel.findOne(personQuery);
+            if (!person) {
+                throw new Error("Person not found");
+            }
+        } catch (error) {
+            throw new Error("Failed to find person");
+        }
+
+        // get rid of all joins
+        if (person.projects) {
+            for (let assignment of person.projects) {
+                await this.unjoin(assignment.id, personID);
+            }
+        }
     }
 
     /**
