@@ -32,7 +32,7 @@
         </div>
       </div>
 
-        <% let assigned = 0; let unassigned = 0; personnel.forEach(function(person) {if (person.projects) {assigned+=1} else {unassigned+=1}}) %>
+        <% let assigned = 0; let unassigned = 0; personnel.forEach(function(person) {if (person.projects && person.projects.length > 0) {assigned+=1} else {unassigned+=1}}) %>
         <hr class="mt-2"><h5 class="card-title">Assigned - <%= assigned %></h5>
         <div class="card-body bg-secondary-subtle rounded" id="cont" ondrop="drop(event)" ondragover="allowDrop(event)">
 
