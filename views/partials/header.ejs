@@ -1,7 +1,15 @@
-
 <nav class="navbar navbar-expand-lg pe-4 ps-2">
-    <a class="navbar-brand">PROJECT TRACKER</a>
-    <a class="nav-link "><%= user.first_name + " " + user.last_name %></a>
-    <a class="nav-link ms-auto me-4 text-primary">Restore</a>
-    <a class="nav-link text-danger" href="/logout" >Logout</a>
-  </nav>
+  <a class="navbar-brand">PROJECT TRACKER</a>
+  <a class="nav-link ">
+    <%= user.first_name + " " + user.last_name %>
+  </a>
+  <a class="nav-link ms-auto me-4 text-primary" href="#" onclick="restore();">Restore</a>
+  <a class="nav-link text-danger" href="/logout">Logout</a>
+  <form id="restore-form" action="/restore" method="post" style="display: none;"></form>
+</nav>
+
+<script>
+  function restore() {
+    document.getElementById("restore-form").submit();
+  }
+</script>

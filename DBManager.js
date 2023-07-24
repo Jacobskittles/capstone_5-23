@@ -24,7 +24,6 @@ class DBManager {
      * "Unjoins" a person and project
      * @param {string} projectID - The ID of the project to join.
      * @param {string} personID - The ID of the person to join.
-     * @returns {Promise<void>} - A promise that resolves once the operation is complete.
      */
     async unjoin(projectID, personID) {
         let projectQuery = { _id: projectID };
@@ -77,7 +76,6 @@ class DBManager {
      * Joins a person to a project in the database.
      * @param {string} projectID - The ID of the project to join.
      * @param {string} personID - The ID of the person to join.
-     * @returns {Promise<void>} - A promise that resolves once the join operation is complete.
      */
     async join(projectID, personID) {
         // set up the queries
@@ -147,7 +145,6 @@ class DBManager {
      * @param {string} projectID - The ID of the project where the role change occurs.
      * @param {string} personID - The ID of the person whose role is being changed.
      * @param {string} role - The new role to assign to the person.
-     * @returns {Promise<void>} - A promise that resolves once the role change operation is complete.
      */
     async changeRole(projectID, personID, role) {
         const projectQuery = { _id: projectID };
@@ -165,7 +162,7 @@ class DBManager {
                 throw new Error("Result not found");
             }
         } catch (error) {
-            throw new Error("Result not found: " + error.message);
+            throw new Error("Result not found");
         }
 
         const assignments = person.projects;
@@ -215,7 +212,6 @@ class DBManager {
     /**
      * Creates a new person document into the personnel collection
      * @param {string} person - The new person object to be inserted
-     * @returns {Promise<void>} - A promise that resolves once the creation operation is complete.
      */
     async createPerson(person) {
         //generate new ID and insert into db
@@ -225,7 +221,7 @@ class DBManager {
 
         this.personnel.insertOne(person, (err, result) => {
             if (err) {
-                throw new Error("Failed to insert person:" + err.message);
+                throw new Error("Failed to insert person");
             }
         });
         return person._id;
@@ -244,7 +240,7 @@ class DBManager {
 
         this.projects.insertOne(project, (err, result) => {
             if (err) {
-                throw new Error("Failed to insert person:" + err.message);
+                throw new Error("Failed to insert project.");
             }
         });
         return project._id;
@@ -253,7 +249,6 @@ class DBManager {
     /**
      * Deletes a person document from the personnel collection with the specified personID.
      * @param {string} personID - The ID of the person document to be deleted.
-     * @returns {Promise<void>} - A promise that resolves once the deletion operation is complete.
      */
     async deletePerson(personID) {
         const personQuery = { _id: personID };
@@ -265,7 +260,7 @@ class DBManager {
                 throw new Error("Person not found");
             }
         } catch (error) {
-            throw new Error("ERROR: " + error.message);
+            throw new Error("Failed to find person");
         }
 
         // get rid of all joins
@@ -277,7 +272,7 @@ class DBManager {
 
         this.personnel.deleteOne(personQuery, (err, result) => {
             if (err) {
-                throw new Error("Failed to delete person: " + err.message);
+                throw new Error("Failed to delete person");
             }
         });
     }
@@ -285,7 +280,6 @@ class DBManager {
     /**
      * Deletes a project document from the projects collection with the specified projectID.
      * @param {string} projectID - The ID of the project document to be deleted.
-     * @returns {Promise<void>} - A promise that resolves once the deletion operation is complete.
      */
     async deleteProject(projectID) {
         const projectQuery = { _id: projectID };
@@ -297,7 +291,7 @@ class DBManager {
                 throw new Error("Project not found");
             }
         } catch (error) {
-            throw new Error("Failed to find project: " + err.message);
+            throw new Error("Failed to find project");
         }
 
         // get rid of all joins
@@ -307,7 +301,7 @@ class DBManager {
 
         this.projects.deleteOne(projectQuery, (err, result) => {
             if (err) {
-                throw new Error("Failed to delete project: " + err.message);
+                throw new Error("Failed to delete project");
             }
         });
     }
@@ -316,7 +310,6 @@ class DBManager {
      * Updates a person document in the personnel collection with the specified personID.
      * @param {string} personID - The ID of the person document to be updated.
      * @param {Object} person - The updated person object containing the new values for firstName and lastName properties.
-     * @returns {Promise<void>} - A promise that resolves once the update operation is complete.
      */
     async updatePerson(personID, person) {
         const personQuery = { _id: personID };
@@ -336,7 +329,6 @@ class DBManager {
      * Updates a project document in the projects collection with the specified projectID.
      * @param {string} projectID - The ID of the project document to be updated.
      * @param {Object} project - The updated project object containing the new values for name and description properties.
-     * @returns {Promise<void>} - A promise that resolves once the update operation is complete.
      */
     async updateProject(projectID, project) {
         const projectQuery = { _id: projectID };
@@ -377,7 +369,6 @@ class DBManager {
      * @param {Collection} collection - The MongoDB Collection where data will be imported.
      * @param {string} data - A JSON string representing the data to be imported.
      * @throws {Error} If there is an issue with saving the backup, JSON format validation, or data import.
-     * @returns {Promise<void>} Resolves once the data is imported successfully.
      * @async
      */
     async importJSON(collection, data) {
@@ -586,7 +577,7 @@ class DBManager {
      * @param {string} username - The username for the new account.
      * @param {string} password - The HASHED password for the new account.
      * @param {boolean} [admin=false] - (Optional) Set to true if the account should have admin privileges, false otherwise.
-     * @returns {Promise<{ status: string, message: string }>} A promise that resolves to an object containing the status and message.
+     * @returns {{ status: string, message: string }} A promise that resolves to an object containing the status and message.
      */
     async addAccount(personId, username, password, admin) {
         if (!(username && password)) {

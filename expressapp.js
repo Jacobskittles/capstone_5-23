@@ -28,7 +28,7 @@ const DBManager = require("./DBManager");
 // for uploading to server
 const multer = require("multer");
 const fs = require("fs");
-const path = require("path")
+const path = require("path");
 
 const app = express();
 const PORT = 80;
@@ -103,11 +103,10 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-
 /**
  * Middleware to check if the user is authorized as an admin.
  *
- * Checks if the user is authorized as an admin based on the presence of the `req.user` object and its `admin` 
+ * Checks if the user is authorized as an admin based on the presence of the `req.user` object and its `admin`
  * property. If the user is not authorized, it renders an error page with a "403 Unauthorized" status code.
  *
  * @param {Object} req - The HTTP request object.
@@ -203,7 +202,7 @@ app.get("/projects", authenticateToken, async (req, res) => {
     try {
         console.log(req.user);
         filldata();
-        
+
         res.render("pages/index", {
             personnel: personnel,
             projects: projects,
@@ -211,7 +210,7 @@ app.get("/projects", authenticateToken, async (req, res) => {
             user: req.user,
         });
     } catch (error) {
-        showError(req, res, error.message, "Internal Server Error")
+        showError(req, res, error.message, "Internal Server Error");
     }
 });
 
@@ -243,7 +242,12 @@ app.post("/login", async (req, res) => {
         res.redirect("/projects");
     } else {
         // If credentials are incorrect, show scary error screen
-        return showError(req, res, "Username or password incorrect.", "Login Failed");
+        return showError(
+            req,
+            res,
+            "Username or password incorrect.",
+            "Login Failed"
+        );
     }
 });
 
@@ -378,7 +382,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
             });
             console.log(`Successfully updated person with ID: ${personID}`);
         } else {
-            return showError(req, res, "Invalid Request", 400)
+            return showError(req, res, "Invalid Request", 400);
         }
 
         // updates the page immediately with the updated database
@@ -481,6 +485,12 @@ app.post(
         res.render("pages/import-success");
     }
 );
+
+app.post("/restore", authenticateToken, adminAuth, (req, res) => {
+    DBMan.restoreLatestBackup(DBMan.personnel);
+    DBMan.restoreLatestBackup(DBMan.projects);
+    res.redirect("/");
+});
 
 // 404 Error Handler
 app.use((req, res, next) => {
